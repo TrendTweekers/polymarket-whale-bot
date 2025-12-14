@@ -25,6 +25,17 @@ async def fetch_trades(session, event_id, limit=100, offset=0):
         return data
 
 
+async def fetch_active_events(session, limit=20):
+    """Returns top N events by volume."""
+    url = f"{BASE}/events"
+    params = {"active": "true", "limit": limit, "order": "volume"}
+    async with session.get(url, headers=HEADERS, params=params) as resp:
+        resp.raise_for_status()
+        data = await resp.json()
+        logger.info("fetched active events", count=len(data) if isinstance(data, list) else 0)
+        return data
+
+
 async def fetch_recent_trades(session, min_size_usd=10000, limit=100):
     """
     Fetch recent trades filtered by minimum size.
@@ -66,9 +77,10 @@ async def fetch_recent_trades(session, min_size_usd=10000, limit=100):
 
 async def main():
     async with aiohttp.ClientSession() as session:
-        trades = await fetch_trades(session, event_id=16096, limit=10)
-        for t in trades:
-            print(t)
+        # Test fetch_active_events
+        events = await fetch_active_events(session, limit=5)
+        for e in events:
+            print(e.get("id", "N/A"), e.get("title", "N/A"), e.get("volume24hr", "N/A"))
 
 if __name__ == "__main__":
     asyncio.run(main())

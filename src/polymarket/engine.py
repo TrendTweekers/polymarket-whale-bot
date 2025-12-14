@@ -24,7 +24,7 @@ project_root = os.path.dirname(parent_dir)
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-from src.polymarket.scraper import fetch_recent_trades, BASE, HEADERS
+from src.polymarket.scraper import fetch_recent_trades, fetch_active_events, fetch_trades, BASE, HEADERS
 from src.polymarket.profiler import get_whale_stats
 from src.polymarket.score import whale_score, whitelist_whales
 
@@ -34,14 +34,14 @@ logger = structlog.get_logger()
 
 # Configuration
 POLL_INTERVAL_SECONDS = 30
-MIN_WHALE_SCORE = 0.05  # Temporarily lowered for testing (was 0.70)
-MIN_DISCOUNT_PCT = 0.1  # Temporarily lowered for testing (was 5.0)
+MIN_WHALE_SCORE = 0.70
+MIN_DISCOUNT_PCT = 5.0
 MIN_ORDERBOOK_DEPTH_MULTIPLIER = 3.0
 CONFLICT_WINDOW_MINUTES = 5
 MAX_SIGNALS_PER_DAY = 3
 MAX_DAILY_LOSS_USD = 50.0
 MAX_BANKROLL_PCT_PER_TRADE = 5.0
-MIN_SIZE_USD = 1_000  # Lowered for testing (was 10_000)
+MIN_SIZE_USD = 10_000
 
 # State tracking
 whitelist_cache: Dict[str, Dict] = {}  # {wallet: {stats, score, category}}
@@ -191,12 +191,18 @@ async def process_trade(session: aiohttp.ClientSession, trade: Dict) -> Optional
     current_price = whale_entry_price  # In production, fetch from orderbook
     discount_pct = calculate_discount(whale_entry_price, current_price)
     
+    # Log ALL whale activity for analysis (before filtering)
+    size = trade.get("size", 0.0)
+    size_usd = size * whale_entry_price
+    market_id = trade.get("conditionId", trade.get("slug", "unknown"))
+    logger.debug("whale_activity", wallet=wallet[:20], score=whale["score"], discount=discount_pct, size_usd=size_usd)
+    log_all_activity(market_id, wallet, whale["score"], discount_pct, size_usd)
+    
     if discount_pct < MIN_DISCOUNT_PCT:
         logger.debug("discount_too_low", discount=discount_pct, wallet=wallet[:20])
         return None
     
     # Check orderbook depth
-    size = trade.get("size", 0.0)
     depth_ratio = await get_orderbook_depth(session, trade.get("conditionId", ""), size)
     
     if depth_ratio < MIN_ORDERBOOK_DEPTH_MULTIPLIER:
@@ -222,6 +228,23 @@ async def process_trade(session: aiohttp.ClientSession, trade: Dict) -> Optional
     }
     
     return signal
+
+
+def log_all_activity(market_id: str, whale_wallet: str, score: float, discount: float, size_usd: float):
+    """Log ALL whale activity for analysis, not just signals."""
+    log_dir = os.path.join(os.path.dirname(__file__), "..", "..", "logs")
+    os.makedirs(log_dir, exist_ok=True)
+    
+    today = datetime.now().strftime("%Y-%m-%d")
+    path = os.path.join(log_dir, f"activity_{today}.csv")
+    
+    file_exists = os.path.exists(path)
+    
+    with open(path, "a", newline="") as f:
+        writer = csv.writer(f)
+        if not file_exists:  # Write header if new file
+            writer.writerow(["timestamp", "market_id", "wallet", "score", "discount_pct", "size_usd"])
+        writer.writerow([datetime.now().isoformat(), market_id, whale_wallet, score, discount, size_usd])
 
 
 def log_signal_to_csv(signal: Dict):
@@ -251,31 +274,67 @@ def log_signal_to_csv(signal: Dict):
 # Telegram functions removed - paper trading mode (CSV + console logging only)
 
 async def main_loop():
-    """Main polling loop."""
-    logger.info("engine_started", poll_interval=POLL_INTERVAL_SECONDS)
+    """Main polling loop - polls top 20 active events by volume."""
+    logger.info("engine_started", poll_interval=POLL_INTERVAL_SECONDS, mode="multi_event")
     
     async with aiohttp.ClientSession() as session:
         while True:
             try:
-                # Fetch recent large trades
-                trades = await fetch_recent_trades(session, min_size_usd=MIN_SIZE_USD, limit=100)
+                # 1. Fetch top 20 active events by volume
+                events = await fetch_active_events(session, limit=20)
                 
-                logger.info("processing_trades", count=len(trades))
+                if not events:
+                    logger.warning("no_events_found")
+                    await asyncio.sleep(POLL_INTERVAL_SECONDS)
+                    continue
                 
-                # Process each trade
-                for trade in trades:
-                    signal = await process_trade(session, trade)
-                    
-                    if signal:
-                        # Log signal to CSV
-                        log_signal_to_csv(signal)
-                        recent_signals.append(signal)
+                logger.info("fetched_events", count=len(events))
+                
+                # 2. Poll trades for each event
+                total_trades_processed = 0
+                for event in events:
+                    try:
+                        event_id = event.get("id") or event.get("eventId")
+                        if not event_id:
+                            logger.debug("event_missing_id", event=event.get("title", "unknown"))
+                            continue
                         
-                        # Console log
-                        logger.info("signal_generated", 
-                                   wallet=signal['wallet'][:20],
-                                   discount=signal['discount_pct'],
-                                   market=signal['market'][:50])
+                        # Fetch trades for this event
+                        trades = await fetch_trades(session, event_id=event_id, limit=100)
+                        
+                        # Process each trade
+                        for trade in trades:
+                            # Filter by minimum size before processing
+                            size = trade.get("size", 0.0)
+                            price = trade.get("price", 0.0)
+                            trade_value_usd = size * price
+                            
+                            if trade_value_usd < MIN_SIZE_USD:
+                                continue
+                            
+                            signal = await process_trade(session, trade)
+                            total_trades_processed += 1
+                            
+                            if signal:
+                                # Log signal to CSV
+                                log_signal_to_csv(signal)
+                                recent_signals.append(signal)
+                                
+                                # Console log
+                                logger.info("signal_generated", 
+                                           wallet=signal['wallet'][:20],
+                                           discount=signal['discount_pct'],
+                                           market=signal['market'][:50],
+                                           event_id=event_id)
+                    except Exception as e:
+                        logger.error("event_processing_error", 
+                                    event_id=event.get("id", "unknown"), 
+                                    error=str(e))
+                        continue
+                
+                logger.info("processing_complete", 
+                           events=len(events), 
+                           trades_processed=total_trades_processed)
                 
                 # Clean up old conflicting whales
                 cutoff_time = datetime.now() - timedelta(minutes=CONFLICT_WINDOW_MINUTES)
