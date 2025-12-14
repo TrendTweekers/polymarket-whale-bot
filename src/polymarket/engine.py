@@ -28,13 +28,15 @@ from src.polymarket.scraper import fetch_recent_trades, BASE, HEADERS
 from src.polymarket.profiler import get_whale_stats
 from src.polymarket.score import whale_score, whitelist_whales
 
-try:
-    from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-    from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes
-    TELEGRAM_AVAILABLE = True
-except ImportError:
-    TELEGRAM_AVAILABLE = False
-    print("Warning: python-telegram-bot not installed. Telegram features disabled.")
+# Telegram imports commented out for paper trading mode
+# try:
+#     from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+#     from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes
+#     TELEGRAM_AVAILABLE = True
+# except ImportError:
+#     TELEGRAM_AVAILABLE = False
+#     print("Warning: python-telegram-bot not installed. Telegram features disabled.")
+TELEGRAM_AVAILABLE = False
 
 logger = structlog.get_logger()
 
@@ -53,7 +55,7 @@ whitelist_cache: Dict[str, Dict] = {}  # {wallet: {stats, score, category}}
 recent_signals: List[Dict] = []  # Track signals sent today
 daily_loss_usd = 0.0
 conflicting_whales: Dict[str, datetime] = {}  # {wallet: timestamp} for opposite side trades
-telegram_app: Optional[Application] = None
+telegram_app: Optional[any] = None  # Application type commented out
 telegram_chat_id: Optional[str] = None
 
 
@@ -300,7 +302,7 @@ async def send_telegram_signal(signal: Dict):
         logger.error("telegram_send_failed", error=str(e))
 
 
-async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def button_callback(update: any, context: any):  # Update, ContextTypes commented out
     """Handle approve/reject button clicks."""
     query = update.callback_query
     await query.answer()
@@ -336,8 +338,10 @@ async def main_loop():
                         log_signal_to_csv(signal)
                         recent_signals.append(signal)
                         
-                        # Send Telegram alert
-                        await send_telegram_signal(signal)
+                        # Send Telegram alert (commented out for paper trading)
+                        # await send_telegram_signal(signal)
+                        if False:  # Disabled for paper trading
+                            await send_telegram_signal(signal)
                         
                         logger.info("signal_generated", 
                                    wallet=signal['wallet'][:20],
@@ -393,15 +397,18 @@ async def main():
     
     load_dotenv()
     
-    # Initialize Telegram if configured
-    telegram_token = os.getenv("TELEGRAM_BOT_TOKEN")
-    telegram_chat_id = os.getenv("TELEGRAM_CHAT_ID")
+    # Initialize Telegram if configured (commented out for paper trading)
+    # telegram_token = os.getenv("TELEGRAM_BOT_TOKEN")
+    # telegram_chat_id = os.getenv("TELEGRAM_CHAT_ID")
+    # 
+    # if telegram_token and telegram_chat_id:
+    #     await init_telegram(telegram_token, telegram_chat_id)
+    # else:
+    #     logger.warning("telegram_not_configured", 
+    #                   message="Set TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID in .env")
     
-    if telegram_token and telegram_chat_id:
-        await init_telegram(telegram_token, telegram_chat_id)
-    else:
-        logger.warning("telegram_not_configured", 
-                      message="Set TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID in .env")
+    # Telegram disabled for paper trading mode
+    logger.info("telegram_disabled", message="Running in paper trading mode - Telegram alerts disabled")
     
     try:
         await main_loop()
