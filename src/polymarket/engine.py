@@ -1,6 +1,6 @@
 """
 Polymarket Whale Signal Engine
-Polls trades, scores whales, and sends Telegram alerts for buy signals.
+Polls trades, scores whales, and logs signals to CSV and console.
 """
 
 import asyncio
@@ -28,15 +28,7 @@ from src.polymarket.scraper import fetch_recent_trades, BASE, HEADERS
 from src.polymarket.profiler import get_whale_stats
 from src.polymarket.score import whale_score, whitelist_whales
 
-# Telegram imports commented out for paper trading mode
-# try:
-#     from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-#     from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes
-#     TELEGRAM_AVAILABLE = True
-# except ImportError:
-#     TELEGRAM_AVAILABLE = False
-#     print("Warning: python-telegram-bot not installed. Telegram features disabled.")
-TELEGRAM_AVAILABLE = False
+# Telegram removed - paper trading mode (CSV + console logging only)
 
 logger = structlog.get_logger()
 
@@ -55,8 +47,6 @@ whitelist_cache: Dict[str, Dict] = {}  # {wallet: {stats, score, category}}
 recent_signals: List[Dict] = []  # Track signals sent today
 daily_loss_usd = 0.0
 conflicting_whales: Dict[str, datetime] = {}  # {wallet: timestamp} for opposite side trades
-telegram_app: Optional[any] = None  # Application type commented out
-telegram_chat_id: Optional[str] = None
 
 
 async def get_orderbook_depth(session: aiohttp.ClientSession, condition_id: str, size: float) -> float:
@@ -257,65 +247,7 @@ def log_signal_to_csv(signal: Dict):
         writer.writerow(signal)
 
 
-async def send_telegram_signal(signal: Dict):
-    """Send signal to Telegram with approve/reject buttons."""
-    if not TELEGRAM_AVAILABLE or not telegram_app or not telegram_chat_id:
-        logger.warning("telegram_not_configured")
-        return
-    
-    message = f"""
-🐋 **WHALE SIGNAL**
-
-**Market:** {signal['market']}
-**Whale:** `{signal['wallet'][:20]}...`
-**Score:** {signal['whale_score']:.2%}
-**Category:** {signal['category'].upper()}
-
-**Entry Price:** ${signal['whale_entry_price']:.4f}
-**Current Price:** ${signal['current_price']:.4f}
-**Discount:** {signal['discount_pct']:.2f}%
-
-**Size:** {signal['size']:.2f}
-**Value:** ${signal['trade_value_usd']:.2f}
-**Depth:** {signal['orderbook_depth_ratio']:.1f}x
-
-[View on Polymarket](https://polymarket.com/event/{signal['slug']})
-"""
-    
-    keyboard = [
-        [
-            InlineKeyboardButton("✅ Approve", callback_data=f"approve_{signal['transaction_hash']}"),
-            InlineKeyboardButton("❌ Reject", callback_data=f"reject_{signal['transaction_hash']}")
-        ]
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-    
-    try:
-        await telegram_app.bot.send_message(
-            chat_id=telegram_chat_id,
-            text=message,
-            reply_markup=reply_markup,
-            parse_mode="Markdown"
-        )
-        logger.info("telegram_signal_sent", signal_id=signal['transaction_hash'][:20])
-    except Exception as e:
-        logger.error("telegram_send_failed", error=str(e))
-
-
-async def button_callback(update: any, context: any):  # Update, ContextTypes commented out
-    """Handle approve/reject button clicks."""
-    query = update.callback_query
-    await query.answer()
-    
-    action, tx_hash = query.data.split("_", 1)
-    
-    if action == "approve":
-        await query.edit_message_text(f"✅ Signal approved: {tx_hash[:20]}...")
-        logger.info("signal_approved", tx_hash=tx_hash[:20])
-    elif action == "reject":
-        await query.edit_message_text(f"❌ Signal rejected: {tx_hash[:20]}...")
-        logger.info("signal_rejected", tx_hash=tx_hash[:20])
-
+# Telegram functions removed - paper trading mode (CSV + console logging only)
 
 async def main_loop():
     """Main polling loop."""
@@ -334,15 +266,11 @@ async def main_loop():
                     signal = await process_trade(session, trade)
                     
                     if signal:
-                        # Log signal
+                        # Log signal to CSV
                         log_signal_to_csv(signal)
                         recent_signals.append(signal)
                         
-                        # Send Telegram alert (commented out for paper trading)
-                        # await send_telegram_signal(signal)
-                        if False:  # Disabled for paper trading
-                            await send_telegram_signal(signal)
-                        
+                        # Console log
                         logger.info("signal_generated", 
                                    wallet=signal['wallet'][:20],
                                    discount=signal['discount_pct'],
@@ -359,56 +287,14 @@ async def main_loop():
             await asyncio.sleep(POLL_INTERVAL_SECONDS)
 
 
-async def init_telegram(token: str, chat_id: str):
-    """Initialize Telegram bot."""
-    global telegram_app, telegram_chat_id
-    
-    if not TELEGRAM_AVAILABLE:
-        logger.warning("telegram_not_available")
-        return
-    
-    telegram_chat_id = chat_id
-    telegram_app = Application.builder().token(token).build()
-    
-    # Add callback handler
-    telegram_app.add_handler(CallbackQueryHandler(button_callback))
-    
-    # Start bot
-    await telegram_app.initialize()
-    await telegram_app.start()
-    await telegram_app.updater.start_polling()
-    
-    logger.info("telegram_initialized", chat_id=chat_id)
-
-
 async def shutdown():
     """Cleanup on shutdown."""
-    if telegram_app:
-        await telegram_app.updater.stop()
-        await telegram_app.stop()
-        await telegram_app.shutdown()
     logger.info("engine_shutdown")
 
 
 async def main():
     """Main entry point."""
-    import os
-    from dotenv import load_dotenv
-    
-    load_dotenv()
-    
-    # Initialize Telegram if configured (commented out for paper trading)
-    # telegram_token = os.getenv("TELEGRAM_BOT_TOKEN")
-    # telegram_chat_id = os.getenv("TELEGRAM_CHAT_ID")
-    # 
-    # if telegram_token and telegram_chat_id:
-    #     await init_telegram(telegram_token, telegram_chat_id)
-    # else:
-    #     logger.warning("telegram_not_configured", 
-    #                   message="Set TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID in .env")
-    
-    # Telegram disabled for paper trading mode
-    logger.info("telegram_disabled", message="Running in paper trading mode - Telegram alerts disabled")
+    logger.info("engine_starting", mode="paper_trading", logging="csv_and_console")
     
     try:
         await main_loop()
