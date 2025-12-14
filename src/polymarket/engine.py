@@ -34,13 +34,14 @@ logger = structlog.get_logger()
 
 # Configuration
 POLL_INTERVAL_SECONDS = 30
-MIN_WHALE_SCORE = 0.70
-MIN_DISCOUNT_PCT = 5.0
+MIN_WHALE_SCORE = 0.05  # Temporarily lowered for testing (was 0.70)
+MIN_DISCOUNT_PCT = 0.1  # Temporarily lowered for testing (was 5.0)
 MIN_ORDERBOOK_DEPTH_MULTIPLIER = 3.0
 CONFLICT_WINDOW_MINUTES = 5
 MAX_SIGNALS_PER_DAY = 3
 MAX_DAILY_LOSS_USD = 50.0
 MAX_BANKROLL_PCT_PER_TRADE = 5.0
+MIN_SIZE_USD = 1_000  # Lowered for testing (was 10_000)
 
 # State tracking
 whitelist_cache: Dict[str, Dict] = {}  # {wallet: {stats, score, category}}
@@ -257,7 +258,7 @@ async def main_loop():
         while True:
             try:
                 # Fetch recent large trades
-                trades = await fetch_recent_trades(session, min_size_usd=10000, limit=100)
+                trades = await fetch_recent_trades(session, min_size_usd=MIN_SIZE_USD, limit=100)
                 
                 logger.info("processing_trades", count=len(trades))
                 
