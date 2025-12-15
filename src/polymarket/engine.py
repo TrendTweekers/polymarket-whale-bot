@@ -31,7 +31,7 @@ project_root = os.path.dirname(parent_dir)
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-from src.polymarket.scraper import fetch_recent_trades, fetch_active_events, fetch_trades, fetch_trades_scanned, BASE, HEADERS
+from src.polymarket.scraper import fetch_recent_trades, fetch_top_markets, fetch_trades, fetch_trades_scanned, BASE, HEADERS
 from src.polymarket.profiler import get_whale_stats
 from src.polymarket.score import whale_score, whitelist_whales
 
@@ -288,32 +288,32 @@ def log_signal_to_csv(signal: Dict):
 # Telegram functions removed - paper trading mode (CSV + console logging only)
 
 async def main_loop():
-    """Main polling loop - polls top 20 active events by volume."""
+    """Main polling loop - polls top 20 active markets by volume (gamma-api → conditionId bridge)."""
     logger.info("engine_started", poll_interval=POLL_INTERVAL_SECONDS, mode="multi_event")
     
     async with aiohttp.ClientSession() as session:
         while True:
             try:
-                # 1. Fetch top 20 active events by volume
-                events = await fetch_active_events(session, limit=20, offset=0)
+                # 1. Fetch top 20 active markets by volume (gamma-api → conditionId bridge)
+                markets = await fetch_top_markets(session, limit=20, offset=0)
                 
-                if not events:
-                    logger.warning("no_events_found")
+                if not markets:
+                    logger.warning("no_markets_found")
                     await asyncio.sleep(POLL_INTERVAL_SECONDS)
                     continue
                 
-                logger.info("fetched_events", count=len(events))
+                logger.info("fetched_markets", count=len(markets))
                 
-                # 2. Poll trades for each event
+                # 2. Poll trades for each market using conditionId
                 total_trades_processed = 0
-                for event in events:
+                for m in markets:
                     try:
-                        event_id = event.get("id") or event.get("eventId")
+                        event_id = m["conditionId"]  # conditionId (0x...) used as 'market' param in Data-API
                         if not event_id:
-                            logger.debug("event_missing_id", event=event.get("title", "unknown"))
+                            logger.debug("market_missing_conditionId", market=m.get("title", "unknown"))
                             continue
                         
-                        # Fetch trades for this event (client-side scanning, 5 pages)
+                        # Fetch trades for this market (client-side scanning, 5 pages)
                         trades = await fetch_trades_scanned(session, event_id, API_MIN_SIZE_USD, pages=5, limit=100)
                         
                         # Process each trade (filter by SIGNAL_MIN_SIZE_USD for production signals)
@@ -342,13 +342,13 @@ async def main_loop():
                                            market=signal['market'][:50],
                                            event_id=event_id)
                     except Exception as e:
-                        logger.error("event_processing_error", 
-                                    event_id=event.get("id", "unknown"), 
+                        logger.error("market_processing_error", 
+                                    conditionId=m.get("conditionId", "unknown"), 
                                     error=str(e))
                         continue
                 
                 logger.info("processing_complete", 
-                           events=len(events), 
+                           markets=len(markets), 
                            trades_processed=total_trades_processed)
                 
                 # Clean up old conflicting whales

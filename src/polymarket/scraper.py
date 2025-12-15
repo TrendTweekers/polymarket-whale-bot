@@ -50,10 +50,12 @@ async def fetch_trades_scanned(session, event_id: int, api_min_size_usd: float, 
     return kept
 
 
-async def fetch_active_events(session, limit=20, offset=0):
-    """Fetch active events - fallback to extracting from trades if /events endpoint unavailable."""
-    # Try /events endpoint first (use gamma-api host)
-    url = f"{GAMMA_BASE}/events"
+async def fetch_top_markets(session, limit=20, offset=0):
+    """
+    Fetch top active markets from gamma-api and return conditionIds.
+    This is the reliable bridge between Gamma → Data-API trades.
+    """
+    url = f"{GAMMA_BASE}/markets"
     params = {
         "active": "true",
         "closed": "false",
@@ -61,41 +63,17 @@ async def fetch_active_events(session, limit=20, offset=0):
         "offset": str(offset),
         "order": "volume"
     }
-    try:
-        async with session.get(url, headers=HEADERS, params=params) as resp:
-            if resp.status == 200:
-                return await resp.json()
-            else:
-                logger.warning("events_endpoint_failed", status=resp.status)
-    except Exception as e:
-        logger.warning("events_endpoint_error", error=str(e))
-    
-    # Fallback: Extract unique events from recent trades
-    logger.info("using_trades_fallback", message="Extracting events from trades endpoint")
-    url = f"{BASE}/trades"
-    params = {"limit": 200}  # Get more trades to find unique events
     async with session.get(url, headers=HEADERS, params=params) as resp:
         resp.raise_for_status()
-        trades = await resp.json()
-        
-        # Extract unique events by conditionId
-        seen_events = {}
-        for trade in trades:
-            condition_id = trade.get("conditionId")
-            event_id = trade.get("eventId") or condition_id
-            if condition_id and condition_id not in seen_events:
-                seen_events[condition_id] = {
-                    "id": event_id,
-                    "conditionId": condition_id,
-                    "title": trade.get("title", "Unknown"),
-                    "slug": trade.get("slug", ""),
-                    "eventSlug": trade.get("eventSlug", "")
-                }
-        
-        # Return as list, limited to requested count
-        events_list = list(seen_events.values())[offset:offset+limit]
-        logger.info("extracted_events_from_trades", count=len(events_list))
-        return events_list
+        markets = await resp.json()
+
+    out = []
+    for m in markets:
+        cid = m.get("conditionId") or m.get("condition_id")
+        if cid:
+            out.append({"conditionId": cid, "title": m.get("title", ""), "slug": m.get("slug", "")})
+    logger.info("fetched_markets", count=len(out))
+    return out
 
 
 async def fetch_recent_trades(session, min_size_usd=10000, limit=100):
