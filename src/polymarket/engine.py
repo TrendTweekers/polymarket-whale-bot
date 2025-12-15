@@ -13,6 +13,7 @@ from typing import Dict, List, Optional, Set
 from collections import defaultdict
 import json
 import pandas as pd
+from pathlib import Path
 
 # Load environment variables (dotenv loaded in main if available)
 try:
@@ -32,27 +33,54 @@ project_root = os.path.dirname(parent_dir)
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-from src.polymarket.scraper import fetch_recent_trades, fetch_top_markets, fetch_trades, fetch_trades_scanned, BASE, HEADERS
+from src.polymarket.scraper import fetch_recent_trades, fetch_top_markets, fetch_trades, fetch_trades_scanned, get_midpoint_price_cached, get_token_id_for_condition, get_market_midpoint_cached, BASE, HEADERS
 from src.polymarket.profiler import get_whale_stats
 from src.polymarket.score import whale_score, whitelist_whales
 from src.polymarket.telegram import send_alert as send_telegram_alert
-from src.polymarket.telegram import send_alert as send_telegram_alert
 
+# Configure logging level from environment (for filtering debug messages)
+LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
 logger = structlog.get_logger()
 
 # Configuration
 POLL_INTERVAL_SECONDS = 30
-MIN_WHALE_SCORE = 0.70
-MIN_DISCOUNT_PCT = float(os.getenv("MIN_DISCOUNT_PCT", "2.0"))  # Temporarily lowered for data collection (was 5.0 production)
+MIN_WHALE_SCORE = float(os.getenv("MIN_WHALE_SCORE", "0.70"))  # Env-configurable
 MIN_ORDERBOOK_DEPTH_MULTIPLIER = 3.0
 CONFLICT_WINDOW_MINUTES = 5
 MAX_SIGNALS_PER_DAY = int(os.getenv("DAILY_SIGNAL_LIMIT", "3"))  # Daily signal limit (env-configurable)
 MAX_DAILY_LOSS_USD = 50.0
 MAX_BANKROLL_PCT_PER_TRADE = 5.0
 
+# Production mode configuration
+PRODUCTION_MODE = os.getenv("PRODUCTION_MODE", "False").lower() == "true"
+
+# Helper function for boolean environment variable parsing
+def env_bool(name: str, default: bool) -> bool:
+    """Parse environment variable as boolean."""
+    v = os.getenv(name)
+    if v is None:
+        return default
+    return v.strip().lower() in ("1", "true", "yes", "y", "on")
+
+# Exclude categories (comma-separated from env, e.g., "sports,crypto")
+EXCLUDE_CATEGORIES = {
+    c.strip().lower()
+    for c in os.getenv("EXCLUDE_CATEGORIES", "").split(",")
+    if c.strip()
+}
+
 # Data collection mode flags (disable blockers temporarily)
-WHITELIST_ONLY = False  # disable whitelist gate for now
-BYPASS_SCORE_ON_STATS_FAIL = True  # allow clustering when stats API fails
+# WHITELIST_ONLY can be overridden via environment variable
+WHITELIST_ONLY = env_bool("WHITELIST_ONLY", default=(PRODUCTION_MODE is True))
+
+# Override other settings in production mode (unless explicitly set via env)
+# MIN_DISCOUNT_PCT can be overridden via env even in production mode
+MIN_DISCOUNT_PCT = float(os.getenv("MIN_DISCOUNT_PCT", "2.0" if PRODUCTION_MODE else "2.0"))
+
+if PRODUCTION_MODE:
+    BYPASS_SCORE_ON_STATS_FAIL = False  # require valid stats in production
+else:
+    BYPASS_SCORE_ON_STATS_FAIL = True  # allow clustering when stats API fails
 
 # Two-tier thresholds (env-driven)
 API_MIN_SIZE_USD = float(os.getenv("API_MIN_SIZE_USD", "1000"))  # API filter (lower for data collection)
@@ -67,7 +95,7 @@ conflicting_whales: Dict[str, datetime] = {}  # {wallet: timestamp} for opposite
 
 # Whale clustering: group multiple trades from same wallet+market within time window
 CLUSTER_WINDOW_MINUTES = 5  # Reduced from 10 to 5 minutes
-CLUSTER_MIN_TRADES = 3  # Minimum trades required per cluster
+CLUSTER_MIN_TRADES = int(os.getenv("CLUSTER_MIN_TRADES", "3"))  # Minimum trades required per cluster (env-configurable)
 CLUSTER_MIN_AVG_HOLD_MINUTES = 30  # Skip clusters with avg hold < 30 min (arb bot filter)
 CLUSTER_MIN_USD = float(os.getenv("CLUSTER_MIN_USD", "10000.0"))  # Cumulative threshold for signal generation (env-configurable)
 whale_clusters: Dict[str, Dict] = {}  # {wallet+market: {trades: [], total_usd: 0, first_trade_time: datetime, whale: {}, category: ""}}
@@ -76,6 +104,8 @@ whale_clusters: Dict[str, Dict] = {}  # {wallet+market: {trades: [], total_usd: 
 rejected_below_cluster_min = 0
 rejected_low_score = 0
 rejected_low_discount = 0
+rejected_score_missing = 0  # Score is None
+rejected_discount_missing = 0  # Discount is None
 rejected_depth = 0
 rejected_conflicting = 0
 rejected_daily_limit = 0
@@ -103,6 +133,15 @@ async def get_orderbook_depth(session: aiohttp.ClientSession, condition_id: str,
         return 0.0
 
 
+def append_status_line(status: str) -> None:
+    """Append a status line to the daily status log file."""
+    Path("logs").mkdir(exist_ok=True)
+    day = datetime.utcnow().strftime("%Y-%m-%d")
+    path = Path("logs") / f"status_{day}.log"
+    with path.open("a", encoding="utf-8") as f:
+        f.write(status.rstrip() + "\n")
+
+
 def get_category_from_trade(trade: Dict) -> str:
     """Extract category from trade data."""
     # Try to infer from slug or title
@@ -121,64 +160,122 @@ def get_category_from_trade(trade: Dict) -> str:
         return "crypto"  # Default
 
 
+async def get_whale_with_score(session: aiohttp.ClientSession, wallet: str, category: str) -> Optional[Dict]:
+    """
+    Fetch whale stats and compute score. Does NOT enforce whitelist gate.
+    Returns whale dict with score, or None if stats cannot be fetched.
+    """
+    # Check cache first
+    if wallet in whitelist_cache:
+        whale = whitelist_cache[wallet]
+        return whale
+    
+    # Fetch stats
+    stats = None
+    score = None
+    stats_lookup_failed = False
+    
+    try:
+        stats = await get_whale_stats(wallet, session)
+        if stats and stats.get("trades_count", 0) > 0:
+            score = whale_score(stats, category)
+        else:
+            # Stats missing or empty - set score to None (will reject)
+            stats_lookup_failed = True
+            score = None
+            logger.debug("whale_stats_missing", wallet=wallet[:20], reason="no_stats_or_zero_trades")
+    except Exception as e:
+        logger.error("whale_stats_fetch_failed", wallet=wallet[:20], error=str(e))
+        stats_lookup_failed = True
+        score = None
+    
+    # Reject if we can't get a valid score (unless bypass is enabled for data collection)
+    if score is None:
+        if BYPASS_SCORE_ON_STATS_FAIL:
+            # Data collection mode: allow with low score (0.0) but log the issue
+            score = 0.0
+            logger.debug("whale_score_bypassed", wallet=wallet[:20], reason="stats_failed_but_bypass_enabled", score=score)
+        else:
+            # Production mode: reject
+            logger.debug("whale_rejected", wallet=wallet[:20], reason="no_valid_score", stats_failed=stats_lookup_failed)
+            return None
+    
+    whale = {
+        "wallet": wallet,
+        "stats": stats or {},
+        "score": score,
+        "category": category
+    }
+    
+    whitelist_cache[wallet] = whale
+    logger.debug("whale_score_computed", wallet=wallet[:20], score=score, category=category, stats_failed=stats_lookup_failed)
+    return whale
+
+
 async def ensure_whale_whitelisted(session: aiohttp.ClientSession, wallet: str, category: str) -> Optional[Dict]:
     """
     Ensure whale is in whitelist cache. Fetch stats if needed.
     Returns whale dict with score if whitelisted, None otherwise.
     """
     # Bypass whitelist check if disabled (data collection mode)
+    # BUT: still require valid stats/score (don't default to 1.0)
     if not WHITELIST_ONLY:
-        # Return a dummy whale with score 1.0 to allow clustering
-        return {
-            "wallet": wallet,
-            "stats": {},
-            "score": 1.0,
-            "category": category
-        }
+        # Still fetch stats to get real score, but don't enforce whitelist gate
+        # This allows data collection while maintaining score accuracy
+        pass  # Continue to fetch stats below
     
     if wallet in whitelist_cache:
         whale = whitelist_cache[wallet]
-        if whale["score"] >= MIN_WHALE_SCORE:
-            return whale
-        return None
+        if WHITELIST_ONLY and whale["score"] < MIN_WHALE_SCORE:
+            return None
+        return whale
     
     # Fetch stats
+    stats = None
+    score = None
     stats_lookup_failed = False
+    
     try:
         stats = await get_whale_stats(wallet, session)
-        score = whale_score(stats, category)
-        
-        # Bypass score check if stats lookup failed and bypass flag is set
-        if BYPASS_SCORE_ON_STATS_FAIL and (not stats or stats.get("trades_count", 0) == 0):
-            stats_lookup_failed = True
-            score = 1.0  # allow clustering during data collection
-        
-        whale = {
-            "wallet": wallet,
-            "stats": stats,
-            "score": score,
-            "category": category
-        }
-        
-        whitelist_cache[wallet] = whale
-        
-        if score >= MIN_WHALE_SCORE or stats_lookup_failed:
-            logger.info("whale_whitelisted", wallet=wallet[:20], score=score, category=category)
-            return whale
+        if stats and stats.get("trades_count", 0) > 0:
+            score = whale_score(stats, category)
         else:
-            logger.debug("whale_below_threshold", wallet=wallet[:20], score=score)
-            return None
+            # Stats missing or empty - set score to None (will reject)
+            stats_lookup_failed = True
+            score = None
+            logger.debug("whale_stats_missing", wallet=wallet[:20], reason="no_stats_or_zero_trades")
     except Exception as e:
         logger.error("whale_stats_fetch_failed", wallet=wallet[:20], error=str(e))
-        # Bypass score check if stats lookup failed and bypass flag is set
-        if BYPASS_SCORE_ON_STATS_FAIL:
-            return {
-                "wallet": wallet,
-                "stats": {},
-                "score": 1.0,
-                "category": category
-            }
+        stats_lookup_failed = True
+        score = None
+    
+    # Reject if we can't get a valid score (unless bypass is enabled for data collection)
+    if score is None:
+        if BYPASS_SCORE_ON_STATS_FAIL and not WHITELIST_ONLY:
+            # Data collection mode: allow with low score (0.0) but log the issue
+            score = 0.0
+            logger.debug("whale_score_bypassed", wallet=wallet[:20], reason="stats_failed_but_bypass_enabled", score=score)
+        else:
+            # Production mode or whitelist enabled: reject
+            logger.debug("whale_rejected", wallet=wallet[:20], reason="no_valid_score", stats_failed=stats_lookup_failed)
+            return None
+    
+    whale = {
+        "wallet": wallet,
+        "stats": stats or {},
+        "score": score,
+        "category": category
+    }
+    
+    whitelist_cache[wallet] = whale
+    
+    # Check score threshold
+    if WHITELIST_ONLY and score < MIN_WHALE_SCORE:
+        logger.debug("whale_below_threshold", wallet=wallet[:20], score=score, required=MIN_WHALE_SCORE)
         return None
+    
+    logger.info("whale_whitelisted", wallet=wallet[:20], score=score, category=category, stats_failed=stats_lookup_failed)
+    return whale
 
 
 def check_daily_limits() -> tuple[bool, str]:
@@ -208,11 +305,20 @@ def check_conflicting_whale(wallet: str, side: str) -> bool:
     return False
 
 
-def calculate_discount(whale_entry_price: float, current_price: float) -> float:
-    """Calculate discount percentage."""
-    if whale_entry_price == 0:
-        return 0.0
-    return ((whale_entry_price - current_price) / whale_entry_price) * 100.0
+def calculate_discount(whale_entry_price: float, current_price: float) -> Optional[float]:
+    """
+    Calculate discount percentage.
+    Returns None if prices are missing/invalid (instead of silently returning 0.0).
+    """
+    # Reject if either price is missing or invalid
+    if whale_entry_price is None or whale_entry_price <= 0:
+        return None
+    if current_price is None or current_price < 0:
+        return None
+    
+    # Calculate discount
+    discount = ((whale_entry_price - current_price) / whale_entry_price) * 100.0
+    return discount
 
 
 def trade_key(trade: Dict) -> str:
@@ -242,6 +348,10 @@ async def process_trade(session: aiohttp.ClientSession, trade: Dict) -> Optional
     Process a trade and generate signal if conditions are met.
     Returns signal dict if generated, None otherwise.
     """
+    # Declare all global variables at the top of the function
+    global rejected_conflicting, rejected_low_score, rejected_discount_missing
+    global rejected_below_cluster_min, rejected_low_discount, rejected_depth
+    
     # Check daily limits
     can_proceed, reason = check_daily_limits()
     if not can_proceed:
@@ -253,13 +363,18 @@ async def process_trade(session: aiohttp.ClientSession, trade: Dict) -> Optional
         logger.debug("trade_rejected", reason="no_wallet")
         return None
     
+    # Exclude categories (early filter, before scoring/discount work)
+    market_category = get_category_from_trade(trade).lower().strip()
+    if market_category and market_category in EXCLUDE_CATEGORIES:
+        logger.debug("trade_rejected", category=market_category, reason="excluded_category")
+        return None
+    
     side = trade.get("side", "BUY")
     if side != "BUY":
         return None  # skip SELL trades quietly, no log spam
     
     # Check for conflicting whale
     if check_conflicting_whale(wallet, side):
-        global rejected_conflicting
         rejected_conflicting += 1
         logger.debug("conflicting_whale", wallet=wallet[:20])
         return None
@@ -267,18 +382,72 @@ async def process_trade(session: aiohttp.ClientSession, trade: Dict) -> Optional
     # Get category
     category = get_category_from_trade(trade)
     
-    # Ensure whale is whitelisted
-    whale = await ensure_whale_whitelisted(session, wallet, category)
-    if not whale:
-        global rejected_low_score
-        rejected_low_score += 1
-        logger.debug("trade_rejected", reason="whale_not_whitelisted", wallet=wallet[:8], category=category)
-        return None
+    # Get whale stats/score (whitelist check only if WHITELIST_ONLY is True)
+    if WHITELIST_ONLY:
+        whale = await ensure_whale_whitelisted(session, wallet, category)
+        if not whale:
+            rejected_low_score += 1
+            logger.debug("trade_rejected", reason="whale_not_whitelisted", wallet=wallet[:8], category=category)
+            return None
+    else:
+        # Whitelist disabled: just get score, don't enforce whitelist gate
+        whale = await get_whale_with_score(session, wallet, category)
+        if not whale:
+            rejected_low_score += 1
+            logger.debug("trade_rejected", reason="whale_score_unavailable", wallet=wallet[:8], category=category)
+            return None
     
     # Calculate discount
-    whale_entry_price = trade.get("price", 0.0)
-    current_price = whale_entry_price  # In production, fetch from orderbook
+    whale_entry_price = trade.get("price")
+    if whale_entry_price is None or whale_entry_price <= 0:
+        logger.debug("trade_rejected", reason="missing_entry_price", wallet=wallet[:8])
+        return None
+    
+    # Fetch current price from CLOB midpoint endpoint using token_id
+    condition_id = trade.get("conditionId", "")
+    if not condition_id:
+        logger.debug("trade_rejected", reason="missing_condition_id", wallet=wallet[:8])
+        return None
+    
+    # Extract token_id from trade (Path A: direct from trade payload)
+    token_id = (trade.get("tokenId") or trade.get("clobTokenId") or 
+                trade.get("asset_id") or trade.get("outcomeId"))
+    
+    # Path B: If not in trade, get from conditionId → clobTokenIds mapping
+    if not token_id:
+        side = trade.get("side", "BUY")
+        token_id = get_token_id_for_condition(condition_id, side)
+    
+    if not token_id:
+        logger.debug("trade_rejected", reason="rejected_discount_missing", 
+                    wallet=wallet[:8], condition_id=condition_id[:20], 
+                    note="token_id_not_found_in_trade_or_cache")
+        rejected_discount_missing += 1
+        return None
+    
+    # Fetch midpoint price: try CLOB first, fallback to Gamma market bestBid/bestAsk
+    current_price = await get_midpoint_price_cached(session, str(token_id))
+    
+    # Fallback to Gamma market midpoint if CLOB fails
+    if current_price is None and condition_id:
+        current_price = await get_market_midpoint_cached(session, condition_id)
+    
+    if current_price is None:
+        rejected_discount_missing += 1
+        logger.debug("trade_rejected", reason="rejected_discount_missing", 
+                    wallet=wallet[:8], token_id=str(token_id)[:20] if token_id else None, 
+                    condition_id=condition_id[:20])
+        return None
+    
+    # Calculate discount: entry_price vs current midpoint
     discount_pct = calculate_discount(whale_entry_price, current_price)
+    
+    # Reject if discount cannot be calculated
+    if discount_pct is None:
+        rejected_discount_missing += 1
+        logger.debug("trade_rejected", reason="rejected_discount_missing", 
+                    wallet=wallet[:8], entry_price=whale_entry_price, current_price=current_price)
+        return None
     
     # Log ALL whale activity for analysis (before filtering)
     size = trade.get("size", 0.0)
@@ -289,7 +458,6 @@ async def process_trade(session: aiohttp.ClientSession, trade: Dict) -> Optional
     
     # Check if trade meets minimum size for clustering ($2k-$8k range)
     if size_usd < 2000.0:
-        global rejected_below_cluster_min
         rejected_below_cluster_min += 1
         logger.debug("trade_rejected", reason="below_cluster_min", size_usd=size_usd, wallet=wallet[:8])
         return None
@@ -297,7 +465,6 @@ async def process_trade(session: aiohttp.ClientSession, trade: Dict) -> Optional
     if size_usd >= CLUSTER_MIN_USD:
         # Single trade already meets threshold - check other filters and generate signal directly
         if discount_pct < MIN_DISCOUNT_PCT:
-            global rejected_low_discount
             rejected_low_discount += 1
             logger.debug("trade_rejected", reason="below_discount", discount=discount_pct, wallet=wallet[:8], score=whale["score"])
             return None
@@ -306,7 +473,6 @@ async def process_trade(session: aiohttp.ClientSession, trade: Dict) -> Optional
         depth_ratio = await get_orderbook_depth(session, trade.get("conditionId", ""), size)
         
         if depth_ratio < MIN_ORDERBOOK_DEPTH_MULTIPLIER:
-            global rejected_depth
             rejected_depth += 1
             logger.debug("trade_rejected", reason="insufficient_depth", depth=depth_ratio, wallet=wallet[:8])
             return None
@@ -466,12 +632,57 @@ async def generate_cluster_signal(session: aiohttp.ClientSession, cluster: Dict)
     
     # Calculate weighted average price
     total_size = sum(t.get("size", 0.0) for t in cluster["trades"])
-    weighted_price = cluster["total_usd"] / total_size if total_size > 0 else first_trade.get("price", 0.0)
+    weighted_price = cluster["total_usd"] / total_size if total_size > 0 else first_trade.get("price")
     
-    # Calculate discount (use first trade price as entry, last as current for now)
+    # Calculate discount
     whale_entry_price = weighted_price
-    current_price = weighted_price  # In production, fetch from orderbook
+    if whale_entry_price is None or whale_entry_price <= 0:
+        logger.debug("cluster_rejected", reason="missing_entry_price", wallet=cluster["wallet"][:8])
+        return None
+    
+    # Fetch current price from CLOB midpoint endpoint using token_id
+    condition_id = cluster["market_id"]
+    if not condition_id:
+        logger.debug("cluster_rejected", reason="missing_condition_id", wallet=cluster["wallet"][:8])
+        return None
+    
+    # Extract token_id from first trade (Path A: direct from trade payload)
+    first_trade = cluster["trades"][0]
+    token_id = (first_trade.get("tokenId") or first_trade.get("clobTokenId") or 
+                first_trade.get("asset_id") or first_trade.get("outcomeId"))
+    
+    # Path B: If not in trade, get from conditionId → clobTokenIds mapping
+    if not token_id:
+        side = first_trade.get("side", "BUY")
+        token_id = get_token_id_for_condition(condition_id, side)
+    
+    if not token_id:
+        logger.debug("cluster_rejected", reason="rejected_discount_missing", 
+                    wallet=cluster["wallet"][:8], condition_id=condition_id[:20], 
+                    note="token_id_not_found_in_trade_or_cache")
+        return None
+    
+    # Fetch midpoint price: try CLOB first, fallback to Gamma market bestBid/bestAsk
+    current_price = await get_midpoint_price_cached(session, str(token_id))
+    
+    # Fallback to Gamma market midpoint if CLOB fails
+    if current_price is None and condition_id:
+        current_price = await get_market_midpoint_cached(session, condition_id)
+    
+    if current_price is None:
+        logger.debug("cluster_rejected", reason="rejected_discount_missing", 
+                    wallet=cluster["wallet"][:8], token_id=str(token_id)[:20] if token_id else None, 
+                    condition_id=condition_id[:20])
+        return None
+    
+    # Calculate discount: entry_price vs current midpoint
     discount_pct = calculate_discount(whale_entry_price, current_price)
+    
+    # Reject if discount cannot be calculated
+    if discount_pct is None:
+        logger.debug("cluster_rejected", reason="rejected_discount_missing", 
+                    wallet=cluster["wallet"][:8], entry_price=whale_entry_price, current_price=current_price)
+        return None
     
     # Check discount filter
     if discount_pct < MIN_DISCOUNT_PCT:
@@ -538,7 +749,7 @@ def cleanup_expired_clusters():
         del whale_clusters[key]
 
 
-def log_all_activity(market_id: str, whale_wallet: str, score: float, discount: float, size_usd: float):
+def log_all_activity(market_id: str, whale_wallet: str, score: float, discount: Optional[float], size_usd: float):
     """Log ALL whale activity for analysis, not just signals."""
     log_dir = os.path.join(os.path.dirname(__file__), "..", "..", "logs")
     os.makedirs(log_dir, exist_ok=True)
@@ -552,7 +763,9 @@ def log_all_activity(market_id: str, whale_wallet: str, score: float, discount: 
         writer = csv.writer(f)
         if not file_exists:  # Write header if new file
             writer.writerow(["timestamp", "market_id", "wallet", "score", "discount_pct", "size_usd"])
-        writer.writerow([datetime.now().isoformat(), market_id, whale_wallet, score, discount, size_usd])
+        # Handle None discount (log as empty string or 0.0 for CSV compatibility)
+        discount_value = discount if discount is not None else ""
+        writer.writerow([datetime.now().isoformat(), market_id, whale_wallet, score, discount_value, size_usd])
 
 
 def log_signal_to_csv(signal: Dict):
@@ -596,29 +809,52 @@ def audit_data_quality():
         return
     
     try:
-        # Load signals CSV
-        df = pd.read_csv(signals_file)
+        # Load signals CSV with encoding error handling
+        try:
+            df = pd.read_csv(signals_file, encoding="utf-8", encoding_errors="replace")
+        except TypeError:
+            # Older pandas fallback (doesn't support encoding_errors parameter)
+            df = pd.read_csv(signals_file, encoding="utf-8", errors="replace")
+        except Exception:
+            # Final fallback: try cp1252 (Windows encoding)
+            try:
+                df = pd.read_csv(signals_file, encoding="cp1252", encoding_errors="replace")
+            except TypeError:
+                df = pd.read_csv(signals_file, encoding="cp1252", errors="replace")
         
         if len(df) == 0:
             logger.debug("audit_skipped", reason="empty_signals_file")
             return
         
+        # Helper function to convert numpy types to native Python types
+        def _py(v):
+            try:
+                import numpy as np
+                if isinstance(v, (np.floating, np.integer)):
+                    return v.item()
+            except Exception:
+                pass
+            return float(v) if hasattr(v, "__float__") else v
+        
         # Compute metrics
         total_signals = len(df)
         
-        # Average cluster size
+        # Average cluster size (convert numpy types to native Python)
         avg_cluster_size = df['cluster_trades_count'].mean() if 'cluster_trades_count' in df.columns else 0.0
+        avg_cluster_size = _py(avg_cluster_size)
         
-        # Average discount
+        # Average discount (convert numpy types to native Python)
         avg_discount = df['discount_pct'].mean() if 'discount_pct' in df.columns else 0.0
+        avg_discount = _py(avg_discount)
         
         # Market category distribution
         category_counts = df['category'].value_counts().to_dict() if 'category' in df.columns else {}
         
-        # % of signals with score < 0.70
+        # % of signals with score < 0.70 (convert numpy types to native Python)
         if 'whale_score' in df.columns:
             low_score_count = len(df[df['whale_score'] < 0.70])
             low_score_pct = (low_score_count / total_signals * 100) if total_signals > 0 else 0.0
+            low_score_pct = _py(low_score_pct)
         else:
             low_score_count = 0
             low_score_pct = 0.0
@@ -692,14 +928,34 @@ def audit_data_quality():
 # Telegram functions removed - paper trading mode (CSV + console logging only)
 
 async def main_loop():
-    """Main polling loop - polls top 20 active markets by volume (gamma-api → conditionId bridge)."""
+    """Main polling loop - polls top markets by volume (gamma-api → conditionId bridge)."""
+    # Log production mode status
+    if PRODUCTION_MODE:
+        logger.info("production_mode_enabled",
+                    message="Running in production mode - enforcing filters",
+                    whitelist_only=WHITELIST_ONLY,
+                    bypass_score=BYPASS_SCORE_ON_STATS_FAIL,
+                    min_discount=MIN_DISCOUNT_PCT,
+                    min_score=MIN_WHALE_SCORE,
+                    cluster_window=CLUSTER_WINDOW_MINUTES,
+                    cluster_min_trades=CLUSTER_MIN_TRADES,
+                    cluster_min_hold=CLUSTER_MIN_AVG_HOLD_MINUTES)
+    else:
+        logger.info("data_collection_mode",
+                    message="Running in data collection mode - relaxed filters",
+                    whitelist_only=WHITELIST_ONLY,
+                    bypass_score=BYPASS_SCORE_ON_STATS_FAIL,
+                    min_discount=MIN_DISCOUNT_PCT)
+    
     logger.info("engine_started", poll_interval=POLL_INTERVAL_SECONDS, mode="multi_event")
     
     async with aiohttp.ClientSession() as session:
         while True:
             try:
-                # 1. Fetch top 20 active markets by volume (gamma-api → conditionId bridge)
-                markets = await fetch_top_markets(session, limit=20, offset=0)
+                # 1. Fetch top markets by volume (gamma-api → conditionId bridge)
+                # Limit to 10 markets in production mode for faster testing
+                market_limit = 10 if PRODUCTION_MODE else 20
+                markets = await fetch_top_markets(session, limit=market_limit, offset=0)
                 
                 if not markets:
                     logger.warning("no_markets_found")
@@ -747,6 +1003,19 @@ async def main_loop():
                             total_trades_processed += 1
                             
                             if signal:
+                                # Final validation: reject if score or discount is None
+                                if signal.get("whale_score") is None:
+                                    global rejected_score_missing
+                                    rejected_score_missing += 1
+                                    logger.debug("signal_rejected", reason="rejected_score_missing", wallet=signal.get("wallet", "unknown")[:8])
+                                    continue
+                                
+                                if signal.get("discount_pct") is None:
+                                    global rejected_discount_missing
+                                    rejected_discount_missing += 1
+                                    logger.debug("signal_rejected", reason="rejected_discount_missing", wallet=signal.get("wallet", "unknown")[:8])
+                                    continue
+                                
                                 global signals_generated
                                 signals_generated += 1
                                 # Log signal to CSV
@@ -781,10 +1050,22 @@ async def main_loop():
                            rejected_below_cluster_min=rejected_below_cluster_min,
                            rejected_low_score=rejected_low_score,
                            rejected_low_discount=rejected_low_discount,
+                           rejected_score_missing=rejected_score_missing,
+                           rejected_discount_missing=rejected_discount_missing,
                            rejected_depth=rejected_depth,
                            rejected_conflicting=rejected_conflicting,
                            rejected_daily_limit=rejected_daily_limit,
                            signals_generated=signals_generated)
+                
+                # Write status line to file for easy tracking
+                append_status_line(
+                    f"{datetime.utcnow().isoformat()}Z gate_breakdown "
+                    f"trades_considered={trades_considered} signals_generated={signals_generated} "
+                    f"rejected_low_score={rejected_low_score} rejected_low_discount={rejected_low_discount} "
+                    f"rejected_score_missing={rejected_score_missing} rejected_discount_missing={rejected_discount_missing} "
+                    f"rejected_below_cluster_min={rejected_below_cluster_min} rejected_conflicting={rejected_conflicting} "
+                    f"rejected_depth={rejected_depth} rejected_daily_limit={rejected_daily_limit}"
+                )
                 
                 # Audit data quality
                 audit_data_quality()
