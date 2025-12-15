@@ -13,6 +13,13 @@ from typing import Dict, List, Optional, Set
 from collections import defaultdict
 import json
 
+# Load environment variables (dotenv loaded in main if available)
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass  # Environment variables can be set directly
+
 # Import our modules
 import sys
 import os
@@ -24,7 +31,7 @@ project_root = os.path.dirname(parent_dir)
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-from src.polymarket.scraper import fetch_recent_trades, fetch_active_events, fetch_trades, BASE, HEADERS
+from src.polymarket.scraper import fetch_recent_trades, fetch_active_events, fetch_trades, fetch_trades_scanned, BASE, HEADERS
 from src.polymarket.profiler import get_whale_stats
 from src.polymarket.score import whale_score, whitelist_whales
 
@@ -41,7 +48,11 @@ CONFLICT_WINDOW_MINUTES = 5
 MAX_SIGNALS_PER_DAY = 3
 MAX_DAILY_LOSS_USD = 50.0
 MAX_BANKROLL_PCT_PER_TRADE = 5.0
-MIN_SIZE_USD = 10_000
+
+# Two-tier thresholds (env-driven)
+API_MIN_SIZE_USD = float(os.getenv("API_MIN_SIZE_USD", "1000"))  # API filter (lower for data collection)
+SIGNAL_MIN_SIZE_USD = float(os.getenv("SIGNAL_MIN_SIZE_USD", "10000"))  # Signal gate (production threshold)
+MIN_SIZE_USD = SIGNAL_MIN_SIZE_USD  # Backward compatibility
 
 # State tracking
 whitelist_cache: Dict[str, Dict] = {}  # {wallet: {stats, score, category}}
@@ -302,19 +313,18 @@ async def main_loop():
                             logger.debug("event_missing_id", event=event.get("title", "unknown"))
                             continue
                         
-                        # Fetch trades for this event
-                        trades = await fetch_trades(session, event_id=event_id, limit=100)
+                        # Fetch trades for this event (client-side scanning, 5 pages)
+                        trades = await fetch_trades_scanned(session, event_id, API_MIN_SIZE_USD, pages=5, limit=100)
                         
-                        # Process each trade
+                        # Process each trade (filter by SIGNAL_MIN_SIZE_USD for production signals)
                         for trade in trades:
-                            # Filter by minimum size before processing
+                            # Signal gate: only process trades ≥ $10k for signals
                             size = trade.get("size", 0.0)
                             price = trade.get("price", 0.0)
-                            trade_value_usd = size * price
-                            market_id = trade.get("conditionId", trade.get("slug", "unknown"))
+                            size_usd = size * price
                             
-                            if trade_value_usd < MIN_SIZE_USD:
-                                logger.debug("trade_rejected", reason="below_size", size_usd=trade_value_usd, market=market_id)
+                            if size_usd < SIGNAL_MIN_SIZE_USD:
+                                logger.debug("trade_rejected", reason="below_signal_threshold", size_usd=size_usd, signal_threshold=SIGNAL_MIN_SIZE_USD)
                                 continue
                             
                             signal = await process_trade(session, trade)

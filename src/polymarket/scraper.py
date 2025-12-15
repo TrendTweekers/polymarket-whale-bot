@@ -10,20 +10,44 @@ HEADERS = {
 
 logger = structlog.get_logger()
 
-async def fetch_trades(session, event_id, limit=100, offset=0):
+async def fetch_trades(session, event_id, limit=100, offset=0, min_size_usd=10000):
+    """Fetch trades for an event (legacy function - use fetch_trades_scanned instead)."""
     url = f"{BASE}/trades"
     params = {
-        "eventId" : event_id,
-        "limit"   : limit,
-        "offset"  : offset,
-        "takerOnly": "true",
-        "side"    : "BUY"
+        "eventId": event_id,
+        "limit": limit,
+        "offset": offset
     }
     async with session.get(url, headers=HEADERS, params=params) as resp:
         resp.raise_for_status()
         data = await resp.json()
         logger.info("fetched trades", event_id=event_id, count=len(data))
         return data
+
+
+async def fetch_trades_scanned(session, event_id: int, api_min_size_usd: float, pages: int = 5, limit: int = 100):
+    """Scan multiple pages client-side and filter by size."""
+    kept = []
+    scanned = 0
+    for offset in range(0, pages * limit, limit):
+        url = f"{BASE}/trades"
+        params = {"eventId": event_id, "limit": limit, "offset": offset}
+        async with session.get(url, params=params, headers=HEADERS) as resp:
+            if resp.status != 200:
+                logger.warning("trades_fetch_failed", event_id=event_id, status=resp.status)
+                return kept
+            trades = await resp.json()
+            scanned += len(trades)
+            for t in trades:
+                size = float(t.get("size") or 0.0)
+                price = float(t.get("price") or 0.0)
+                usd = size * price
+                if usd >= api_min_size_usd:
+                    kept.append(t)
+            if not trades:
+                break  # no more pages
+    logger.info("scan_summary", event_id=event_id, scanned=scanned, kept=len(kept), api_min_size_usd=api_min_size_usd, pages=pages)
+    return kept
 
 
 async def fetch_active_events(session, limit=20, offset=0):
@@ -89,29 +113,18 @@ async def fetch_recent_trades(session, min_size_usd=10000, limit=100):
     url = f"{BASE}/trades"
     params = {
         "limit": limit,
-        "takerOnly": "true",
-        "side": "BUY"
+        "filterType": "CASH",
+        "filterAmount": str(min_size_usd)
     }
     
     async with session.get(url, headers=HEADERS, params=params) as resp:
         resp.raise_for_status()
-        all_trades = await resp.json()
-        
-        # Filter by size (size * price gives USD value)
-        filtered_trades = []
-        for trade in all_trades:
-            size = trade.get("size", 0)
-            price = trade.get("price", 0)
-            trade_value_usd = size * price
-            
-            if trade_value_usd >= min_size_usd:
-                filtered_trades.append(trade)
+        trades = await resp.json()
         
         logger.info("fetched recent trades", 
-                   total=len(all_trades), 
-                   filtered=len(filtered_trades),
+                   count=len(trades),
                    min_size_usd=min_size_usd)
-        return filtered_trades
+        return trades
 
 async def main():
     async with aiohttp.ClientSession() as session:
