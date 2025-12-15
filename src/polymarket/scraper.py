@@ -1,6 +1,7 @@
 import aiohttp, asyncio, os, structlog
 
 BASE   = "https://data-api.polymarket.com"
+GAMMA_BASE = "https://gamma-api.polymarket.com"  # Correct host for events endpoint
 HEADERS = {
     "accept"     : "application/json",
     "user-agent" : "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
@@ -27,8 +28,8 @@ async def fetch_trades(session, event_id, limit=100, offset=0):
 
 async def fetch_active_events(session, limit=20, offset=0):
     """Fetch active events - fallback to extracting from trades if /events endpoint unavailable."""
-    # Try /events endpoint first
-    url = f"{BASE}/events"
+    # Try /events endpoint first (use gamma-api host)
+    url = f"{GAMMA_BASE}/events"
     params = {
         "active": "true",
         "closed": "false",

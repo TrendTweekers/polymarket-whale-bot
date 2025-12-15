@@ -162,15 +162,17 @@ async def process_trade(session: aiohttp.ClientSession, trade: Dict) -> Optional
     # Check daily limits
     can_proceed, reason = check_daily_limits()
     if not can_proceed:
-        logger.debug("daily_limit_hit", reason=reason)
+        logger.debug("trade_rejected", reason="daily_limit", details=reason)
         return None
     
     wallet = trade.get("proxyWallet") or trade.get("makerAddress", "")
     if not wallet:
+        logger.debug("trade_rejected", reason="no_wallet")
         return None
     
     side = trade.get("side", "BUY")
     if side != "BUY":
+        logger.debug("trade_rejected", reason="wrong_side", side=side)
         return None
     
     # Check for conflicting whale
@@ -184,6 +186,7 @@ async def process_trade(session: aiohttp.ClientSession, trade: Dict) -> Optional
     # Ensure whale is whitelisted
     whale = await ensure_whale_whitelisted(session, wallet, category)
     if not whale:
+        logger.debug("trade_rejected", reason="whale_not_whitelisted", wallet=wallet[:8], category=category)
         return None
     
     # Calculate discount
@@ -199,14 +202,14 @@ async def process_trade(session: aiohttp.ClientSession, trade: Dict) -> Optional
     log_all_activity(market_id, wallet, whale["score"], discount_pct, size_usd)
     
     if discount_pct < MIN_DISCOUNT_PCT:
-        logger.debug("discount_too_low", discount=discount_pct, wallet=wallet[:20])
+        logger.debug("trade_rejected", reason="below_discount", discount=discount_pct, wallet=wallet[:8], score=whale["score"])
         return None
     
     # Check orderbook depth
     depth_ratio = await get_orderbook_depth(session, trade.get("conditionId", ""), size)
     
     if depth_ratio < MIN_ORDERBOOK_DEPTH_MULTIPLIER:
-        logger.debug("insufficient_depth", depth=depth_ratio, wallet=wallet[:20])
+        logger.debug("trade_rejected", reason="insufficient_depth", depth=depth_ratio, wallet=wallet[:8])
         return None
     
     # Generate signal
@@ -308,8 +311,10 @@ async def main_loop():
                             size = trade.get("size", 0.0)
                             price = trade.get("price", 0.0)
                             trade_value_usd = size * price
+                            market_id = trade.get("conditionId", trade.get("slug", "unknown"))
                             
                             if trade_value_usd < MIN_SIZE_USD:
+                                logger.debug("trade_rejected", reason="below_size", size_usd=trade_value_usd, market=market_id)
                                 continue
                             
                             signal = await process_trade(session, trade)
