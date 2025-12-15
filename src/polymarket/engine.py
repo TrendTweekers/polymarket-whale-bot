@@ -42,12 +42,16 @@ logger = structlog.get_logger()
 # Configuration
 POLL_INTERVAL_SECONDS = 30
 MIN_WHALE_SCORE = 0.70
-MIN_DISCOUNT_PCT = 2.0  # Temporarily lowered for data collection (was 5.0 production)
+MIN_DISCOUNT_PCT = float(os.getenv("MIN_DISCOUNT_PCT", "2.0"))  # Temporarily lowered for data collection (was 5.0 production)
 MIN_ORDERBOOK_DEPTH_MULTIPLIER = 3.0
 CONFLICT_WINDOW_MINUTES = 5
-MAX_SIGNALS_PER_DAY = 3
+MAX_SIGNALS_PER_DAY = int(os.getenv("DAILY_SIGNAL_LIMIT", "3"))  # Daily signal limit (env-configurable)
 MAX_DAILY_LOSS_USD = 50.0
 MAX_BANKROLL_PCT_PER_TRADE = 5.0
+
+# Data collection mode flags (disable blockers temporarily)
+WHITELIST_ONLY = False  # disable whitelist gate for now
+BYPASS_SCORE_ON_STATS_FAIL = True  # allow clustering when stats API fails
 
 # Two-tier thresholds (env-driven)
 API_MIN_SIZE_USD = float(os.getenv("API_MIN_SIZE_USD", "1000"))  # API filter (lower for data collection)
@@ -62,7 +66,7 @@ conflicting_whales: Dict[str, datetime] = {}  # {wallet: timestamp} for opposite
 
 # Whale clustering: group multiple trades from same wallet+market within time window
 CLUSTER_WINDOW_MINUTES = 10
-CLUSTER_MIN_USD = 10000.0  # Cumulative threshold for signal generation
+CLUSTER_MIN_USD = float(os.getenv("CLUSTER_MIN_USD", "10000.0"))  # Cumulative threshold for signal generation (env-configurable)
 whale_clusters: Dict[str, Dict] = {}  # {wallet+market: {trades: [], total_usd: 0, first_trade_time: datetime, whale: {}, category: ""}}
 
 # Filter rejection counters (for diagnostics)
@@ -73,6 +77,11 @@ rejected_depth = 0
 rejected_conflicting = 0
 rejected_daily_limit = 0
 signals_generated = 0
+trades_considered = 0
+
+# Trade deduplication cache (prevent re-processing same trades)
+SEEN_TRADE_KEYS: Set[str] = set()
+SEEN_TRADE_KEYS_MAX = 250000  # prevent unbounded memory
 
 
 async def get_orderbook_depth(session: aiohttp.ClientSession, condition_id: str, size: float) -> float:
@@ -114,6 +123,16 @@ async def ensure_whale_whitelisted(session: aiohttp.ClientSession, wallet: str, 
     Ensure whale is in whitelist cache. Fetch stats if needed.
     Returns whale dict with score if whitelisted, None otherwise.
     """
+    # Bypass whitelist check if disabled (data collection mode)
+    if not WHITELIST_ONLY:
+        # Return a dummy whale with score 1.0 to allow clustering
+        return {
+            "wallet": wallet,
+            "stats": {},
+            "score": 1.0,
+            "category": category
+        }
+    
     if wallet in whitelist_cache:
         whale = whitelist_cache[wallet]
         if whale["score"] >= MIN_WHALE_SCORE:
@@ -121,9 +140,15 @@ async def ensure_whale_whitelisted(session: aiohttp.ClientSession, wallet: str, 
         return None
     
     # Fetch stats
+    stats_lookup_failed = False
     try:
         stats = await get_whale_stats(wallet, session)
         score = whale_score(stats, category)
+        
+        # Bypass score check if stats lookup failed and bypass flag is set
+        if BYPASS_SCORE_ON_STATS_FAIL and (not stats or stats.get("trades_count", 0) == 0):
+            stats_lookup_failed = True
+            score = 1.0  # allow clustering during data collection
         
         whale = {
             "wallet": wallet,
@@ -134,7 +159,7 @@ async def ensure_whale_whitelisted(session: aiohttp.ClientSession, wallet: str, 
         
         whitelist_cache[wallet] = whale
         
-        if score >= MIN_WHALE_SCORE:
+        if score >= MIN_WHALE_SCORE or stats_lookup_failed:
             logger.info("whale_whitelisted", wallet=wallet[:20], score=score, category=category)
             return whale
         else:
@@ -142,6 +167,14 @@ async def ensure_whale_whitelisted(session: aiohttp.ClientSession, wallet: str, 
             return None
     except Exception as e:
         logger.error("whale_stats_fetch_failed", wallet=wallet[:20], error=str(e))
+        # Bypass score check if stats lookup failed and bypass flag is set
+        if BYPASS_SCORE_ON_STATS_FAIL:
+            return {
+                "wallet": wallet,
+                "stats": {},
+                "score": 1.0,
+                "category": category
+            }
         return None
 
 
@@ -179,6 +212,28 @@ def calculate_discount(whale_entry_price: float, current_price: float) -> float:
     return ((whale_entry_price - current_price) / whale_entry_price) * 100.0
 
 
+def trade_key(trade: Dict) -> str:
+    """
+    Generate a stable unique key for a trade to enable deduplication.
+    Prefers real unique IDs if present, falls back to composite key.
+    """
+    # Prefer real unique IDs if present
+    tid = trade.get("id") or trade.get("tradeId") or trade.get("hash") or trade.get("transactionHash")
+    if tid:
+        return str(tid)
+    
+    # Fallback: stable composite key
+    return "|".join([
+        str(trade.get("conditionId") or ""),
+        str(trade.get("timestamp") or trade.get("createdAt") or ""),
+        str(trade.get("makerAddress") or trade.get("maker") or ""),
+        str(trade.get("takerAddress") or trade.get("taker") or ""),
+        str(trade.get("side") or ""),
+        str(trade.get("price") or ""),
+        str(trade.get("size") or ""),
+    ])
+
+
 async def process_trade(session: aiohttp.ClientSession, trade: Dict) -> Optional[Dict]:
     """
     Process a trade and generate signal if conditions are met.
@@ -197,8 +252,7 @@ async def process_trade(session: aiohttp.ClientSession, trade: Dict) -> Optional
     
     side = trade.get("side", "BUY")
     if side != "BUY":
-        logger.debug("trade_rejected", reason="wrong_side", side=side)
-        return None
+        return None  # skip SELL trades quietly, no log spam
     
     # Check for conflicting whale
     if check_conflicting_whale(wallet, side):
@@ -274,8 +328,6 @@ async def process_trade(session: aiohttp.ClientSession, trade: Dict) -> Optional
             "cluster_window_minutes": 0,
         }
         
-        global signals_generated
-        signals_generated += 1
         return signal
     else:
         # Trade is $2k-$8k range - add to cluster
@@ -307,6 +359,11 @@ async def add_trade_to_cluster(session: aiohttp.ClientSession, trade: Dict, whal
     # Check if cluster exists and is still valid (within time window)
     if cluster_key in whale_clusters:
         cluster = whale_clusters[cluster_key]
+        
+        # DEDUPE: don't add the same trade to a cluster twice
+        if cluster.get("triggered"):
+            return None
+        
         age_minutes = (now - cluster["first_trade_time"]).total_seconds() / 60
         
         if age_minutes > CLUSTER_WINDOW_MINUTES:
@@ -315,11 +372,20 @@ async def add_trade_to_cluster(session: aiohttp.ClientSession, trade: Dict, whal
             cluster = None
         else:
             cluster = whale_clusters[cluster_key]
+            
+            # DEDUPE: check if this trade is already in the cluster
+            trade_k = trade_key(trade)
+            existing_trade_keys = cluster.get("trade_keys", set())
+            if trade_k in existing_trade_keys:
+                return None  # Trade already in cluster, skip
+            existing_trade_keys.add(trade_k)
+            cluster["trade_keys"] = existing_trade_keys
     else:
         cluster = None
     
     # Create new cluster or add to existing
     if cluster is None:
+        trade_k = trade_key(trade)
         whale_clusters[cluster_key] = {
             "trades": [],
             "total_usd": 0.0,
@@ -330,6 +396,7 @@ async def add_trade_to_cluster(session: aiohttp.ClientSession, trade: Dict, whal
             "market_id": market_id,
             "market_title": trade.get("title", "Unknown"),
             "slug": trade.get("slug", ""),
+            "trade_keys": {trade_k},  # Track trade keys for deduplication
         }
         cluster = whale_clusters[cluster_key]
     
@@ -337,20 +404,29 @@ async def add_trade_to_cluster(session: aiohttp.ClientSession, trade: Dict, whal
     cluster["trades"].append(trade)
     cluster["total_usd"] += trade_usd
     
-    logger.debug("trade_added_to_cluster", 
-                 wallet=wallet[:20], 
-                 market=market_id[:20],
-                 trade_usd=trade_usd,
-                 cluster_total=cluster["total_usd"],
-                 trades_in_cluster=len(cluster["trades"]))
+    logger.info("cluster_updated",
+                key=cluster_key[:30],
+                wallet=wallet[:20],
+                market=market_id[:20],
+                trades=len(cluster["trades"]),
+                total_usd=cluster["total_usd"],
+                trade_usd=trade_usd)
     
     # Check if cluster threshold met
     if cluster["total_usd"] >= CLUSTER_MIN_USD:
+        # DEDUPE: skip if cluster already triggered
+        if cluster.get("triggered"):
+            return None
+        
         # Generate signal from cluster
         signal = await generate_cluster_signal(session, cluster)
         
-        # Remove cluster after signal generation
-        del whale_clusters[cluster_key]
+        # DEDUPE: mark cluster as triggered so we don't re-fire
+        if signal:
+            cluster["triggered"] = True
+        
+        # Remove cluster after signal generation (keep it briefly to prevent re-triggering)
+        # Will be cleaned up by cleanup_expired_clusters()
         
         return signal
     
@@ -411,8 +487,9 @@ async def generate_cluster_signal(session: aiohttp.ClientSession, cluster: Dict)
                 trades_count=len(cluster["trades"]),
                 discount=discount_pct)
     
-    global signals_generated
-    signals_generated += 1
+    # DEDUPE: mark cluster as triggered so we don't re-fire
+    cluster["triggered"] = True
+    
     return signal
 
 
@@ -509,21 +586,35 @@ async def main_loop():
                         # Fetch trades for this market (client-side scanning, 25 pages = 2500 trades max)
                         trades = await fetch_trades_scanned(session, event_id, API_MIN_SIZE_USD, pages=25, limit=100)
                         
-                        # Process each trade (filter by SIGNAL_MIN_SIZE_USD for production signals)
+                        # Process each trade (use API_MIN_SIZE_USD filter, clustering happens inside process_trade)
                         for trade in trades:
-                            # Signal gate: only process trades ≥ $10k for signals
+                            # DEDUPE: skip duplicate trades (prevent re-processing same trades)
+                            k = trade_key(trade)
+                            if k in SEEN_TRADE_KEYS:
+                                continue  # Skip already processed trades
+                            SEEN_TRADE_KEYS.add(k)
+                            
+                            # Prevent unbounded memory growth
+                            if len(SEEN_TRADE_KEYS) > SEEN_TRADE_KEYS_MAX:
+                                SEEN_TRADE_KEYS.clear()
+                            
+                            # DO NOT reject here — clustering happens inside process_trade()
+                            # Only apply the cheap API_MIN_SIZE_USD filter before calling process_trade.
                             size = trade.get("size", 0.0)
                             price = trade.get("price", 0.0)
                             size_usd = size * price
                             
-                            if size_usd < SIGNAL_MIN_SIZE_USD:
-                                logger.debug("trade_rejected", reason="below_signal_threshold", size_usd=size_usd, signal_threshold=SIGNAL_MIN_SIZE_USD)
-                                continue
+                            if size_usd < API_MIN_SIZE_USD:
+                                continue  # Skip trades below API filter threshold
                             
+                            global trades_considered
+                            trades_considered += 1
                             signal = await process_trade(session, trade)
                             total_trades_processed += 1
                             
                             if signal:
+                                global signals_generated
+                                signals_generated += 1
                                 # Log signal to CSV
                                 log_signal_to_csv(signal)
                                 recent_signals.append(signal)
@@ -546,6 +637,7 @@ async def main_loop():
                 
                 # Log filter breakdown
                 logger.info("gate_breakdown",
+                           trades_considered=trades_considered,
                            rejected_below_cluster_min=rejected_below_cluster_min,
                            rejected_low_score=rejected_low_score,
                            rejected_low_discount=rejected_low_discount,
