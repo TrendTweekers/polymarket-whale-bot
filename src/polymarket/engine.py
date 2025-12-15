@@ -12,6 +12,7 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Set
 from collections import defaultdict
 import json
+import pandas as pd
 
 # Load environment variables (dotenv loaded in main if available)
 try:
@@ -34,8 +35,8 @@ if project_root not in sys.path:
 from src.polymarket.scraper import fetch_recent_trades, fetch_top_markets, fetch_trades, fetch_trades_scanned, BASE, HEADERS
 from src.polymarket.profiler import get_whale_stats
 from src.polymarket.score import whale_score, whitelist_whales
-
-# Telegram removed - paper trading mode (CSV + console logging only)
+from src.polymarket.telegram import send_alert as send_telegram_alert
+from src.polymarket.telegram import send_alert as send_telegram_alert
 
 logger = structlog.get_logger()
 
@@ -65,7 +66,9 @@ daily_loss_usd = 0.0
 conflicting_whales: Dict[str, datetime] = {}  # {wallet: timestamp} for opposite side trades
 
 # Whale clustering: group multiple trades from same wallet+market within time window
-CLUSTER_WINDOW_MINUTES = 10
+CLUSTER_WINDOW_MINUTES = 5  # Reduced from 10 to 5 minutes
+CLUSTER_MIN_TRADES = 3  # Minimum trades required per cluster
+CLUSTER_MIN_AVG_HOLD_MINUTES = 30  # Skip clusters with avg hold < 30 min (arb bot filter)
 CLUSTER_MIN_USD = float(os.getenv("CLUSTER_MIN_USD", "10000.0"))  # Cumulative threshold for signal generation (env-configurable)
 whale_clusters: Dict[str, Dict] = {}  # {wallet+market: {trades: [], total_usd: 0, first_trade_time: datetime, whale: {}, category: ""}}
 
@@ -418,6 +421,28 @@ async def add_trade_to_cluster(session: aiohttp.ClientSession, trade: Dict, whal
         if cluster.get("triggered"):
             return None
         
+        # Require minimum 3 trades per cluster
+        if len(cluster["trades"]) < CLUSTER_MIN_TRADES:
+            logger.debug("cluster_rejected", 
+                        reason="insufficient_trades", 
+                        trades_count=len(cluster["trades"]), 
+                        required=CLUSTER_MIN_TRADES,
+                        wallet=wallet[:20])
+            return None
+        
+        # Arb bot filter: skip if whale's avg hold time < 30 min
+        whale_stats = cluster.get("whale", {}).get("stats", {})
+        avg_hold_hours = whale_stats.get("avg_hold_time_hours", 0.0)
+        avg_hold_minutes = avg_hold_hours * 60
+        
+        if avg_hold_minutes > 0 and avg_hold_minutes < CLUSTER_MIN_AVG_HOLD_MINUTES:
+            logger.debug("cluster_rejected",
+                        reason="avg_hold_too_short",
+                        avg_hold_minutes=avg_hold_minutes,
+                        required=CLUSTER_MIN_AVG_HOLD_MINUTES,
+                        wallet=wallet[:20])
+            return None
+        
         # Generate signal from cluster
         signal = await generate_cluster_signal(session, cluster)
         
@@ -555,6 +580,115 @@ def log_signal_to_csv(signal: Dict):
         writer.writerow(signal)
 
 
+def audit_data_quality():
+    """
+    Analyze today's signals.csv and compute quality metrics.
+    Logs results to quality_audit.txt.
+    """
+    log_dir = os.path.join(os.path.dirname(__file__), "..", "..", "logs")
+    os.makedirs(log_dir, exist_ok=True)
+    
+    date_str = datetime.now().strftime("%Y-%m-%d")
+    signals_file = os.path.join(log_dir, f"signals_{date_str}.csv")
+    
+    if not os.path.exists(signals_file):
+        logger.debug("audit_skipped", reason="no_signals_file", file=signals_file)
+        return
+    
+    try:
+        # Load signals CSV
+        df = pd.read_csv(signals_file)
+        
+        if len(df) == 0:
+            logger.debug("audit_skipped", reason="empty_signals_file")
+            return
+        
+        # Compute metrics
+        total_signals = len(df)
+        
+        # Average cluster size
+        avg_cluster_size = df['cluster_trades_count'].mean() if 'cluster_trades_count' in df.columns else 0.0
+        
+        # Average discount
+        avg_discount = df['discount_pct'].mean() if 'discount_pct' in df.columns else 0.0
+        
+        # Market category distribution
+        category_counts = df['category'].value_counts().to_dict() if 'category' in df.columns else {}
+        
+        # % of signals with score < 0.70
+        if 'whale_score' in df.columns:
+            low_score_count = len(df[df['whale_score'] < 0.70])
+            low_score_pct = (low_score_count / total_signals * 100) if total_signals > 0 else 0.0
+        else:
+            low_score_count = 0
+            low_score_pct = 0.0
+        
+        # Market title analysis (extract sport/event types)
+        market_types = {}
+        if 'market' in df.columns:
+            for market in df['market'].dropna():
+                market_lower = str(market).lower()
+                if 'nhl' in market_lower or 'hockey' in market_lower:
+                    market_types['NHL'] = market_types.get('NHL', 0) + 1
+                elif 'nfl' in market_lower or 'football' in market_lower:
+                    market_types['NFL'] = market_types.get('NFL', 0) + 1
+                elif 'nba' in market_lower or 'basketball' in market_lower:
+                    market_types['NBA'] = market_types.get('NBA', 0) + 1
+                elif 'election' in market_lower or 'president' in market_lower or 'vote' in market_lower:
+                    market_types['Elections'] = market_types.get('Elections', 0) + 1
+                elif 'crypto' in market_lower or 'bitcoin' in market_lower or 'btc' in market_lower:
+                    market_types['Crypto'] = market_types.get('Crypto', 0) + 1
+                elif 'sport' in market_lower:
+                    market_types['Sports'] = market_types.get('Sports', 0) + 1
+        
+        # Write audit report
+        audit_file = os.path.join(log_dir, "quality_audit.txt")
+        with open(audit_file, "w", encoding="utf-8") as f:
+            f.write("="*70 + "\n")
+            f.write(f"DATA QUALITY AUDIT - {date_str}\n")
+            f.write("="*70 + "\n\n")
+            f.write(f"Timestamp: {datetime.now().isoformat()}\n")
+            f.write(f"Signals File: {signals_file}\n\n")
+            
+            f.write("SUMMARY METRICS\n")
+            f.write("-"*70 + "\n")
+            f.write(f"Total Signals: {total_signals}\n")
+            f.write(f"Average Cluster Size: {avg_cluster_size:.2f} trades\n")
+            f.write(f"Average Discount: {avg_discount:.2f}%\n")
+            f.write(f"Signals with Score < 0.70: {low_score_count} ({low_score_pct:.2f}%)\n\n")
+            
+            f.write("CATEGORY DISTRIBUTION\n")
+            f.write("-"*70 + "\n")
+            for category, count in sorted(category_counts.items(), key=lambda x: x[1], reverse=True):
+                pct = (count / total_signals * 100) if total_signals > 0 else 0.0
+                f.write(f"  {category}: {count} ({pct:.2f}%)\n")
+            f.write("\n")
+            
+            f.write("MARKET TYPE DISTRIBUTION\n")
+            f.write("-"*70 + "\n")
+            if market_types:
+                for market_type, count in sorted(market_types.items(), key=lambda x: x[1], reverse=True):
+                    pct = (count / total_signals * 100) if total_signals > 0 else 0.0
+                    f.write(f"  {market_type}: {count} ({pct:.2f}%)\n")
+            else:
+                f.write("  (No market types detected)\n")
+            f.write("\n")
+            
+            f.write("="*70 + "\n")
+        
+        logger.info("quality_audit_completed",
+                   total_signals=total_signals,
+                   avg_cluster_size=avg_cluster_size,
+                   avg_discount=avg_discount,
+                   low_score_pct=low_score_pct,
+                   audit_file=audit_file)
+        
+    except Exception as e:
+        logger.error("audit_failed", error=str(e))
+        import traceback
+        logger.error("audit_traceback", traceback=traceback.format_exc())
+
+
 # Telegram functions removed - paper trading mode (CSV + console logging only)
 
 async def main_loop():
@@ -625,6 +759,12 @@ async def main_loop():
                                            discount=signal['discount_pct'],
                                            market=signal['market'][:50],
                                            event_id=event_id)
+                                
+                                # Send Telegram alert (if enabled)
+                                try:
+                                    await send_telegram_alert(signal)
+                                except Exception as e:
+                                    logger.error("telegram_alert_failed", error=str(e))
                     except Exception as e:
                         logger.error("market_processing_error", 
                                     conditionId=m.get("conditionId", "unknown"), 
@@ -645,6 +785,9 @@ async def main_loop():
                            rejected_conflicting=rejected_conflicting,
                            rejected_daily_limit=rejected_daily_limit,
                            signals_generated=signals_generated)
+                
+                # Audit data quality
+                audit_data_quality()
                 
                 # Clean up old conflicting whales
                 cutoff_time = datetime.now() - timedelta(minutes=CONFLICT_WINDOW_MINUTES)
