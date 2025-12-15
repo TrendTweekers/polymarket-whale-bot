@@ -60,6 +60,20 @@ recent_signals: List[Dict] = []  # Track signals sent today
 daily_loss_usd = 0.0
 conflicting_whales: Dict[str, datetime] = {}  # {wallet: timestamp} for opposite side trades
 
+# Whale clustering: group multiple trades from same wallet+market within time window
+CLUSTER_WINDOW_MINUTES = 10
+CLUSTER_MIN_USD = 10000.0  # Cumulative threshold for signal generation
+whale_clusters: Dict[str, Dict] = {}  # {wallet+market: {trades: [], total_usd: 0, first_trade_time: datetime, whale: {}, category: ""}}
+
+# Filter rejection counters (for diagnostics)
+rejected_below_cluster_min = 0
+rejected_low_score = 0
+rejected_low_discount = 0
+rejected_depth = 0
+rejected_conflicting = 0
+rejected_daily_limit = 0
+signals_generated = 0
+
 
 async def get_orderbook_depth(session: aiohttp.ClientSession, condition_id: str, size: float) -> float:
     """
@@ -188,6 +202,8 @@ async def process_trade(session: aiohttp.ClientSession, trade: Dict) -> Optional
     
     # Check for conflicting whale
     if check_conflicting_whale(wallet, side):
+        global rejected_conflicting
+        rejected_conflicting += 1
         logger.debug("conflicting_whale", wallet=wallet[:20])
         return None
     
@@ -197,6 +213,8 @@ async def process_trade(session: aiohttp.ClientSession, trade: Dict) -> Optional
     # Ensure whale is whitelisted
     whale = await ensure_whale_whitelisted(session, wallet, category)
     if not whale:
+        global rejected_low_score
+        rejected_low_score += 1
         logger.debug("trade_rejected", reason="whale_not_whitelisted", wallet=wallet[:8], category=category)
         return None
     
@@ -212,36 +230,210 @@ async def process_trade(session: aiohttp.ClientSession, trade: Dict) -> Optional
     logger.debug("whale_activity", wallet=wallet[:20], score=whale["score"], discount=discount_pct, size_usd=size_usd)
     log_all_activity(market_id, wallet, whale["score"], discount_pct, size_usd)
     
+    # Check if trade meets minimum size for clustering ($2k-$8k range)
+    if size_usd < 2000.0:
+        global rejected_below_cluster_min
+        rejected_below_cluster_min += 1
+        logger.debug("trade_rejected", reason="below_cluster_min", size_usd=size_usd, wallet=wallet[:8])
+        return None
+    
+    if size_usd >= CLUSTER_MIN_USD:
+        # Single trade already meets threshold - check other filters and generate signal directly
+        if discount_pct < MIN_DISCOUNT_PCT:
+            global rejected_low_discount
+            rejected_low_discount += 1
+            logger.debug("trade_rejected", reason="below_discount", discount=discount_pct, wallet=wallet[:8], score=whale["score"])
+            return None
+        
+        # Check orderbook depth
+        depth_ratio = await get_orderbook_depth(session, trade.get("conditionId", ""), size)
+        
+        if depth_ratio < MIN_ORDERBOOK_DEPTH_MULTIPLIER:
+            global rejected_depth
+            rejected_depth += 1
+            logger.debug("trade_rejected", reason="insufficient_depth", depth=depth_ratio, wallet=wallet[:8])
+            return None
+        
+        # Generate signal directly (single trade ≥ $10k)
+        signal = {
+            "timestamp": datetime.now().isoformat(),
+            "wallet": wallet,
+            "whale_score": whale["score"],
+            "category": category,
+            "market": trade.get("title", "Unknown"),
+            "slug": trade.get("slug", ""),
+            "condition_id": trade.get("conditionId", ""),
+            "whale_entry_price": whale_entry_price,
+            "current_price": current_price,
+            "discount_pct": discount_pct,
+            "size": size,
+            "trade_value_usd": size_usd,
+            "orderbook_depth_ratio": depth_ratio,
+            "transaction_hash": trade.get("transactionHash", ""),
+            "cluster_trades_count": 1,
+            "cluster_window_minutes": 0,
+        }
+        
+        global signals_generated
+        signals_generated += 1
+        return signal
+    else:
+        # Trade is $2k-$8k range - add to cluster
+        # Note: We'll check discount/depth when cluster completes
+        cluster_signal = await add_trade_to_cluster(session, trade, whale, category)
+        return cluster_signal
+
+
+def get_cluster_key(wallet: str, market_id: str) -> str:
+    """Generate unique key for wallet+market cluster."""
+    return f"{wallet}:{market_id}"
+
+
+async def add_trade_to_cluster(session: aiohttp.ClientSession, trade: Dict, whale: Dict, category: str) -> Optional[Dict]:
+    """
+    Add trade to cluster and generate signal if cluster reaches threshold.
+    Returns signal dict if cluster threshold met, None otherwise.
+    """
+    wallet = trade.get("proxyWallet") or trade.get("makerAddress", "")
+    market_id = trade.get("conditionId", trade.get("slug", "unknown"))
+    cluster_key = get_cluster_key(wallet, market_id)
+    
+    size = trade.get("size", 0.0)
+    price = trade.get("price", 0.0)
+    trade_usd = size * price
+    
+    now = datetime.now()
+    
+    # Check if cluster exists and is still valid (within time window)
+    if cluster_key in whale_clusters:
+        cluster = whale_clusters[cluster_key]
+        age_minutes = (now - cluster["first_trade_time"]).total_seconds() / 60
+        
+        if age_minutes > CLUSTER_WINDOW_MINUTES:
+            # Cluster expired, remove it
+            del whale_clusters[cluster_key]
+            cluster = None
+        else:
+            cluster = whale_clusters[cluster_key]
+    else:
+        cluster = None
+    
+    # Create new cluster or add to existing
+    if cluster is None:
+        whale_clusters[cluster_key] = {
+            "trades": [],
+            "total_usd": 0.0,
+            "first_trade_time": now,
+            "whale": whale,
+            "category": category,
+            "wallet": wallet,
+            "market_id": market_id,
+            "market_title": trade.get("title", "Unknown"),
+            "slug": trade.get("slug", ""),
+        }
+        cluster = whale_clusters[cluster_key]
+    
+    # Add trade to cluster
+    cluster["trades"].append(trade)
+    cluster["total_usd"] += trade_usd
+    
+    logger.debug("trade_added_to_cluster", 
+                 wallet=wallet[:20], 
+                 market=market_id[:20],
+                 trade_usd=trade_usd,
+                 cluster_total=cluster["total_usd"],
+                 trades_in_cluster=len(cluster["trades"]))
+    
+    # Check if cluster threshold met
+    if cluster["total_usd"] >= CLUSTER_MIN_USD:
+        # Generate signal from cluster
+        signal = await generate_cluster_signal(session, cluster)
+        
+        # Remove cluster after signal generation
+        del whale_clusters[cluster_key]
+        
+        return signal
+    
+    return None
+
+
+async def generate_cluster_signal(session: aiohttp.ClientSession, cluster: Dict) -> Optional[Dict]:
+    """Generate signal from a completed whale cluster. Returns None if filters fail."""
+    # Use the first trade for most fields, aggregate for size/price
+    first_trade = cluster["trades"][0]
+    last_trade = cluster["trades"][-1]
+    
+    # Calculate weighted average price
+    total_size = sum(t.get("size", 0.0) for t in cluster["trades"])
+    weighted_price = cluster["total_usd"] / total_size if total_size > 0 else first_trade.get("price", 0.0)
+    
+    # Calculate discount (use first trade price as entry, last as current for now)
+    whale_entry_price = weighted_price
+    current_price = weighted_price  # In production, fetch from orderbook
+    discount_pct = calculate_discount(whale_entry_price, current_price)
+    
+    # Check discount filter
     if discount_pct < MIN_DISCOUNT_PCT:
-        logger.debug("trade_rejected", reason="below_discount", discount=discount_pct, wallet=wallet[:8], score=whale["score"])
+        logger.debug("cluster_rejected", reason="below_discount", discount=discount_pct, wallet=cluster["wallet"][:8], cluster_total=cluster["total_usd"])
         return None
     
-    # Check orderbook depth
-    depth_ratio = await get_orderbook_depth(session, trade.get("conditionId", ""), size)
+    # Get orderbook depth for total size
+    depth_ratio = await get_orderbook_depth(session, cluster["market_id"], total_size)
     
+    # Check depth filter
     if depth_ratio < MIN_ORDERBOOK_DEPTH_MULTIPLIER:
-        logger.debug("trade_rejected", reason="insufficient_depth", depth=depth_ratio, wallet=wallet[:8])
+        logger.debug("cluster_rejected", reason="insufficient_depth", depth=depth_ratio, wallet=cluster["wallet"][:8], cluster_total=cluster["total_usd"])
         return None
     
-    # Generate signal
     signal = {
         "timestamp": datetime.now().isoformat(),
-        "wallet": wallet,
-        "whale_score": whale["score"],
-        "category": category,
-        "market": trade.get("title", "Unknown"),
-        "slug": trade.get("slug", ""),
-        "condition_id": trade.get("conditionId", ""),
+        "wallet": cluster["wallet"],
+        "whale_score": cluster["whale"]["score"],
+        "category": cluster["category"],
+        "market": cluster["market_title"],
+        "slug": cluster["slug"],
+        "condition_id": cluster["market_id"],
         "whale_entry_price": whale_entry_price,
         "current_price": current_price,
         "discount_pct": discount_pct,
-        "size": size,
-        "trade_value_usd": size * whale_entry_price,
+        "size": total_size,
+        "trade_value_usd": cluster["total_usd"],
         "orderbook_depth_ratio": depth_ratio,
-        "transaction_hash": trade.get("transactionHash", ""),
+        "transaction_hash": first_trade.get("transactionHash", ""),
+        "cluster_trades_count": len(cluster["trades"]),
+        "cluster_window_minutes": CLUSTER_WINDOW_MINUTES,
     }
     
+    logger.info("cluster_signal_generated",
+                wallet=cluster["wallet"][:20],
+                market=cluster["market_title"][:50],
+                cluster_total=cluster["total_usd"],
+                trades_count=len(cluster["trades"]),
+                discount=discount_pct)
+    
+    global signals_generated
+    signals_generated += 1
     return signal
+
+
+def cleanup_expired_clusters():
+    """Remove clusters older than CLUSTER_WINDOW_MINUTES."""
+    now = datetime.now()
+    expired_keys = []
+    
+    for cluster_key, cluster in whale_clusters.items():
+        age_minutes = (now - cluster["first_trade_time"]).total_seconds() / 60
+        if age_minutes > CLUSTER_WINDOW_MINUTES:
+            expired_keys.append(cluster_key)
+    
+    for key in expired_keys:
+        cluster = whale_clusters[key]
+        logger.debug("cluster_expired",
+                     wallet=cluster["wallet"][:20],
+                     market=cluster["market_id"][:20],
+                     total_usd=cluster["total_usd"],
+                     trades_count=len(cluster["trades"]))
+        del whale_clusters[key]
 
 
 def log_all_activity(market_id: str, whale_wallet: str, score: float, discount: float, size_usd: float):
@@ -275,7 +467,8 @@ def log_signal_to_csv(signal: Dict):
         fieldnames = [
             "timestamp", "wallet", "whale_score", "category", "market", "slug",
             "condition_id", "whale_entry_price", "current_price", "discount_pct",
-            "size", "trade_value_usd", "orderbook_depth_ratio", "transaction_hash"
+            "size", "trade_value_usd", "orderbook_depth_ratio", "transaction_hash",
+            "cluster_trades_count", "cluster_window_minutes"
         ]
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         
@@ -313,8 +506,8 @@ async def main_loop():
                             logger.debug("market_missing_conditionId", market=m.get("title", "unknown"))
                             continue
                         
-                        # Fetch trades for this market (client-side scanning, 5 pages)
-                        trades = await fetch_trades_scanned(session, event_id, API_MIN_SIZE_USD, pages=5, limit=100)
+                        # Fetch trades for this market (client-side scanning, 25 pages = 2500 trades max)
+                        trades = await fetch_trades_scanned(session, event_id, API_MIN_SIZE_USD, pages=25, limit=100)
                         
                         # Process each trade (filter by SIGNAL_MIN_SIZE_USD for production signals)
                         for trade in trades:
@@ -351,9 +544,22 @@ async def main_loop():
                            markets=len(markets), 
                            trades_processed=total_trades_processed)
                 
+                # Log filter breakdown
+                logger.info("gate_breakdown",
+                           rejected_below_cluster_min=rejected_below_cluster_min,
+                           rejected_low_score=rejected_low_score,
+                           rejected_low_discount=rejected_low_discount,
+                           rejected_depth=rejected_depth,
+                           rejected_conflicting=rejected_conflicting,
+                           rejected_daily_limit=rejected_daily_limit,
+                           signals_generated=signals_generated)
+                
                 # Clean up old conflicting whales
                 cutoff_time = datetime.now() - timedelta(minutes=CONFLICT_WINDOW_MINUTES)
                 conflicting_whales.clear()  # Simplified cleanup
+                
+                # Clean up expired clusters
+                cleanup_expired_clusters()
                 
             except Exception as e:
                 logger.error("loop_error", error=str(e))

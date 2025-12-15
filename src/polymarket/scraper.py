@@ -1,4 +1,5 @@
-import aiohttp, asyncio, os, structlog
+import aiohttp, asyncio, os, structlog, csv
+from datetime import datetime
 
 BASE   = "https://data-api.polymarket.com"
 GAMMA_BASE = "https://gamma-api.polymarket.com"  # Correct host for events endpoint
@@ -9,6 +10,19 @@ HEADERS = {
 }
 
 logger = structlog.get_logger()
+
+
+def log_scan_stats(market_id, scanned, kept, api_min_size_usd, pages, limit):
+    """Log scan statistics to CSV for auditing."""
+    os.makedirs("logs", exist_ok=True)
+    fn = f"logs/scan_stats_{datetime.now().strftime('%Y-%m-%d')}.csv"
+    new_file = not os.path.exists(fn)
+    with open(fn, "a", newline="", encoding="utf-8") as f:
+        w = csv.writer(f)
+        if new_file:
+            w.writerow(["ts", "market_id", "scanned", "kept", "api_min_size_usd", "pages", "limit"])
+        w.writerow([datetime.now().isoformat(timespec="seconds"), market_id, scanned, kept, api_min_size_usd, pages, limit])
+
 
 async def fetch_trades(session, event_id, limit=100, offset=0, min_size_usd=10000):
     """Fetch trades for an event (legacy function - use fetch_trades_scanned instead)."""
@@ -47,6 +61,7 @@ async def fetch_trades_scanned(session, event_id: int, api_min_size_usd: float, 
             if not trades:
                 break  # no more pages
     logger.info("scan_summary", event_id=event_id, scanned=scanned, kept=len(kept), api_min_size_usd=api_min_size_usd, pages=pages)
+    log_scan_stats(event_id, scanned, len(kept), api_min_size_usd, pages, limit)
     return kept
 
 
