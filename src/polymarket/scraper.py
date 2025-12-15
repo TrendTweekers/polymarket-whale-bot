@@ -25,15 +25,52 @@ async def fetch_trades(session, event_id, limit=100, offset=0):
         return data
 
 
-async def fetch_active_events(session, limit=20):
-    """Returns top N events by volume."""
+async def fetch_active_events(session, limit=20, offset=0):
+    """Fetch active events - fallback to extracting from trades if /events endpoint unavailable."""
+    # Try /events endpoint first
     url = f"{BASE}/events"
-    params = {"active": "true", "limit": limit, "order": "volume"}
+    params = {
+        "active": "true",
+        "closed": "false",
+        "limit": str(limit),
+        "offset": str(offset),
+        "order": "volume"
+    }
+    try:
+        async with session.get(url, headers=HEADERS, params=params) as resp:
+            if resp.status == 200:
+                return await resp.json()
+            else:
+                logger.warning("events_endpoint_failed", status=resp.status)
+    except Exception as e:
+        logger.warning("events_endpoint_error", error=str(e))
+    
+    # Fallback: Extract unique events from recent trades
+    logger.info("using_trades_fallback", message="Extracting events from trades endpoint")
+    url = f"{BASE}/trades"
+    params = {"limit": 200}  # Get more trades to find unique events
     async with session.get(url, headers=HEADERS, params=params) as resp:
         resp.raise_for_status()
-        data = await resp.json()
-        logger.info("fetched active events", count=len(data) if isinstance(data, list) else 0)
-        return data
+        trades = await resp.json()
+        
+        # Extract unique events by conditionId
+        seen_events = {}
+        for trade in trades:
+            condition_id = trade.get("conditionId")
+            event_id = trade.get("eventId") or condition_id
+            if condition_id and condition_id not in seen_events:
+                seen_events[condition_id] = {
+                    "id": event_id,
+                    "conditionId": condition_id,
+                    "title": trade.get("title", "Unknown"),
+                    "slug": trade.get("slug", ""),
+                    "eventSlug": trade.get("eventSlug", "")
+                }
+        
+        # Return as list, limited to requested count
+        events_list = list(seen_events.values())[offset:offset+limit]
+        logger.info("extracted_events_from_trades", count=len(events_list))
+        return events_list
 
 
 async def fetch_recent_trades(session, min_size_usd=10000, limit=100):
@@ -78,7 +115,7 @@ async def fetch_recent_trades(session, min_size_usd=10000, limit=100):
 async def main():
     async with aiohttp.ClientSession() as session:
         # Test fetch_active_events
-        events = await fetch_active_events(session, limit=5)
+        events = await fetch_active_events(session, limit=5, offset=0)
         for e in events:
             print(e.get("id", "N/A"), e.get("title", "N/A"), e.get("volume24hr", "N/A"))
 

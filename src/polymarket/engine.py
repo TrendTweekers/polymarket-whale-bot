@@ -35,7 +35,7 @@ logger = structlog.get_logger()
 # Configuration
 POLL_INTERVAL_SECONDS = 30
 MIN_WHALE_SCORE = 0.70
-MIN_DISCOUNT_PCT = 5.0
+MIN_DISCOUNT_PCT = 2.0  # Temporarily lowered for data collection (was 5.0 production)
 MIN_ORDERBOOK_DEPTH_MULTIPLIER = 3.0
 CONFLICT_WINDOW_MINUTES = 5
 MAX_SIGNALS_PER_DAY = 3
@@ -281,7 +281,7 @@ async def main_loop():
         while True:
             try:
                 # 1. Fetch top 20 active events by volume
-                events = await fetch_active_events(session, limit=20)
+                events = await fetch_active_events(session, limit=20, offset=0)
                 
                 if not events:
                     logger.warning("no_events_found")
