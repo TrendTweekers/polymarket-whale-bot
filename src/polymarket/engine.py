@@ -8,6 +8,8 @@ import aiohttp
 import structlog
 import csv
 import os
+import logging
+from logging.handlers import RotatingFileHandler
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Set
 from collections import defaultdict
@@ -36,10 +38,85 @@ if project_root not in sys.path:
 from src.polymarket.scraper import fetch_recent_trades, fetch_top_markets, fetch_trades, fetch_trades_scanned, get_midpoint_price_cached, get_token_id_for_condition, get_market_midpoint_cached, BASE, HEADERS
 from src.polymarket.profiler import get_whale_stats
 from src.polymarket.score import whale_score, whitelist_whales
-from src.polymarket.telegram import send_alert as send_telegram_alert
+from src.polymarket.telegram import notify_engine_start, notify_engine_stop, notify_signal, notify_phase1b_bypass, notify_csv_write_attempt, notify_csv_write_done
+from src.polymarket.telegram_notify import SignalStats
 
 # Configure logging level from environment (for filtering debug messages)
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
+
+# Setup file logging for console output
+def setup_file_logging():
+    """Configure logging to write to both console and daily log file."""
+    # Ensure logs directory exists
+    Path("logs").mkdir(exist_ok=True)
+    
+    # Create daily log file
+    day = datetime.utcnow().strftime("%Y-%m-%d")
+    log_file = Path("logs") / f"engine_{day}.log"
+    
+    # Configure Python logging to write to file
+    file_handler = RotatingFileHandler(
+        log_file,
+        maxBytes=10 * 1024 * 1024,  # 10MB
+        backupCount=5,
+        encoding="utf-8"
+    )
+    file_handler.setLevel(logging.DEBUG)
+    
+    # Format: timestamp level message
+    file_formatter = logging.Formatter(
+        "%(asctime)s [%(levelname)-8s] %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S"
+    )
+    file_handler.setFormatter(file_formatter)
+    
+    # Get root logger and add file handler
+    root_logger = logging.getLogger()
+    root_logger.setLevel(logging.DEBUG)
+    # Remove existing handlers to avoid duplicates
+    root_logger.handlers.clear()
+    root_logger.addHandler(file_handler)
+    
+    return log_file
+
+# Setup file logging
+_log_file = setup_file_logging()
+
+# Configure structlog to use standard library logging
+structlog.configure(
+    processors=[
+        structlog.stdlib.filter_by_level,
+        structlog.stdlib.add_logger_name,
+        structlog.stdlib.add_log_level,
+        structlog.stdlib.PositionalArgumentsFormatter(),
+        structlog.processors.TimeStamper(fmt="iso"),
+        structlog.processors.StackInfoRenderer(),
+        structlog.processors.format_exc_info,
+        structlog.processors.UnicodeDecoder(),
+        structlog.stdlib.ProcessorFormatter.wrap_for_formatter,
+    ],
+    context_class=dict,
+    logger_factory=structlog.stdlib.LoggerFactory(),
+    wrapper_class=structlog.stdlib.BoundLogger,
+    cache_logger_on_first_use=True,
+)
+
+# Add console handler for structlog (for real-time viewing)
+console_handler = logging.StreamHandler()
+console_handler.setLevel(getattr(logging, LOG_LEVEL))
+console_formatter = structlog.stdlib.ProcessorFormatter(
+    processor=structlog.dev.ConsoleRenderer(),
+    foreign_pre_chain=[
+        structlog.stdlib.add_log_level,
+        structlog.stdlib.add_logger_name,
+    ],
+)
+console_handler.setFormatter(console_formatter)
+
+# Add console handler to root logger (file handler already added in setup_file_logging)
+root_logger = logging.getLogger()
+root_logger.addHandler(console_handler)
+
 logger = structlog.get_logger()
 
 # Configuration
@@ -96,7 +173,7 @@ conflicting_whales: Dict[str, datetime] = {}  # {wallet: timestamp} for opposite
 # Whale clustering: group multiple trades from same wallet+market within time window
 CLUSTER_WINDOW_MINUTES = 5  # Reduced from 10 to 5 minutes
 CLUSTER_MIN_TRADES = int(os.getenv("CLUSTER_MIN_TRADES", "3"))  # Minimum trades required per cluster (env-configurable)
-CLUSTER_MIN_AVG_HOLD_MINUTES = 30  # Skip clusters with avg hold < 30 min (arb bot filter)
+CLUSTER_MIN_AVG_HOLD_MINUTES = int(os.getenv("CLUSTER_MIN_HOLD", "30"))  # Skip clusters with avg hold < X min (arb bot filter, env-configurable)
 CLUSTER_MIN_USD = float(os.getenv("CLUSTER_MIN_USD", "10000.0"))  # Cumulative threshold for signal generation (env-configurable)
 whale_clusters: Dict[str, Dict] = {}  # {wallet+market: {trades: [], total_usd: 0, first_trade_time: datetime, whale: {}, category: ""}}
 
@@ -433,21 +510,37 @@ async def process_trade(session: aiohttp.ClientSession, trade: Dict) -> Optional
         current_price = await get_market_midpoint_cached(session, condition_id)
     
     if current_price is None:
-        rejected_discount_missing += 1
-        logger.debug("trade_rejected", reason="rejected_discount_missing", 
-                    wallet=wallet[:8], token_id=str(token_id)[:20] if token_id else None, 
-                    condition_id=condition_id[:20])
-        return None
+        # Phase 1b bypass: allow missing discount for calibration
+        if os.getenv("PHASE1B_ALLOW_MISSING_DISCOUNT", "False") == "True":
+            logger.warning("PHASE1B_USING_ZERO_DISCOUNT", wallet=wallet[:8], 
+                         token_id=str(token_id)[:20] if token_id else None, 
+                         condition_id=condition_id[:20], note="current_price_missing_using_entry_price")
+            notify_phase1b_bypass(wallet, condition_id, "current_price_missing_using_entry_price")
+            current_price = whale_entry_price  # Use entry price so discount = 0.0
+        else:
+            rejected_discount_missing += 1
+            logger.debug("trade_rejected", reason="rejected_discount_missing", 
+                        wallet=wallet[:8], token_id=str(token_id)[:20] if token_id else None, 
+                        condition_id=condition_id[:20])
+            return None
     
     # Calculate discount: entry_price vs current midpoint
     discount_pct = calculate_discount(whale_entry_price, current_price)
     
     # Reject if discount cannot be calculated
     if discount_pct is None:
-        rejected_discount_missing += 1
-        logger.debug("trade_rejected", reason="rejected_discount_missing", 
-                    wallet=wallet[:8], entry_price=whale_entry_price, current_price=current_price)
-        return None
+        # Phase 1b bypass: allow missing discount for calibration
+        if os.getenv("PHASE1B_ALLOW_MISSING_DISCOUNT", "False") == "True":
+            logger.warning("PHASE1B_USING_ZERO_DISCOUNT", wallet=wallet[:8], 
+                         entry_price=whale_entry_price, current_price=current_price,
+                         note="discount_calc_returned_none_using_zero")
+            notify_phase1b_bypass(wallet, condition_id, "discount_calc_returned_none_using_zero")
+            discount_pct = 0.0
+        else:
+            rejected_discount_missing += 1
+            logger.debug("trade_rejected", reason="rejected_discount_missing", 
+                        wallet=wallet[:8], entry_price=whale_entry_price, current_price=current_price)
+            return None
     
     # Log ALL whale activity for analysis (before filtering)
     size = trade.get("size", 0.0)
@@ -670,19 +763,35 @@ async def generate_cluster_signal(session: aiohttp.ClientSession, cluster: Dict)
         current_price = await get_market_midpoint_cached(session, condition_id)
     
     if current_price is None:
-        logger.debug("cluster_rejected", reason="rejected_discount_missing", 
-                    wallet=cluster["wallet"][:8], token_id=str(token_id)[:20] if token_id else None, 
-                    condition_id=condition_id[:20])
-        return None
+        # Phase 1b bypass: allow missing discount for calibration
+        if os.getenv("PHASE1B_ALLOW_MISSING_DISCOUNT", "False") == "True":
+            logger.warning("PHASE1B_USING_ZERO_DISCOUNT", wallet=cluster["wallet"][:8], 
+                         token_id=str(token_id)[:20] if token_id else None, 
+                         condition_id=condition_id[:20], note="current_price_missing_using_entry_price")
+            notify_phase1b_bypass(cluster["wallet"], condition_id, "current_price_missing_using_entry_price")
+            current_price = whale_entry_price  # Use entry price so discount = 0.0
+        else:
+            logger.debug("cluster_rejected", reason="rejected_discount_missing", 
+                        wallet=cluster["wallet"][:8], token_id=str(token_id)[:20] if token_id else None, 
+                        condition_id=condition_id[:20])
+            return None
     
     # Calculate discount: entry_price vs current midpoint
     discount_pct = calculate_discount(whale_entry_price, current_price)
     
     # Reject if discount cannot be calculated
     if discount_pct is None:
-        logger.debug("cluster_rejected", reason="rejected_discount_missing", 
-                    wallet=cluster["wallet"][:8], entry_price=whale_entry_price, current_price=current_price)
-        return None
+        # Phase 1b bypass: allow missing discount for calibration
+        if os.getenv("PHASE1B_ALLOW_MISSING_DISCOUNT", "False") == "True":
+            logger.warning("PHASE1B_USING_ZERO_DISCOUNT", wallet=cluster["wallet"][:8], 
+                         entry_price=whale_entry_price, current_price=current_price,
+                         note="discount_calc_returned_none_using_zero")
+            notify_phase1b_bypass(cluster["wallet"], condition_id, "discount_calc_returned_none_using_zero")
+            discount_pct = 0.0
+        else:
+            logger.debug("cluster_rejected", reason="rejected_discount_missing", 
+                        wallet=cluster["wallet"][:8], entry_price=whale_entry_price, current_price=current_price)
+            return None
     
     # Check discount filter
     if discount_pct < MIN_DISCOUNT_PCT:
@@ -790,7 +899,13 @@ def log_signal_to_csv(signal: Dict):
         if not file_exists:
             writer.writeheader()
         
+        logger.debug("CSV_WRITE_ATTEMPT", row=signal)
+        notify_csv_write_attempt(signal)
         writer.writerow(signal)
+        f.flush()
+        os.fsync(f.fileno())
+        logger.debug("CSV_WRITE_DONE", file=log_file)
+        notify_csv_write_done(str(log_file))
 
 
 def audit_data_quality():
@@ -927,6 +1042,9 @@ def audit_data_quality():
 
 # Telegram functions removed - paper trading mode (CSV + console logging only)
 
+# Global SignalStats instance for periodic Telegram notifications
+stats = SignalStats(notify_every_signals=10, notify_every_seconds=15*60)
+
 async def main_loop():
     """Main polling loop - polls top markets by volume (gamma-api → conditionId bridge)."""
     # Log production mode status
@@ -1022,6 +1140,12 @@ async def main_loop():
                                 log_signal_to_csv(signal)
                                 recent_signals.append(signal)
                                 
+                                # Notify via Telegram (real signal notification)
+                                notify_signal(signal)
+                                
+                                # Periodic stats update (every 10 signals or 15 min)
+                                stats.bump(extra_line="signal recorded")
+                                
                                 # Console log
                                 logger.info("signal_generated", 
                                            wallet=signal['wallet'][:20],
@@ -1029,11 +1153,7 @@ async def main_loop():
                                            market=signal['market'][:50],
                                            event_id=event_id)
                                 
-                                # Send Telegram alert (if enabled)
-                                try:
-                                    await send_telegram_alert(signal)
-                                except Exception as e:
-                                    logger.error("telegram_alert_failed", error=str(e))
+                                # Signal notification already sent via notify_signal() above
                     except Exception as e:
                         logger.error("market_processing_error", 
                                     conditionId=m.get("conditionId", "unknown"), 
@@ -1091,12 +1211,24 @@ async def shutdown():
 
 async def main():
     """Main entry point."""
-    logger.info("engine_starting", mode="paper_trading", logging="csv_and_console")
+    # Notify engine start
+    notify_engine_start()
+    
+    # Log file location
+    day = datetime.utcnow().strftime("%Y-%m-%d")
+    log_file = Path("logs") / f"engine_{day}.log"
+    logger.info("engine_starting", mode="paper_trading", logging="csv_and_console", log_file=str(log_file))
+    print(f"\n📝 Console output is being logged to: {log_file}\n")
     
     try:
         await main_loop()
     except KeyboardInterrupt:
         logger.info("shutdown_requested")
+        notify_engine_stop()
+    except Exception as e:
+        from src.polymarket.telegram import notify_engine_crash
+        notify_engine_crash(f"{type(e).__name__}: {e}")
+        raise
     finally:
         await shutdown()
 

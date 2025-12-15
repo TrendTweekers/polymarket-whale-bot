@@ -77,8 +77,8 @@ async def get_whale_stats(user_id: str, session: Optional[aiohttp.ClientSession]
                 raise
         
         # If all endpoints failed (404s), return empty stats structure for graceful degradation
-        logger.warning("all endpoints returned 404", user_id=user_id, 
-                      message="User stats endpoint not found. Using empty stats structure.")
+        logger.debug("all endpoints returned 404", user_id=user_id, 
+                     message="User stats endpoint not found. Using empty stats structure.")
         # Return empty stats structure for graceful degradation
         stats = {
             "total_profit": 0.0,

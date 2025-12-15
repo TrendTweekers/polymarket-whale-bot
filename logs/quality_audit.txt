@@ -1,0 +1,23 @@
+======================================================================
+DATA QUALITY AUDIT - 2025-12-15
+======================================================================
+
+Timestamp: 2025-12-15T23:33:42.220372
+Signals File: C:\Users\User\Documents\polymarket-whale-engine\src\polymarket\..\..\logs\signals_2025-12-15.csv
+
+SUMMARY METRICS
+----------------------------------------------------------------------
+Total Signals: 1
+Average Cluster Size: 3.00 trades
+Average Discount: 2.50%
+Signals with Score < 0.70: 0 (0.00%)
+
+CATEGORY DISTRIBUTION
+----------------------------------------------------------------------
+  crypto: 1 (100.00%)
+
+MARKET TYPE DISTRIBUTION
+----------------------------------------------------------------------
+  (No market types detected)
+
+======================================================================

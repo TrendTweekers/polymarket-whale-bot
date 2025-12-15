@@ -19,20 +19,44 @@ if project_root not in sys.path:
 
 
 def load_signals(date_str: str = "2025-12-15") -> pd.DataFrame:
-    """Load signals CSV file."""
+    """Load signals CSV file with encoding handling."""
     log_dir = os.path.join(project_root, "logs")
     signals_file = os.path.join(log_dir, f"signals_{date_str}.csv")
     
     if not os.path.exists(signals_file):
         raise FileNotFoundError(f"Signals file not found: {signals_file}")
     
-    df = pd.read_csv(signals_file)
+    # Try multiple encodings to handle various CSV formats
+    encodings = ['utf-8-sig', 'latin-1', 'cp1252', 'utf-8']
+    df = None
+    
+    for encoding in encodings:
+        try:
+            # Read file as bytes first, decode with error handling, then pass to pandas
+            with open(signals_file, 'rb') as f:
+                content = f.read()
+                try:
+                    decoded_content = content.decode(encoding)
+                except UnicodeDecodeError:
+                    # If decode fails, try with error replacement
+                    decoded_content = content.decode(encoding, errors='replace')
+                
+                # Use StringIO to pass decoded content to pandas
+                from io import StringIO
+                df = pd.read_csv(StringIO(decoded_content), low_memory=False)
+                break
+        except (UnicodeDecodeError, UnicodeError, Exception) as e:
+            continue
+    
+    if df is None:
+        raise ValueError(f"Could not decode signals file with any encoding: {signals_file}")
+    
     df['timestamp'] = pd.to_datetime(df['timestamp'])
     return df
 
 
 def load_activity(date_str: str = "2025-12-15") -> pd.DataFrame:
-    """Load activity CSV file."""
+    """Load activity CSV file with encoding handling."""
     log_dir = os.path.join(project_root, "logs")
     activity_file = os.path.join(log_dir, f"activity_{date_str}.csv")
     
@@ -40,7 +64,32 @@ def load_activity(date_str: str = "2025-12-15") -> pd.DataFrame:
         print(f"Warning: Activity file not found: {activity_file}")
         return pd.DataFrame()
     
-    df = pd.read_csv(activity_file)
+    # Try multiple encodings to handle various CSV formats
+    encodings = ['utf-8-sig', 'latin-1', 'cp1252', 'utf-8']
+    df = None
+    
+    for encoding in encodings:
+        try:
+            # Read file as bytes first, decode with error handling, then pass to pandas
+            with open(activity_file, 'rb') as f:
+                content = f.read()
+                try:
+                    decoded_content = content.decode(encoding)
+                except UnicodeDecodeError:
+                    # If decode fails, try with error replacement
+                    decoded_content = content.decode(encoding, errors='replace')
+                
+                # Use StringIO to pass decoded content to pandas
+                from io import StringIO
+                df = pd.read_csv(StringIO(decoded_content), low_memory=False)
+                break
+        except (UnicodeDecodeError, UnicodeError, Exception) as e:
+            continue
+    
+    if df is None:
+        print(f"Warning: Could not decode activity file with any encoding: {activity_file}")
+        return pd.DataFrame()
+    
     df['timestamp'] = pd.to_datetime(df['timestamp'])
     return df
 
@@ -163,7 +212,15 @@ def run_backtest(date_str: str = "2025-12-15", position_size_usd: float = 25.0, 
     
     if len(production_signals) == 0:
         print("No production signals found. Cannot run backtest.")
-        return
+        return pd.DataFrame(), {
+            'total_trades': 0,
+            'win_rate': 0.0,
+            'avg_roi': 0.0,
+            'total_pnl': 0.0,
+            'sharpe_ratio': 0.0,
+            'max_drawdown': 0.0,
+            'expectancy': 0.0,
+        }
     
     # Simulate trades
     print("\nSimulating trades...")

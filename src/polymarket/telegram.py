@@ -1,114 +1,98 @@
-"""
-Telegram alert module for Polymarket Whale Signal Engine.
-Sends signals via Telegram with approve/reject buttons for manual mode.
-"""
-
+# src/polymarket/telegram.py
 import os
-import asyncio
-import structlog
-from typing import Dict, Optional
+import requests
 
-logger = structlog.get_logger()
+# Load .env file if dotenv is available
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass  # dotenv not installed, rely on system env vars
 
-# Telegram configuration
-TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
-TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "")
+TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
+CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "").strip()
 
-# Check if Telegram is configured
-TELEGRAM_ENABLED = bool(TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID)
-
-
-async def send_alert(signal_data: Dict) -> bool:
-    """
-    Send signal alert to Telegram with approve/reject buttons.
-    
-    Args:
-        signal_data: Dictionary containing signal information
-        
-    Returns:
-        True if sent successfully, False otherwise
-    """
-    if not TELEGRAM_ENABLED:
-        logger.debug("telegram_disabled", reason="missing_token_or_chat_id")
-        return False
-    
+def send_telegram(text: str) -> None:
+    if not TOKEN or not CHAT_ID:
+        return
     try:
-        from telegram import Bot, InlineKeyboardButton, InlineKeyboardMarkup
-        
-        bot = Bot(token=TELEGRAM_BOT_TOKEN)
-        
-        # Extract signal data
-        wallet = signal_data.get("wallet", "Unknown")[:20]
-        market = signal_data.get("market", "Unknown")[:50]
-        score = signal_data.get("whale_score", 0.0)
-        cluster_total = signal_data.get("trade_value_usd", 0.0)
-        discount_pct = signal_data.get("discount_pct", 0.0)
-        cluster_trades = signal_data.get("cluster_trades_count", 1)
-        
-        # Format message (exact format as specified)
-        message = (
-            f"Signal: Wallet {wallet}, Market {market}, Score {score:.2f}, "
-            f"Cluster ${cluster_total:,.2f}, Discount {discount_pct:.2f}%"
+        requests.post(
+            f"https://api.telegram.org/bot{TOKEN}/sendMessage",
+            json={"chat_id": CHAT_ID, "text": text},
+            timeout=10,
         )
-        
-        # Create approve/reject buttons
-        keyboard = [
-            [
-                InlineKeyboardButton("✅ Approve", callback_data=f"approve_{signal_data.get('timestamp', '')}"),
-                InlineKeyboardButton("❌ Reject", callback_data=f"reject_{signal_data.get('timestamp', '')}")
-            ]
-        ]
-        reply_markup = InlineKeyboardMarkup(keyboard)
-        
-        # Send message
-        await bot.send_message(
-            chat_id=TELEGRAM_CHAT_ID,
-            text=message,
-            reply_markup=reply_markup,
-            parse_mode="Markdown"
-        )
-        
-        logger.info("telegram_alert_sent",
-                   wallet=wallet,
-                   market=market[:30],
-                   chat_id=TELEGRAM_CHAT_ID)
-        
-        return True
-        
-    except ImportError:
-        logger.error("telegram_import_failed", error="python-telegram-bot not installed")
-        return False
-    except Exception as e:
-        logger.error("telegram_send_failed", error=str(e))
-        return False
+    except Exception:
+        pass  # Silently fail - don't break engine if Telegram is down
 
+def notify_engine_start():
+    send_telegram("🟢 Polymarket engine started")
 
-async def send_text_message(text: str) -> bool:
+def notify_engine_stop():
+    send_telegram("🔴 Polymarket engine stopped")
+
+def notify_engine_crash(err: str):
+    send_telegram(f"⚠️ Polymarket engine crashed:\n{err}")
+
+def notify_signal(signal_row: dict):
     """
-    Send a simple text message to Telegram (for status updates, errors, etc.).
-    
-    Args:
-        text: Message text to send
-        
-    Returns:
-        True if sent successfully, False otherwise
+    Send Telegram notification for a whale signal.
+    Expects signal dict with: market, category, whale_score, discount_pct, cluster_trades_count, wallet
     """
-    if not TELEGRAM_ENABLED:
-        return False
+    market = str(signal_row.get("market", "Unknown")).strip()
+    category = str(signal_row.get("category", "unknown")).strip()
+    score = signal_row.get("whale_score", None)
+    discount = signal_row.get("discount_pct", None)
+    trades = signal_row.get("cluster_trades_count", 1)
+    wallet = signal_row.get("wallet", "")
+    wallet_short = wallet[:8] + "..." if wallet and len(wallet) > 8 else wallet
     
-    try:
-        from telegram import Bot
-        
-        bot = Bot(token=TELEGRAM_BOT_TOKEN)
-        await bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=text)
-        return True
-        
-    except Exception as e:
-        logger.error("telegram_text_send_failed", error=str(e))
-        return False
+    # Format discount
+    discount_str = f"{discount:.2f}%" if discount is not None else "N/A"
+    
+    # Format score
+    score_str = f"{score:.2f}" if score is not None else "N/A"
+    
+    msg = (
+        "🐋 Whale Signal\n"
+        f"Wallet: {wallet_short}\n"
+        f"Market: {market[:100]}\n"  # Truncate long market names
+        f"Category: {category}\n"
+        f"Score: {score_str}\n"
+        f"Discount: {discount_str}\n"
+        f"Trades: {trades}"
+    )
+    send_telegram(msg)
 
+def notify_phase1b_bypass(wallet: str, condition_id: str = None, note: str = None):
+    """Notify when Phase 1b bypass is used (missing discount)."""
+    wallet_short = wallet[:8] + "..." if wallet and len(wallet) > 8 else wallet
+    cond_short = condition_id[:20] + "..." if condition_id and len(condition_id) > 20 else (condition_id or "N/A")
+    note_str = f"\nNote: {note}" if note else ""
+    
+    msg = (
+        "⚠️ Phase 1b Bypass Active\n"
+        f"Wallet: {wallet_short}\n"
+        f"Condition: {cond_short}{note_str}"
+    )
+    send_telegram(msg)
 
-def is_telegram_enabled() -> bool:
-    """Check if Telegram is configured and enabled."""
-    return TELEGRAM_ENABLED
+def notify_csv_write_attempt(signal: dict):
+    """Notify when CSV write is attempted."""
+    wallet = signal.get("wallet", "")
+    wallet_short = wallet[:8] + "..." if wallet and len(wallet) > 8 else wallet
+    market = str(signal.get("market", "Unknown"))[:50]
+    
+    msg = (
+        "📝 CSV Write Attempt\n"
+        f"Wallet: {wallet_short}\n"
+        f"Market: {market}"
+    )
+    send_telegram(msg)
 
+def notify_csv_write_done(log_file: str):
+    """Notify when CSV write completes."""
+    msg = (
+        "✅ CSV Write Complete\n"
+        f"File: {log_file}"
+    )
+    send_telegram(msg)
