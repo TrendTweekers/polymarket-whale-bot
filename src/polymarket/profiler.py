@@ -1,166 +1,124 @@
-import aiohttp
-import asyncio
-import structlog
+import os
 import time
-from typing import Dict, Optional
-
-BASE = "https://data-api.polymarket.com"
-HEADERS = {
-    "accept": "application/json",
-    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-    "origin": "https://polymarket.com"
-}
+import math
+import aiohttp
+import structlog
 
 logger = structlog.get_logger()
 
-# Simple in-memory cache: {user_id: (data, timestamp)}
-_cache: Dict[str, tuple] = {}
-CACHE_TTL_SECONDS = 3600  # 1 hour
+DATA_API_BASE = os.getenv("DATA_API_BASE", "https://data-api.polymarket.com").rstrip("/")
 
+# 30 min cache to avoid re-fetching same wallet constantly
+_STATS_CACHE = {}
+_STATS_TTL_SEC = int(os.getenv("STATS_CACHE_TTL_SEC", "1800"))
 
-async def get_whale_stats(user_id: str, session: Optional[aiohttp.ClientSession] = None) -> Dict:
+def _now():
+    return time.time()
+
+async def _get_json(session: aiohttp.ClientSession, url: str):
+    async with session.get(url, timeout=aiohttp.ClientTimeout(total=15)) as r:
+        r.raise_for_status()
+        return await r.json()
+
+async def get_user_stats(session: aiohttp.ClientSession, wallet: str, limit: int = 100):
     """
-    Fetch whale stats for a given user_id.
-    Caches responses for 1 hour to avoid re-fetching.
-    
-    Returns dict with:
-    - total_profit
-    - win_rate
-    - max_drawdown
-    - avg_hold_time_hours
-    - trades_count
-    - segmented_win_rate (elections / sports / crypto / geo)
+    Returns:
+      {
+        "wallet": str,
+        "trade_count_100": int,
+        "total_usd_100": float,
+        "max_trade_usd_100": float,
+        "stats_missing": bool,
+        "reason": str
+      }
     """
-    # Check cache first
-    if user_id in _cache:
-        data, timestamp = _cache[user_id]
-        if time.time() - timestamp < CACHE_TTL_SECONDS:
-            logger.info("cache hit", user_id=user_id)
-            return data
-    
-    # Try multiple endpoint patterns (common REST API patterns)
-    endpoints = [
-        f"{BASE}/user-stats/{user_id}",
-        f"{BASE}/users/{user_id}/stats",
-        f"{BASE}/profile/{user_id}",
-        f"{BASE}/account/{user_id}/stats",
-    ]
-    
-    # Create session if not provided
-    should_close_session = False
-    if session is None:
-        session = aiohttp.ClientSession()
-        should_close_session = True
+    wallet = wallet.lower()
+
+    cached = _STATS_CACHE.get(wallet)
+    if cached and (_now() - cached["ts"]) < _STATS_TTL_SEC:
+        return cached["data"]
+
+    url = f"{DATA_API_BASE}/trades?user={wallet}&limit={limit}&offset=0&takerOnly=true"
+
+    try:
+        data = await _get_json(session, url)
+        # Handle both dict with 'value' key and direct list responses
+        if isinstance(data, list):
+            rows = data
+        else:
+            rows = data.get("value") or []
+    except Exception as e:
+        out = {
+            "wallet": wallet,
+            "trade_count_100": 0,
+            "total_usd_100": 0.0,
+            "max_trade_usd_100": 0.0,
+            "stats_missing": True,
+            "reason": f"fetch_error:{type(e).__name__}",
+        }
+        _STATS_CACHE[wallet] = {"ts": _now(), "data": out}
+        return out
+
+    # data-api /trades rows include: size, price. We'll treat size*price as USDC notionals.
+    total_usd = 0.0
+    max_usd = 0.0
     
     try:
-        for url in endpoints:
+        for t in rows:
             try:
-                async with session.get(url, headers=HEADERS) as resp:
-                    if resp.status == 200:
-                        raw_data = await resp.json()
-                        logger.info("fetched user stats", user_id=user_id, url=url, status=resp.status)
-                        
-                        # Parse and structure the response
-                        stats = _parse_stats(raw_data)
-                        
-                        # Cache the result
-                        _cache[user_id] = (stats, time.time())
-                        
-                        return stats
-                    elif resp.status == 404:
-                        continue  # Try next endpoint
-                    else:
-                        resp.raise_for_status()
-            except aiohttp.ClientResponseError as e:
-                if e.status == 404:
-                    continue  # Try next endpoint
-                raise
-        
-        # If all endpoints failed (404s), return empty stats structure for graceful degradation
-        logger.debug("all endpoints returned 404", user_id=user_id, 
-                     message="User stats endpoint not found. Using empty stats structure.")
-        # Return empty stats structure for graceful degradation
-        stats = {
-            "total_profit": 0.0,
-            "win_rate": 0.0,
-            "max_drawdown": 0.0,
-            "avg_hold_time_hours": 0.0,
-            "trades_count": 0,
-            "segmented_win_rate": {
-                "elections": 0.0,
-                "sports": 0.0,
-                "crypto": 0.0,
-                "geo": 0.0,
-            }
-        }
-        # Cache empty result to avoid repeated failed requests
-        _cache[user_id] = (stats, time.time())
-        return stats
-    finally:
-        if should_close_session:
-            await session.close()
+                # Use 'side', 'size', 'price' directly as per API docs
+                # Use 'proxyWallet' instead of 'makerAddress'
+                size = float(t.get("size") or 0.0)
+                price = float(t.get("price") or 0.0)
+                usd = max(0.0, size * price)
+            except (KeyError, AttributeError, TypeError) as e:
+                logger.debug("stats_parse_error", 
+                           wallet=wallet[:10], 
+                           error=str(e), 
+                           error_type=type(e).__name__,
+                           response_sample=str(t)[:200] if t else "empty")
+                usd = 0.0
 
+            total_usd += usd
+            if usd > max_usd:
+                max_usd = usd
+    except (KeyError, AttributeError, TypeError) as e:
+        logger.debug("stats_parse_error", 
+                   wallet=wallet[:10], 
+                   error=str(e), 
+                   error_type=type(e).__name__,
+                   response_sample=str(rows[:2]) if rows else "empty")
+        # Continue with empty stats
+        total_usd = 0.0
+        max_usd = 0.0
 
-def _parse_stats(raw_data: dict) -> Dict:
-    """
-    Parse raw API response into structured stats dict.
-    Adapts to actual API response structure.
-    """
-    stats = {
-        "total_profit": raw_data.get("totalProfit", raw_data.get("total_profit", 0.0)),
-        "win_rate": raw_data.get("winRate", raw_data.get("win_rate", 0.0)),
-        "max_drawdown": raw_data.get("maxDrawdown", raw_data.get("max_drawdown", 0.0)),
-        "avg_hold_time_hours": raw_data.get("avgHoldTimeHours", raw_data.get("avg_hold_time_hours", 0.0)),
-        "trades_count": raw_data.get("tradesCount", raw_data.get("trades_count", 0)),
-        "segmented_win_rate": {
-            "elections": raw_data.get("segmentedWinRate", {}).get("elections", 0.0) if isinstance(raw_data.get("segmentedWinRate"), dict) else 0.0,
-            "sports": raw_data.get("segmentedWinRate", {}).get("sports", 0.0) if isinstance(raw_data.get("segmentedWinRate"), dict) else 0.0,
-            "crypto": raw_data.get("segmentedWinRate", {}).get("crypto", 0.0) if isinstance(raw_data.get("segmentedWinRate"), dict) else 0.0,
-            "geo": raw_data.get("segmentedWinRate", {}).get("geo", 0.0) if isinstance(raw_data.get("segmentedWinRate"), dict) else 0.0,
-        }
+    out = {
+        "wallet": wallet,
+        "trade_count_100": int(len(rows)),
+        "total_usd_100": float(total_usd),
+        "max_trade_usd_100": float(max_usd),
+        "stats_missing": (len(rows) == 0),
+        "reason": ("no_trades" if len(rows) == 0 else "ok"),
     }
-    
-    # Fallback: try to extract from nested structures
-    if "segmentedWinRate" not in raw_data and "segmented_win_rate" not in raw_data:
-        # Try alternative structures
-        if "categoryStats" in raw_data:
-            cat_stats = raw_data["categoryStats"]
-            stats["segmented_win_rate"] = {
-                "elections": cat_stats.get("elections", {}).get("winRate", 0.0),
-                "sports": cat_stats.get("sports", {}).get("winRate", 0.0),
-                "crypto": cat_stats.get("crypto", {}).get("winRate", 0.0),
-                "geo": cat_stats.get("geo", {}).get("winRate", 0.0),
-            }
-    
-    return stats
 
+    _STATS_CACHE[wallet] = {"ts": _now(), "data": out}
+    return out
 
-async def demo():
-    """Demo function that prints stats for a sample wallet."""
-    # Using a sample wallet address from the trades we saw earlier
-    sample_wallet = "0x90aadb1c214783e4df1fce6aaa692fe637a01e72"
-    
-    async with aiohttp.ClientSession() as session:
-        try:
-            stats = await get_whale_stats(sample_wallet, session)
-            print("\n" + "="*60)
-            print(f"Whale Stats for: {sample_wallet}")
-            print("="*60)
-            print(f"Total Profit: ${stats['total_profit']:,.2f}")
-            print(f"Win Rate: {stats['win_rate']:.2%}")
-            print(f"Max Drawdown: {stats['max_drawdown']:.2%}")
-            print(f"Avg Hold Time: {stats['avg_hold_time_hours']:.2f} hours")
-            print(f"Trades Count: {stats['trades_count']:,}")
-            print("\nSegmented Win Rate:")
-            for category, rate in stats['segmented_win_rate'].items():
-                print(f"  {category.capitalize()}: {rate:.2%}")
-            print("="*60 + "\n")
-        except Exception as e:
-            logger.error("demo failed", error=str(e), wallet=sample_wallet)
-            print(f"Error fetching stats: {e}")
-            print("Note: This might fail if the API endpoint structure differs.")
+def whale_score_from_stats(stats: dict) -> float:
+    """
+    Score 0..1 using log scaling.
+    """
+    trade_count = float(stats.get("trade_count_100") or 0.0)
+    total_usd = float(stats.get("total_usd_100") or 0.0)
+    max_usd = float(stats.get("max_trade_usd_100") or 0.0)
 
+    score_total = math.log10(total_usd + 1.0) / 6.0   # ~1 around 1M
+    score_max   = math.log10(max_usd + 1.0) / 6.0
+    score_cnt   = trade_count / 50.0
 
-if __name__ == "__main__":
-    asyncio.run(demo())
-
+    s = 0.55 * score_total + 0.35 * score_max + 0.10 * score_cnt
+    if s < 0.0:
+        return 0.0
+    if s > 1.0:
+        return 1.0
+    return float(s)

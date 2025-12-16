@@ -50,6 +50,40 @@ def _mid_from_bid_ask(bid: Optional[float], ask: Optional[float]) -> Optional[fl
         return bid
     return (bid + ask) / 2.0
 
+async def fetch_market_metadata_by_condition(session: aiohttp.ClientSession, condition_id: str) -> Optional[Dict]:
+    """
+    Fetch a single market by conditionId from Gamma and return full market metadata including category.
+    Returns dict with: title, slug, category, etc.
+    """
+    url = f"https://gamma-api.polymarket.com/markets?conditionId={condition_id}"
+    try:
+        async with session.get(url, headers=HEADERS, timeout=aiohttp.ClientTimeout(total=10)) as r:
+            if r.status != 200:
+                return None
+            data = await r.json()
+
+        # Gamma can return a list or an object depending on filters.
+        market = None
+        if isinstance(data, list) and len(data) > 0:
+            market = data[0]
+        elif isinstance(data, dict) and "markets" in data and isinstance(data["markets"], list) and data["markets"]:
+            market = data["markets"][0]
+        elif isinstance(data, dict) and "id" in data:
+            market = data
+
+        if not isinstance(market, dict):
+            return None
+
+        # Return full market metadata
+        return {
+            "title": market.get("title", ""),
+            "slug": market.get("slug", ""),
+            "category": (market.get("category") or market.get("marketCategory") or "").lower().strip(),
+            "conditionId": condition_id,
+        }
+    except Exception:
+        return None
+
 async def fetch_market_quote_by_condition(session: aiohttp.ClientSession, condition_id: str) -> Optional[Dict[str, Optional[float]]]:
     """
     Fetch a single market by conditionId from Gamma and return bestBid/bestAsk.
@@ -192,7 +226,11 @@ async def fetch_midpoint_price(session: aiohttp.ClientSession, token_id: str) ->
         url = f"https://clob.polymarket.com/midpoint?token_id={token_id}"
         async with session.get(url, headers=HEADERS, timeout=aiohttp.ClientTimeout(total=15)) as r:
             if r.status != 200:
-                logger.debug("midpoint_fetch_failed", token_id=token_id[:20], status=r.status)
+                response_text = await r.text()
+                logger.debug("midpoint_fetch_failed", 
+                            token_id=token_id[:20], 
+                            status=r.status, 
+                            response=response_text[:100])
                 return None
             
             # Midpoint endpoint returns a simple number or JSON with price field
@@ -305,6 +343,7 @@ async def fetch_top_markets(session, limit=20, offset=0):
                 "conditionId": cid,
                 "title": m.get("title", ""),
                 "slug": m.get("slug", ""),
+                "category": market_category,  # Include category from market metadata
                 "clobTokenIds": clob_token_ids
             })
     logger.info("fetched_markets", count=len(out), excluded_categories=len(EXCLUDE_CATEGORIES))

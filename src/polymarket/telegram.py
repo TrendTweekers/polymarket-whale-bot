@@ -1,13 +1,23 @@
 # src/polymarket/telegram.py
 import os
 import requests
+from pathlib import Path
 
 # Load .env file if dotenv is available
 try:
     from dotenv import load_dotenv
-    load_dotenv()
+    # Load from project root (where .env file is located)
+    env_path = Path(__file__).parent.parent.parent / ".env"
+    load_dotenv(env_path)
 except ImportError:
     pass  # dotenv not installed, rely on system env vars
+except Exception:
+    # Fallback: try loading from current directory
+    try:
+        from dotenv import load_dotenv
+        load_dotenv()
+    except:
+        pass
 
 TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
 CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "").strip()
@@ -46,8 +56,13 @@ def notify_signal(signal_row: dict):
     wallet = signal_row.get("wallet", "")
     wallet_short = wallet[:8] + "..." if wallet and len(wallet) > 8 else wallet
     
-    # Format discount
-    discount_str = f"{discount:.2f}%" if discount is not None else "N/A"
+    # Format discount (multiply by 100 if stored as ratio, e.g., 0.03 = 3%)
+    # Discount is stored as ratio (0.03 = 3%), so multiply by 100 for display
+    if discount is not None:
+        discount_display = discount * 100.0
+        discount_str = f"{discount_display:.2f}%"
+    else:
+        discount_str = "N/A"
     
     # Format score
     score_str = f"{score:.2f}" if score is not None else "N/A"
