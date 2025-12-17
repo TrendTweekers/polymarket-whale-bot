@@ -3,6 +3,17 @@ Polymarket Whale Signal Engine
 Polls trades, scores whales, and logs signals to CSV and console.
 """
 
+from pathlib import Path
+
+# Force-load .env from project root (works no matter where you run from)
+# MUST be at the very top, before any other imports
+try:
+    from dotenv import load_dotenv
+    ROOT = Path(__file__).resolve().parents[2]  # .../polymarket-whale-engine
+    load_dotenv(ROOT / ".env", override=True)
+except Exception:
+    pass
+
 import asyncio
 import aiohttp
 import structlog
@@ -16,14 +27,21 @@ from collections import defaultdict
 import json
 import math
 import pandas as pd
-from pathlib import Path
+import re
+from time import time
 
-# Load environment variables (force load at top)
+# Engine fingerprint for process identification
+ENGINE_FINGERPRINT = f"pid={os.getpid()}"
+
+# Debug: Log Telegram config on startup (mask token for security)
 try:
-    from dotenv import load_dotenv
-    load_dotenv()  # Load .env file
-except ImportError:
-    pass  # Environment variables can be set directly
+    tok = os.getenv("TELEGRAM_BOT_TOKEN", "")
+    chat = os.getenv("TELEGRAM_CHAT_ID", "")
+    # Mask token: show only last 4 chars for verification
+    tok_masked = f"***{tok[-4:]}" if tok and len(tok) > 4 else "EMPTY"
+    print(f"[TELEGRAM_CFG] chat_id={chat} token_tail={tok_masked}")
+except Exception:
+    pass
 
 # Import our modules
 import sys
@@ -40,6 +58,9 @@ from src.polymarket.scraper import fetch_recent_trades, fetch_top_markets, fetch
 from src.polymarket.profiler import get_user_stats, whale_score_from_stats
 from src.polymarket.score import whale_score, whitelist_whales
 from src.polymarket.telegram import notify_engine_start, notify_engine_stop, notify_signal
+from src.polymarket.storage import SignalStore
+from src.polymarket.paper_trading import should_paper_trade, open_paper_trade, format_paper_trade_telegram
+from src.polymarket.resolver import run_resolver_loop, fetch_outcome
 from src.polymarket.telegram_notify import SignalStats
 
 # Windows-safe stdout/stderr UTF-8 reconfiguration (prevents crashes from emoji/unicode)
@@ -52,6 +73,24 @@ if os.name == "nt":
 
 # Configure logging level from environment (for filtering debug messages)
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
+
+# Setup logging to respect LOG_LEVEL globally and silence noisy libraries
+def _setup_logging_from_env():
+    """Configure logging levels from environment, silence noisy libraries."""
+    level_name = os.getenv("LOG_LEVEL", "INFO").upper()
+    level = getattr(logging, level_name, logging.INFO)
+    
+    # Set root logger level from env (handlers will be added later)
+    root = logging.getLogger()
+    root.setLevel(level)   # Set root level from env
+    
+    # Silence common noisy libraries unless explicitly needed
+    logging.getLogger("urllib3").setLevel(logging.WARNING)
+    logging.getLogger("requests").setLevel(logging.WARNING)
+    logging.getLogger("aiohttp").setLevel(logging.WARNING)
+
+# Call immediately to set up logging before any other logging happens
+_setup_logging_from_env()
 
 # Recent log handler that maintains only last 50 lines
 class RecentLogHandler(logging.Handler):
@@ -124,10 +163,11 @@ def setup_file_logging():
     recent_handler.setFormatter(file_formatter)
     
     # Get root logger and add file handlers
+    # NOTE: Don't clear handlers here - console handler was already added by _setup_logging_from_env()
+    # File handlers are added in addition to console handler
     root_logger = logging.getLogger()
-    root_logger.setLevel(logging.DEBUG)
-    # Remove existing handlers to avoid duplicates
-    root_logger.handlers.clear()
+    # File logs always DEBUG (for auditing), console level controlled separately
+    # Don't change root level here - it's already set by _setup_logging_from_env()
     root_logger.addHandler(file_handler)
     root_logger.addHandler(recent_handler)
     
@@ -155,32 +195,77 @@ structlog.configure(
     cache_logger_on_first_use=True,
 )
 
-# Add console handler for structlog (for real-time viewing)
-console_handler = logging.StreamHandler()
-console_handler.setLevel(getattr(logging, LOG_LEVEL))
-console_formatter = structlog.stdlib.ProcessorFormatter(
+# Replace the basic console handler with structlog-aware handler
+# Console handler was already added by _setup_logging_from_env(), replace it
+root_logger = logging.getLogger()
+log_level_value = getattr(logging, LOG_LEVEL, logging.INFO)
+
+# Remove basic console handler and replace with structlog formatter
+for handler in root_logger.handlers[:]:
+    if isinstance(handler, logging.StreamHandler) and not isinstance(handler, RotatingFileHandler):
+        root_logger.removeHandler(handler)
+
+# Add structlog-aware console handler
+structlog_console_handler = logging.StreamHandler()
+structlog_console_handler.setLevel(log_level_value)  # Respect LOG_LEVEL
+structlog_console_formatter = structlog.stdlib.ProcessorFormatter(
     processor=structlog.dev.ConsoleRenderer(),
     foreign_pre_chain=[
         structlog.stdlib.add_log_level,
         structlog.stdlib.add_logger_name,
     ],
 )
-console_handler.setFormatter(console_formatter)
+structlog_console_handler.setFormatter(structlog_console_formatter)
+root_logger.addHandler(structlog_console_handler)
 
-# Add console handler to root logger (file handler already added in setup_file_logging)
-root_logger = logging.getLogger()
-root_logger.addHandler(console_handler)
+# Ensure structlog loggers respect the level
+structlog_logger = logging.getLogger("structlog")
+structlog_logger.setLevel(log_level_value)
 
 logger = structlog.get_logger()
 
 # Configuration
-POLL_INTERVAL_SECONDS = 30
+POLL_INTERVAL_SECONDS = 30  # Legacy - kept for backward compatibility
+SCAN_INTERVAL_SECONDS = int(os.getenv("SCAN_INTERVAL_SECONDS", "60"))  # Main scan interval (default 60 seconds)
 MIN_WHALE_SCORE = float(os.getenv("MIN_WHALE_SCORE", "0.70"))  # Env-configurable
 MIN_ORDERBOOK_DEPTH_MULTIPLIER = 3.0
 CONFLICT_WINDOW_MINUTES = 5
-MAX_SIGNALS_PER_DAY = int(os.getenv("DAILY_SIGNAL_LIMIT", "3"))  # Daily signal limit (env-configurable)
+MAX_SIGNALS_PER_DAY = int(os.getenv("DAILY_SIGNAL_LIMIT", "0"))  # Daily signal limit (0 = disabled, env-configurable)
 MAX_DAILY_LOSS_USD = 50.0
 MAX_BANKROLL_PCT_PER_TRADE = 5.0
+
+# Signal de-dupe cooldown (prevents repeated alerts on same market/outcome)
+SIGNAL_COOLDOWN_SECONDS = int(os.getenv("SIGNAL_COOLDOWN_SECONDS", "21600"))  # 6 hours default (was 1800)
+# Whale signal Telegram cooldown (prevents spam for same market)
+WHALE_SIGNAL_COOLDOWN_SECONDS = int(os.getenv("WHALE_SIGNAL_COOLDOWN_SECONDS", "300"))  # 5 minutes default
+_recent_signal_keys: dict[tuple, float] = {}  # For signal deduplication
+_last_whale_alert_at: dict[str, float] = {}  # condition_id -> timestamp (for Telegram cooldown)
+
+# Market/outcome dedupe: (market_id, outcome_index) -> last_alert_time
+_market_outcome_alerts: dict[tuple, float] = {}  # (market_id, outcome_index) -> timestamp
+
+# Market maker/bot detection: track wallets trading both sides in same market
+# Structure: {wallet: {market_id: {side: timestamp, ...}}}
+_mm_wallet_trades: dict[str, dict[str, dict[str, float]]] = {}  # wallet -> market_id -> side -> timestamp
+_mm_blacklist: set[str] = set()  # Wallets detected as market makers/bots
+MM_DETECTION_WINDOW_SECONDS = int(os.getenv("MM_DETECTION_WINDOW_SECONDS", "7200"))  # 2 hours default (30-120 min range)
+
+# Whale signal rollup (aggregate multiple wallets/trades per market)
+_whale_rollup: defaultdict = defaultdict(lambda: {
+    "wallets": set(),
+    "trades": 0,
+    "total_usd": 0.0,
+    "max_trade_usd": 0.0,
+    "market": "",
+    "outcome_name": None,
+    "dedupe_key": None,  # (market_id, outcome_index) for dedupe
+    "min_discount": None,  # Track minimum discount in rollup for filtering
+})
+
+# Expiry filter configuration
+MAX_DAYS_TO_EXPIRY = float(os.getenv("MAX_DAYS_TO_EXPIRY", "2"))
+MIN_HOURS_TO_EXPIRY = float(os.getenv("MIN_HOURS_TO_EXPIRY", "2"))
+STRICT_SHORT_TERM = os.getenv("STRICT_SHORT_TERM", "1").strip() == "1"  # Reject markets with unknown expiry
 
 # Production mode configuration
 PRODUCTION_MODE = os.getenv("PRODUCTION_MODE", "False").lower() == "true"
@@ -194,11 +279,14 @@ def env_bool(name: str, default: bool) -> bool:
     return v.strip().lower() in ("1", "true", "yes", "y", "on")
 
 # Exclude categories (comma-separated from env, e.g., "sports,crypto")
-EXCLUDE_CATEGORIES = {
-    c.strip().lower()
-    for c in os.getenv("EXCLUDE_CATEGORIES", "").split(",")
-    if c.strip()
-}
+# Handle empty string, "none", "false", "0" as "no excludes"
+raw = os.getenv("EXCLUDE_CATEGORIES", "")
+raw = (raw or "").strip()
+
+if raw == "" or raw.lower() in {"none", "no", "false", "0"}:
+    EXCLUDE_CATEGORIES = set()
+else:
+    EXCLUDE_CATEGORIES = {x.strip().lower() for x in raw.split(",") if x.strip()}
 
 # Data collection mode flags (disable blockers temporarily)
 # WHITELIST_ONLY can be overridden via environment variable
@@ -208,7 +296,7 @@ WHITELIST_ONLY = env_bool("WHITELIST_ONLY", default=(PRODUCTION_MODE is True))
 # MIN_DISCOUNT_PCT can be overridden via env even in production mode
 MIN_DISCOUNT_PCT = float(os.getenv("MIN_DISCOUNT_PCT", "2.0" if PRODUCTION_MODE else "2.0"))
 # MIN_LOW_DISCOUNT is an alias/alternative name for MIN_DISCOUNT_PCT (for clarity)
-MIN_LOW_DISCOUNT = float(os.getenv("MIN_LOW_DISCOUNT", os.getenv("MIN_DISCOUNT_PCT", "0.0")))
+MIN_LOW_DISCOUNT = float(os.getenv("MIN_LOW_DISCOUNT", os.getenv("MIN_DISCOUNT_PCT", "0.02")))  # Default 0.02 (2%) minimum edge
 # Use MIN_LOW_DISCOUNT if set, otherwise fall back to MIN_DISCOUNT_PCT
 if "MIN_LOW_DISCOUNT" in os.environ:
     MIN_DISCOUNT_PCT = MIN_LOW_DISCOUNT
@@ -223,11 +311,35 @@ INCLUDE_SELL_TRADES = env_bool("INCLUDE_SELL_TRADES", default=False)
 BYPASS_CLUSTER_MIN = env_bool("BYPASS_CLUSTER_MIN", default=False)
 BYPASS_LOW_DISCOUNT = env_bool("BYPASS_LOW_DISCOUNT", default=False)
 
+# Paper trading configuration
+PAPER_TRADING = env_bool("PAPER_TRADING", default=False)
+PAPER_MIN_CONFIDENCE = int(os.getenv("PAPER_MIN_CONFIDENCE", "60"))  # 0-100
+PAPER_STAKE_EUR = float(os.getenv("PAPER_STAKE_EUR", "2.0"))
+FX_EUR_USD = float(os.getenv("FX_EUR_USD", "1.10"))
+RESOLVER_INTERVAL_SECONDS = int(os.getenv("RESOLVER_INTERVAL_SECONDS", "300"))  # 5 minutes
+# Paper trading filters (for fast feedback)
+PAPER_MAX_DTE_DAYS = float(os.getenv("PAPER_MAX_DTE_DAYS", "2.0"))  # Only trade markets expiring within N days
+PAPER_MIN_DISCOUNT_PCT = float(os.getenv("PAPER_MIN_DISCOUNT_PCT", "0.0001"))  # Minimum discount (as fraction, e.g., 0.0001 = 0.01%)
+PAPER_MIN_TRADE_USD = float(os.getenv("PAPER_MIN_TRADE_USD", "50.0"))  # Minimum trade value USD
+
+# Heartbeat configuration
+HEARTBEAT_INTERVAL_SECONDS = int(os.getenv("HEARTBEAT_INTERVAL_SECONDS", "600"))  # Default 10 minutes
+
+# Operator dashboard configuration (periodic summary reports)
+DASHBOARD_INTERVAL_SECONDS = int(os.getenv("DASHBOARD_INTERVAL_SECONDS", "3600"))  # Default 1 hour (0 = disabled)
+# Rolling metrics tracking (last hour)
+_rolling_metrics = {
+    "signals": [],
+    "trades_considered": [],
+    "rejections": {},  # reason -> count
+    "timestamps": [],  # Keep last hour of timestamps
+}
+
 # Minimum cluster USD threshold (env-configurable, lowered default for testing)
 MIN_CLUSTER_USD = float(os.getenv("MIN_CLUSTER_USD", "100.0"))
 
 # Two-tier thresholds (env-driven)
-API_MIN_SIZE_USD = float(os.getenv("API_MIN_SIZE_USD", "1000"))  # API filter (lower for data collection)
+API_MIN_SIZE_USD = float(os.getenv("API_MIN_SIZE_USD", "150"))  # API filter (raised from 1000 to reduce noise)
 SIGNAL_MIN_SIZE_USD = float(os.getenv("SIGNAL_MIN_SIZE_USD", "10000"))  # Signal gate (production threshold)
 MIN_SIZE_USD = SIGNAL_MIN_SIZE_USD  # Backward compatibility
 
@@ -256,10 +368,19 @@ logger.info("ENV_SETTINGS",
            MIN_CLUSTER_TRADES=os.getenv("MIN_CLUSTER_TRADES", "1"),
            MIN_WHALE_SCORE=os.getenv("MIN_WHALE_SCORE", "0.005"),
            BYPASS_SCORE_ON_STATS_FAIL=os.getenv("BYPASS_SCORE_ON_STATS_FAIL", "False"),
-           MIN_LOW_DISCOUNT=os.getenv("MIN_LOW_DISCOUNT", "0.01"),
+           MIN_LOW_DISCOUNT=os.getenv("MIN_LOW_DISCOUNT", "0.02"),
            MIN_DISCOUNT_PCT=MIN_DISCOUNT_PCT,
            BYPASS_CLUSTER_MIN=os.getenv("BYPASS_CLUSTER_MIN", "False"),
-           BYPASS_LOW_DISCOUNT=os.getenv("BYPASS_LOW_DISCOUNT", "False"))
+           BYPASS_LOW_DISCOUNT=os.getenv("BYPASS_LOW_DISCOUNT", "False"),
+           DAILY_SIGNAL_LIMIT=MAX_SIGNALS_PER_DAY,
+           MAX_DAYS_TO_EXPIRY=MAX_DAYS_TO_EXPIRY,
+           MIN_HOURS_TO_EXPIRY=MIN_HOURS_TO_EXPIRY,
+           STRICT_SHORT_TERM=STRICT_SHORT_TERM,
+           EXCLUDE_CATEGORIES_RAW=os.getenv("EXCLUDE_CATEGORIES", ""),
+           EXCLUDE_CATEGORIES_PARSED=list(EXCLUDE_CATEGORIES) if EXCLUDE_CATEGORIES else [],
+           API_MIN_SIZE_USD=API_MIN_SIZE_USD,
+           SIGNAL_COOLDOWN_SECONDS=SIGNAL_COOLDOWN_SECONDS,
+           MM_DETECTION_WINDOW_SECONDS=MM_DETECTION_WINDOW_SECONDS)
 
 whale_clusters: Dict[str, Dict] = {}  # {wallet+market: {trades: [], total_usd: 0, first_trade_time: datetime, whale: {}, category: ""}}
 
@@ -274,6 +395,7 @@ rejected_depth = 0
 rejected_conflicting = 0
 rejected_daily_limit = 0
 rejected_other = 0  # Other gates not explicitly counted
+rejected_other_reasons = {}  # Track specific reasons for rejected_other
 signals_generated = 0
 trades_considered = 0
 
@@ -329,7 +451,13 @@ async def get_orderbook_depth(session: aiohttp.ClientSession, condition_id: str,
         # For now, return a conservative estimate
         return 5.0  # Assume 5x depth available
     except Exception as e:
-        logger.warning("orderbook_depth_fetch_failed", error=str(e))
+        logger.warning(
+            "orderbook_depth_fetch_failed",
+            extra={
+                "event": "orderbook_depth_fetch_failed",
+                "error": str(e),
+            }
+        )
         return 0.0
 
 
@@ -342,22 +470,105 @@ def append_status_line(status: str) -> None:
         f.write(status.rstrip() + "\n")
 
 
+def infer_category_from_title_slug(title: str, slug: str) -> str | None:
+    """
+    Infer category from title/slug patterns when API doesn't provide category.
+    Returns inferred category or None if no match.
+    """
+    t = (title or "").lower()
+    s = (slug or "").lower()
+    text = f"{t} {s}".lower()  # Combined text for pattern matching
+
+    # esports / CS2 patterns (check before general sports to catch specific esports terms)
+    esports_keys = [
+        "cs2", "counter-strike", "counter strike", "bo1", "bo3", "bo5",
+        "to win 0 maps", "to win 1 maps", "to win 2 maps",
+        "map handicap", "handicap", "total maps", "games total"
+    ]
+    if any(k in t for k in esports_keys) or any(k in s for k in esports_keys):
+        return "sports"
+
+    # --- SPORTS (soccer / football fast-path) ---
+    # Check for soccer/football patterns before other sports checks
+    soccer_football_keys = [
+        "fc ", " fc", "vs", " v ", "match", "cup", "league", "semifinal", "quarterfinal", "final",
+        "barcelona", "real madrid", "manchester", "chelsea", "arsenal", "liverpool", "bayern",
+        "juventus", "psg", "inter", "milan", "atletico", "dortmund", "tottenham", "napoli"
+    ]
+    if any(k in text for k in soccer_football_keys):
+        return "sports"
+    
+    # Also handle "Sports Personality of the Year" etc.
+    if "sports personality" in text or "player of the year" in text:
+        return "sports"
+
+    # obvious sports patterns (only if there's a league/team pattern or "vs" to avoid false positives)
+    sports_leagues = ["nhl", "nfl", "nba", "mlb", "ncaaf", "ncaab", "premier league", "champions league", "epl"]
+    has_sports_context = any(league in t or league in s for league in sports_leagues) or " vs " in t or " vs " in s
+    
+    # Only infer sports if there's a sports context (league/team/vs) AND sports keywords
+    if has_sports_context and (any(x in t for x in ["spread:", "moneyline", "total:", "over", "under"]) or any(x in s for x in sports_leagues)):
+        return "sports"
+
+    # commodities: Crude Oil, Gold, WTI, Brent, CL, GC (check BEFORE stocks to avoid false positives)
+    commodity_keywords = ["crude oil", "wti", "brent", "gold", "silver", "copper", "natural gas", "oil", "cl ", "gc "]
+    if any(kw in t for kw in commodity_keywords):
+        return "commodities"
+
+    # stocks: titles with (...ticker...) + "after earnings", "up or down"
+    # Pattern: (TICKER) or ticker followed by earnings/up or down
+    ticker_pattern = r"\([A-Z]{1,5}\)"  # Matches (AAPL), (TSLA), etc.
+    if re.search(ticker_pattern, title or ""):
+        if any(phrase in t for phrase in ["after earnings", "up or down", "earnings"]):
+            return "stocks"
+    
+    # Also check for common stock tickers without parentheses
+    stock_keywords = ["fds", "factset", "earnings", "revenue", "eps", "guidance"]
+    if any(kw in t for kw in stock_keywords) and ("up or down" in t or "after earnings" in t):
+        return "stocks"
+
+    # macro: eggs/gas/CPI/inflation/jobs/rates
+    macro_keywords = ["cpi", "inflation", "unemployment", "jobs report", "fed rate", "interest rate", "gas price", "dozen eggs", "gdp"]
+    if any(kw in t for kw in macro_keywords):
+        return "macro"
+
+    # celebrity/social: Elon/tweets/celebrity posts
+    celebrity_keywords = ["elon", "musk", "tweet", "twitter", "celebrity", "kardashian", "trump tweet"]
+    if any(kw in t for kw in celebrity_keywords):
+        return "social"
+
+    # obvious crypto patterns (only specific crypto tokens, not generic "up or down")
+    crypto_tokens = ["bitcoin", "ethereum", "solana", "xrp", "btc", "eth", "sol", "matic", "avax", "ada", "dot", "link"]
+    if any(x in t for x in crypto_tokens) or any(x in s for x in crypto_tokens + ["crypto"]):
+        return "crypto"
+
+    # politics/elections
+    if any(x in t for x in ["election", "primary", "senate", "president", "congress", "governor", "poll"]) or "election" in s:
+        return "politics"
+
+    return None
+
+
 def get_category_from_trade(trade: Dict) -> str:
-    """Extract category from trade data."""
+    """Extract category from trade data (fallback only, should not be used normally)."""
     # Try to infer from slug or title
     slug = trade.get("slug", "").lower()
     title = trade.get("title", "").lower()
+    
+    inferred = infer_category_from_title_slug(title, slug)
+    if inferred:
+        return inferred
     
     if any(word in slug or word in title for word in ["bitcoin", "crypto", "ethereum", "btc", "eth"]):
         return "crypto"
     elif any(word in slug or word in title for word in ["election", "president", "vote", "poll"]):
         return "elections"
-    elif any(word in slug or word in title for word in ["sport", "nfl", "nba", "soccer", "football"]):
+    elif any(word in slug or word in title for word in ["sport", "nfl", "nba", "nhl", "mlb", "soccer", "football", "oilers", "lakers", "arsenal"]):
         return "sports"
     elif any(word in slug or word in title for word in ["country", "geo", "nation", "state"]):
         return "geo"
     else:
-        return "crypto"  # Default
+        return "unknown"  # Default (never lie)
 
 
 async def get_whale_with_score(session: aiohttp.ClientSession, wallet: str, category: str, trade_usd: float = 0.0) -> Optional[Dict]:
@@ -378,7 +589,14 @@ async def get_whale_with_score(session: aiohttp.ClientSession, wallet: str, cate
         stats = await get_user_stats(session, wallet)
         score = whale_score_from_stats(stats)
     except Exception as e:
-        logger.error("whale_stats_fetch_failed", wallet=wallet[:20], error=str(e))
+        logger.error(
+            "whale_stats_fetch_failed",
+            extra={
+                "event": "whale_stats_fetch_failed",
+                "wallet": wallet[:20],
+                "error": str(e),
+            }
+        )
         stats = {
             "wallet": wallet,
             "trade_count_100": 0,
@@ -456,7 +674,14 @@ async def ensure_whale_whitelisted(session: aiohttp.ClientSession, wallet: str, 
         stats = await get_user_stats(session, wallet)
         score = whale_score_from_stats(stats)
     except Exception as e:
-        logger.error("whale_stats_fetch_failed", wallet=wallet[:20], error=str(e))
+        logger.error(
+            "whale_stats_fetch_failed",
+            extra={
+                "event": "whale_stats_fetch_failed",
+                "wallet": wallet[:20],
+                "error": str(e),
+            }
+        )
         stats = {
             "wallet": wallet,
             "trade_count_100": 0,
@@ -516,7 +741,8 @@ async def ensure_whale_whitelisted(session: aiohttp.ClientSession, wallet: str, 
 
 def check_daily_limits() -> tuple[bool, str]:
     """Check if we've hit daily limits. Returns (can_proceed, reason)."""
-    if len(recent_signals) >= MAX_SIGNALS_PER_DAY:
+    # Only enforce signal limit if MAX_SIGNALS_PER_DAY > 0
+    if MAX_SIGNALS_PER_DAY > 0 and len(recent_signals) >= MAX_SIGNALS_PER_DAY:
         return False, f"Daily signal limit reached ({MAX_SIGNALS_PER_DAY})"
     
     if daily_loss_usd >= MAX_DAILY_LOSS_USD:
@@ -541,37 +767,140 @@ def check_conflicting_whale(wallet: str, side: str) -> bool:
     return False
 
 
-def _parse_dt(s: str) -> Optional[datetime]:
-    """Parse ISO datetime string, handling various formats."""
-    if not s:
+def _parse_dt_any(v) -> Optional[datetime]:
+    """
+    Accepts:
+      - ISO strings: "2025-12-16T09:00:00Z", "2025-12-16T09:00:00.000Z"
+      - unix seconds / ms (int/float)
+    Returns timezone-aware UTC datetime or None.
+    """
+    if v is None or v == "":
         return None
-    # Handle "2025-12-16T09:00:00Z" and "2025-12-16T09:00:00.000Z"
-    s = s.replace("Z", "+00:00")
-    try:
-        return datetime.fromisoformat(s)
-    except Exception:
-        return None
+
+    # unix timestamp
+    if isinstance(v, (int, float)):
+        # detect ms
+        ts = float(v)
+        if ts > 1e12:
+            ts = ts / 1000.0
+        try:
+            return datetime.fromtimestamp(ts, tz=timezone.utc)
+        except Exception:
+            return None
+
+    # ISO string
+    if isinstance(v, str):
+        s = v.strip().replace("Z", "+00:00")
+        try:
+            dt = datetime.fromisoformat(s)
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=timezone.utc)
+            return dt.astimezone(timezone.utc)
+        except Exception:
+            return None
+
+    return None
+
+
+# Whitelist of ONLY real expiry fields (never startDate, createdAt, etc.)
+EXPIRY_KEYS = [
+    "endDate", "end_date",
+    "endDateIso", "endDateISO", "end_date_iso",
+    "closeTime", "close_time",
+    "resolutionTime", "resolution_time",
+    "expiry", "expiresAt", "expires_at",
+]
 
 
 def _days_to_expiry(market: dict) -> Optional[float]:
-    """Calculate days to expiry from market metadata. Returns None if expiry date not found."""
-    # Polymarket fields vary; try the common ones
-    for k in ("endDate", "end_date", "closeTime", "close_time", "resolutionTime", "resolution_time"):
-        dt = _parse_dt(market.get(k))
+    """
+    Gamma can use different keys, sometimes nested under event/events.
+    ONLY uses whitelisted expiry fields (never startDate, createdAt, etc.).
+    """
+    if not isinstance(market, dict):
+        return None
+
+    ev = market.get("event") if isinstance(market.get("event"), dict) else {}
+    ev0 = (market.get("events") or [{}])[0] if isinstance(market.get("events"), list) and market.get("events") else {}
+
+    candidates = []
+    for src in (market, ev, ev0):
+        for k in EXPIRY_KEYS:
+            if k in src:
+                candidates.append(src.get(k))
+
+    for v in candidates:
+        dt = _parse_dt_any(v)
         if dt:
             now = datetime.now(timezone.utc)
-            # Ensure dt is timezone-aware
-            if dt.tzinfo is None:
-                dt = dt.replace(tzinfo=timezone.utc)
-            return (dt - now).total_seconds() / 86400.0
+            days = (dt - now).total_seconds() / 86400.0
+            # Reject negative values (expired markets) - treat as unknown
+            if days < 0:
+                return None
+            return days
+
     return None
+
+
+# Title date parsing for safety net
+_TITLE_DATE_RE = re.compile(
+    r"\b(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d{1,2}),\s+(\d{4})\b",
+    re.IGNORECASE
+)
+
+_MONTHS = {
+    "january": 1, "february": 2, "march": 3, "april": 4, "may": 5, "june": 6,
+    "july": 7, "august": 8, "september": 9, "october": 10, "november": 11, "december": 12
+}
+
+
+def _title_days_to_expiry(title: str) -> Optional[float]:
+    """
+    Parse expiry date from market title (e.g., "Will X happen by December 31, 2025?").
+    Returns days to expiry or None if no date found.
+    """
+    if not title:
+        return None
+    m = _TITLE_DATE_RE.search(title)
+    if not m:
+        return None
+    mon = _MONTHS[m.group(1).lower()]
+    day = int(m.group(2))
+    year = int(m.group(3))
+    try:
+        dt = datetime(year, mon, day, 23, 59, 59, tzinfo=timezone.utc)
+    except Exception:
+        return None
+    now = datetime.now(timezone.utc)
+    days = (dt - now).total_seconds() / 86400.0
+    # Reject negative values (expired markets) - treat as unknown
+    if days < 0:
+        return None
+    return days
+
+
+def _passes_strict_expiry_gate(market_obj: dict) -> tuple[bool, str]:
+    """
+    Check if market passes strict expiry gate at signal emission time.
+    Returns (ok, reason) tuple.
+    """
+    dte = _days_to_expiry(market_obj)
+    if dte is None:
+        return (not STRICT_SHORT_TERM), "expiry_unknown"
+    if dte * 24.0 < float(MIN_HOURS_TO_EXPIRY):
+        return False, "too_soon"
+    if dte > float(MAX_DAYS_TO_EXPIRY):
+        return False, "too_long"
+    return True, "ok"
 
 
 def calculate_discount(whale_entry_price: float, current_price: float, side: str = "BUY") -> Optional[float]:
     """
-    Calculate discount percentage (edge/advantage).
+    Calculate discount as a fraction (edge/advantage).
     For BUY: positive discount means you bought below market (good)
     For SELL: positive discount means you sold above market (good)
+    Returns discount as a fraction (e.g., 0.05 for 5%, 0.0005 for 0.05%).
+    Multiply by 100 only when displaying to user.
     Returns None if prices are missing/invalid (instead of silently returning 0.0).
     """
     # Reject if either price is missing or invalid
@@ -581,14 +910,15 @@ def calculate_discount(whale_entry_price: float, current_price: float, side: str
         return None
     
     # Calculate discount based on side
+    # Returns fraction (0.05 = 5%), NOT percentage
     if side.upper() == "BUY":
-        # For BUY: discount = (current_price - entry_price) / current_price * 100
+        # For BUY: discount = (current_price - entry_price) / current_price
         # Positive means you bought below market (good)
-        discount = ((current_price - whale_entry_price) / current_price) * 100.0
+        discount = (current_price - whale_entry_price) / current_price
     else:
-        # For SELL: discount = (entry_price - current_price) / entry_price * 100
+        # For SELL: discount = (entry_price - current_price) / entry_price
         # Positive means you sold above market (good)
-        discount = ((whale_entry_price - current_price) / whale_entry_price) * 100.0
+        discount = (whale_entry_price - current_price) / whale_entry_price
     
     return discount
 
@@ -750,7 +1080,7 @@ def trade_key(trade: Dict) -> str:
     ])
 
 
-async def process_trade(session: aiohttp.ClientSession, trade: Dict, market_category: Optional[str] = None) -> Optional[Dict]:
+async def process_trade(session: aiohttp.ClientSession, trade: Dict, market_category: Optional[str] = None, category_inferred: bool = False, market_obj: Optional[Dict] = None) -> Optional[Dict]:
     """
     Process a trade and generate signal if conditions are met.
     Returns signal dict if generated, None otherwise.
@@ -758,30 +1088,35 @@ async def process_trade(session: aiohttp.ClientSession, trade: Dict, market_cate
     # Declare all global variables at the top of the function
     global rejected_conflicting, rejected_low_score, rejected_discount_missing
     global rejected_below_cluster_min, rejected_low_discount, rejected_depth
-    global rejected_score_unavailable, rejected_other
+    global rejected_score_unavailable, rejected_other, rejected_other_reasons
+    
+    # Extract wallet at the very top (before any usage)
+    trade_wallet = trade.get("proxyWallet") or trade.get("wallet") or trade.get("makerAddress", "")
+    if not trade_wallet:
+        trade_wallet = "unknown"
     
     # Check daily limits
     can_proceed, reason = check_daily_limits()
     if not can_proceed:
         rejected_other += 1
-        logger.debug("trade_rejected_other", wallet=wallet[:8] if wallet else "unknown", specific_reason="daily_limit", details=reason)
+        rejected_other_reasons["daily_limit"] = rejected_other_reasons.get("daily_limit", 0) + 1
+        logger.debug("trade_rejected_other", wallet=trade_wallet[:8] if trade_wallet != "unknown" else "unknown", specific_reason="daily_limit", details=reason)
         return None
     
-    wallet = trade.get("proxyWallet") or trade.get("makerAddress", "")
-    if not wallet:
+    if trade_wallet == "unknown":
         rejected_other += 1
+        rejected_other_reasons["no_wallet"] = rejected_other_reasons.get("no_wallet", 0) + 1
         logger.debug("trade_rejected_other", wallet="unknown", specific_reason="no_wallet", details="proxyWallet and makerAddress both missing")
         return None
     
-    # Get category from market metadata (preferred) or infer from trade
-    if not market_category:
-        market_category = get_category_from_trade(trade)
-    market_category = market_category.lower().strip() if market_category else ""
+    # Use passed market_category (from market object), fallback to "unknown" if not provided
+    category = (market_category or "unknown").lower().strip()
     
     # Exclude categories (early filter, before scoring/discount work)
-    if market_category and market_category in EXCLUDE_CATEGORIES:
+    if category and category in EXCLUDE_CATEGORIES:
         rejected_other += 1
-        logger.debug("trade_rejected_other", wallet=wallet[:8], specific_reason="excluded_category", details=f"category={market_category}")
+        rejected_other_reasons["excluded_category"] = rejected_other_reasons.get("excluded_category", 0) + 1
+        logger.debug("trade_rejected_other", wallet=trade_wallet[:8], specific_reason="excluded_category", details=f"category={category}")
         return None
     
     side = trade.get("side", "BUY")
@@ -791,26 +1126,72 @@ async def process_trade(session: aiohttp.ClientSession, trade: Dict, market_cate
                 trade_side=side.upper())
     if not include_sells and side.upper() == "SELL":
         rejected_other += 1
+        rejected_other_reasons["sell_trade"] = rejected_other_reasons.get("sell_trade", 0) + 1
         logger.debug("trade_rejected_other",
-                    wallet=wallet[:8],
+                    wallet=trade_wallet[:8],
                     specific_reason="sell_trade",
                     details=f"side={side}, INCLUDE_SELL_TRADES={include_sells}")
         return None  # skip SELL trades unless INCLUDE_SELL_TRADES=True
     
     # Check for conflicting whale
-    if check_conflicting_whale(wallet, side):
+    if check_conflicting_whale(trade_wallet, side):
         rejected_conflicting += 1
-        logger.debug("conflicting_whale", wallet=wallet[:20])
+        logger.debug("conflicting_whale", wallet=trade_wallet[:20])
         return None
     
-    # Use market_category (from market metadata) or infer from trade
-    category = market_category if market_category else get_category_from_trade(trade)
+    # Check if wallet is blacklisted as market maker/bot
+    if trade_wallet in _mm_blacklist:
+        rejected_other += 1
+        rejected_other_reasons["mm_bot_blacklist"] = rejected_other_reasons.get("mm_bot_blacklist", 0) + 1
+        logger.debug("trade_rejected_mm_bot", wallet=trade_wallet[:8], reason="blacklisted")
+        return None
+    
+    # Market maker/bot detection: track trades by wallet+market+side
+    market_id = trade.get("marketId") or trade.get("market_id") or ""
+    if market_id and trade_wallet != "unknown":
+        now_ts = time()
+        if trade_wallet not in _mm_wallet_trades:
+            _mm_wallet_trades[trade_wallet] = {}
+        if market_id not in _mm_wallet_trades[trade_wallet]:
+            _mm_wallet_trades[trade_wallet][market_id] = {}
+        
+        # Check if wallet traded opposite side in this market recently
+        opposite_side = "SELL" if side.upper() == "BUY" else "BUY"
+        if opposite_side in _mm_wallet_trades[trade_wallet][market_id]:
+            last_opposite_time = _mm_wallet_trades[trade_wallet][market_id][opposite_side]
+            time_diff = now_ts - last_opposite_time
+            if time_diff <= MM_DETECTION_WINDOW_SECONDS:
+                # Wallet traded both sides within detection window - mark as MM/bot
+                _mm_blacklist.add(trade_wallet)
+                rejected_other += 1
+                rejected_other_reasons["mm_bot_detected"] = rejected_other_reasons.get("mm_bot_detected", 0) + 1
+                logger.info("mm_bot_detected", 
+                           wallet=trade_wallet[:8], 
+                           market_id=market_id[:20],
+                           time_diff_seconds=time_diff,
+                           side=side,
+                           opposite_side=opposite_side)
+                return None
+        
+        # Record this trade
+        _mm_wallet_trades[trade_wallet][market_id][side.upper()] = now_ts
+        
+        # Cleanup old entries (keep only recent trades within detection window)
+        for mkt_id in list(_mm_wallet_trades[trade_wallet].keys()):
+            for s in list(_mm_wallet_trades[trade_wallet][mkt_id].keys()):
+                if now_ts - _mm_wallet_trades[trade_wallet][mkt_id][s] > MM_DETECTION_WINDOW_SECONDS:
+                    del _mm_wallet_trades[trade_wallet][mkt_id][s]
+            if not _mm_wallet_trades[trade_wallet][mkt_id]:
+                del _mm_wallet_trades[trade_wallet][mkt_id]
+    
+    # Category already set above from market object (never infer from trade)
     
     # Calculate trade USD early for fallback scoring
     whale_entry_price = trade.get("price")
     if whale_entry_price is None or whale_entry_price <= 0:
         rejected_other += 1
-        logger.debug("trade_rejected_other", wallet=wallet[:8], specific_reason="missing_entry_price", details=f"price={whale_entry_price}")
+        rejected_other_reasons["missing_entry_price"] = rejected_other_reasons.get("missing_entry_price", 0) + 1
+        logger.debug("trade_rejected_other", wallet=trade_wallet[:8], specific_reason="missing_entry_price", details=f"price={whale_entry_price}")
         return None
     
     size = trade.get("size", 0.0)
@@ -818,28 +1199,33 @@ async def process_trade(session: aiohttp.ClientSession, trade: Dict, market_cate
     
     # Get whale stats/score (whitelist check only if WHITELIST_ONLY is True)
     if WHITELIST_ONLY:
-        whale = await ensure_whale_whitelisted(session, wallet, category, trade_usd)
+        whale = await ensure_whale_whitelisted(session, trade_wallet, category, trade_usd)
         if not whale:
             rejected_low_score += 1
-            logger.debug("trade_rejected", reason="whale_not_whitelisted", wallet=wallet[:8], category=category)
+            logger.debug("trade_rejected", reason="whale_not_whitelisted", wallet=trade_wallet[:8], category=category)
             return None
     else:
         # Whitelist disabled: just get score, don't enforce whitelist gate
-        whale = await get_whale_with_score(session, wallet, category, trade_usd)
+        whale = await get_whale_with_score(session, trade_wallet, category, trade_usd)
         if not whale:
             rejected_low_score += 1
-            logger.debug("trade_rejected", reason="whale_score_unavailable", wallet=wallet[:8], category=category)
+            logger.debug("trade_rejected", reason="whale_score_unavailable", wallet=trade_wallet[:8], category=category)
             return None
     
     # Fetch current price from CLOB midpoint endpoint using token_id
     condition_id = trade.get("conditionId", "")
     if not condition_id:
-        logger.debug("trade_rejected", reason="missing_condition_id", wallet=wallet[:8])
+        logger.debug("trade_rejected", reason="missing_condition_id", wallet=trade_wallet[:8])
         return None
     
-    # Extract token_id from trade (Path A: direct from trade payload)
-    token_id = (trade.get("tokenId") or trade.get("clobTokenId") or 
+    # Extract token_id from trade (Path A: prefer "asset" field - most reliable)
+    # "asset" is the outcome token id that the trade is actually for
+    token_id = (trade.get("asset") or trade.get("token_id") or 
+                trade.get("tokenId") or trade.get("clobTokenId") or 
                 trade.get("asset_id") or trade.get("outcomeId"))
+    
+    outcome_name = trade.get("outcome") or trade.get("name", "")
+    outcome_index = trade.get("outcomeIndex")
     
     # Path B: If not in trade, get from conditionId → clobTokenIds mapping
     if not token_id:
@@ -851,18 +1237,19 @@ async def process_trade(session: aiohttp.ClientSession, trade: Dict, market_cate
         token_id = await get_token_id(condition_id, trade, session)
         if token_id:
             logger.debug("token_id_resolved",
-                        wallet=wallet[:8],
+                        wallet=trade_wallet[:8],
                         condition_id=condition_id[:20],
                         token_id=str(token_id)[:20],
-                        outcome=trade.get("outcome"))
+                        outcome=outcome_name)
     
     if not token_id:
         rejected_other += 1
+        rejected_other_reasons["token_id_resolve_failed"] = rejected_other_reasons.get("token_id_resolve_failed", 0) + 1
         logger.debug("trade_rejected", 
-                    wallet=wallet[:8], 
+                    wallet=trade_wallet[:8], 
                     reason="token_id_resolve_failed", 
                     condition_id=condition_id[:20],
-                    outcome=trade.get("outcome"))
+                    outcome=outcome_name)
         return None
     
     # Fetch midpoint price: try CLOB first, fallback to Gamma market bestBid/bestAsk
@@ -875,9 +1262,29 @@ async def process_trade(session: aiohttp.ClientSession, trade: Dict, market_cate
     if current_price is None:
         rejected_discount_missing += 1
         logger.debug("trade_rejected", reason="rejected_discount_missing", 
-                    wallet=wallet[:8], token_id=str(token_id)[:20] if token_id else None, 
+                    wallet=trade_wallet[:8], token_id=str(token_id)[:20] if token_id else None, 
                     condition_id=condition_id[:20])
         return None
+    
+    # Safety: If trade is for "No" or "Down" outcome and midpoint seems wrong, flip it
+    # Binary markets: if outcome is "No"/"Down" and midpoint is very low (< 0.1), 
+    # we might have fetched the "Yes"/"Up" midpoint - flip it
+    outcome_lower = outcome_name.lower() if outcome_name else ""
+    is_no_or_down = outcome_lower in ["no", "down"] or (outcome_index == 1 and outcome_lower != "yes")
+    
+    if is_no_or_down and current_price is not None and current_price < 0.1:
+        # Likely fetched midpoint for opposite outcome - flip it
+        flipped_price = 1.0 - current_price
+        logger.debug("midpoint_flipped_for_outcome",
+                    wallet=trade_wallet[:8],
+                    outcome_name=outcome_name,
+                    original_midpoint=current_price,
+                    flipped_midpoint=flipped_price,
+                    token_id=str(token_id)[:20])
+        current_price = flipped_price
+    
+    # Store the token_id we actually used for midpoint fetching (for signal dict and logs)
+    token_id_used = str(token_id) if token_id else None
     
     # Calculate discount: entry_price vs current midpoint
     side = trade.get("side", "BUY")
@@ -885,7 +1292,7 @@ async def process_trade(session: aiohttp.ClientSession, trade: Dict, market_cate
     
     # Debug discount calculation
     logger.debug("discount_calc_debug",
-                wallet=wallet[:8],
+                wallet=trade_wallet[:8],
                 condition_id=condition_id[:20],
                 entry_price=whale_entry_price,
                 midpoint=current_price,
@@ -897,20 +1304,20 @@ async def process_trade(session: aiohttp.ClientSession, trade: Dict, market_cate
     if discount_pct is None:
         rejected_discount_missing += 1
         logger.debug("trade_rejected", reason="rejected_discount_missing", 
-                    wallet=wallet[:8], entry_price=whale_entry_price, current_price=current_price)
+                    wallet=trade_wallet[:8], entry_price=whale_entry_price, current_price=current_price)
         return None
     
     # Log ALL whale activity for analysis (before filtering)
     # Note: trade_usd already calculated above
     market_id = trade.get("conditionId", trade.get("slug", "unknown"))
-    logger.debug("whale_activity", wallet=wallet[:20], score=whale["score"], discount=discount_pct, size_usd=trade_usd)
-    log_all_activity(market_id, wallet, whale["score"], discount_pct, trade_usd)
+    logger.debug("whale_activity", wallet=trade_wallet[:20], score=whale["score"], discount=discount_pct, size_usd=trade_usd)
+    log_all_activity(market_id, trade_wallet, whale["score"], discount_pct, trade_usd)
     
     # Calibration mode: track whale score for histogram analysis
     global whale_score_samples
     if len(whale_score_samples) < WHALE_SCORE_SAMPLES_MAX:
         whale_score_samples.append({
-            "wallet": wallet,
+            "wallet": trade_wallet,
             "condition_id": condition_id,
             "trade_usd": trade_usd,
             "whale_score": whale["score"]
@@ -919,42 +1326,54 @@ async def process_trade(session: aiohttp.ClientSession, trade: Dict, market_cate
         # Rotate: remove oldest 10% when full
         whale_score_samples = whale_score_samples[int(WHALE_SCORE_SAMPLES_MAX * 0.1):]
         whale_score_samples.append({
-            "wallet": wallet,
+            "wallet": trade_wallet,
             "condition_id": condition_id,
             "trade_usd": trade_usd,
             "whale_score": whale["score"]
         })
     
     # Check if trade meets minimum size for clustering (bypass if enabled)
+    # Check cluster minimum - respect CLUSTER_MIN_USD from env (or MIN_CLUSTER_USD)
     bypass_cluster = os.getenv("BYPASS_CLUSTER_MIN", "False") == "True"
+    cluster_min_usd = float(os.getenv("CLUSTER_MIN_USD", os.getenv("MIN_CLUSTER_USD", "100.0")))
+    
+    # If cluster min is 0 or negative, bypass the check entirely
+    if cluster_min_usd <= 0:
+        bypass_cluster = True
+    
     logger.debug("trade_cluster_bypass_check",
                 bypass_enabled=bypass_cluster,
                 trade_usd=trade_usd,
-                required=2000.0)
-    if not bypass_cluster and trade_usd < 2000.0:
+                required=cluster_min_usd)
+    
+    if not bypass_cluster and trade_usd < cluster_min_usd:
         rejected_below_cluster_min += 1
         logger.debug("trade_rejected_other",
-                    wallet=wallet[:8],
+                    wallet=trade_wallet[:8],
                     specific_reason="below_cluster_min",
-                    details=f"size_usd={trade_usd}, required=2000.0")
+                    details=f"size_usd={trade_usd}, required={cluster_min_usd}")
         return None
     
     if trade_usd >= MIN_CLUSTER_USD:
         # Single trade already meets threshold - check other filters and generate signal directly
         bypass_discount = os.getenv("BYPASS_LOW_DISCOUNT", "False") == "True"
-        min_discount = float(os.getenv("MIN_LOW_DISCOUNT", "0.0"))
+        # MIN_LOW_DISCOUNT is in percentage (e.g., 0.01 = 0.01%), convert to fraction for comparison
+        # discount_pct is now a fraction (0.0005 = 0.05%), so convert threshold to fraction too
+        min_discount_pct = float(os.getenv("MIN_LOW_DISCOUNT", "0.0"))
+        min_discount = min_discount_pct / 100.0  # Convert percentage to fraction (0.01% -> 0.0001)
         
         logger.debug("discount_bypass_check",
                     bypass_enabled=bypass_discount,
                     calculated_discount=discount_pct,
                     min_required=min_discount,
+                    min_required_pct=min_discount_pct,
                     entry_price=whale_entry_price,
                     midpoint=current_price if current_price else "none")
         
         if not bypass_discount and discount_pct < min_discount:
             rejected_low_discount += 1
             logger.debug("trade_rejected_low_discount",
-                        wallet=wallet[:8],
+                        wallet=trade_wallet[:8],
                         condition_id=condition_id[:20],
                         calculated_discount=discount_pct,
                         min_required=min_discount,
@@ -968,15 +1387,113 @@ async def process_trade(session: aiohttp.ClientSession, trade: Dict, market_cate
         
         if depth_ratio < MIN_ORDERBOOK_DEPTH_MULTIPLIER:
             rejected_depth += 1
-            logger.debug("trade_rejected", reason="insufficient_depth", depth=depth_ratio, wallet=wallet[:8])
+            logger.debug("trade_rejected", reason="insufficient_depth", depth=depth_ratio, wallet=trade_wallet[:8])
             return None
         
+        # --- STRICT SHORT TERM: hard gate at signal emission ---
+        # Require expiry to be known and within window when STRICT_SHORT_TERM=1
+        if STRICT_SHORT_TERM:
+            market_for_expiry = market_obj or {}
+            market_title = (market_for_expiry.get("title") or market_for_expiry.get("question") or trade.get("title") or "")
+            
+            # Paranoia safety net: check title for far-future dates
+            title_dte = _title_days_to_expiry(market_title)
+            if title_dte is not None and title_dte > MAX_DAYS_TO_EXPIRY:
+                rejected_other += 1
+                rejected_other_reasons["expiry_title_safety_net"] = rejected_other_reasons.get("expiry_title_safety_net", 0) + 1
+                event_id = trade.get("conditionId") or trade.get("condition_id") or "unknown"
+                logger.info("signal_rejected_expiry_title_safety_net",
+                           title_dte=title_dte,
+                           max_days=MAX_DAYS_TO_EXPIRY,
+                           market_title=market_title[:120],
+                           event_id=event_id[:20] if isinstance(event_id, str) else str(event_id)[:20])
+                return None
+            
+            dte = _days_to_expiry(market_for_expiry)
+            if dte is None:
+                rejected_other += 1
+                rejected_other_reasons["expiry_unknown"] = rejected_other_reasons.get("expiry_unknown", 0) + 1
+                event_id = trade.get("conditionId") or trade.get("condition_id") or "unknown"
+                logger.info("signal_rejected_expiry",
+                           title=market_title[:120],
+                           event_id=event_id[:20] if isinstance(event_id, str) else str(event_id)[:20],
+                           reason="expiry_unknown_at_emit")
+                return None
+            if dte > MAX_DAYS_TO_EXPIRY:
+                rejected_other += 1
+                rejected_other_reasons["expiry_too_long"] = rejected_other_reasons.get("expiry_too_long", 0) + 1
+                event_id = trade.get("conditionId") or trade.get("condition_id") or "unknown"
+                logger.info("signal_rejected_expiry",
+                           title=market_title[:120],
+                           event_id=event_id[:20] if isinstance(event_id, str) else str(event_id)[:20],
+                           days_to_expiry=dte,
+                           reason="too_long_at_emit")
+                return None
+            if dte * 24.0 < MIN_HOURS_TO_EXPIRY:
+                rejected_other += 1
+                rejected_other_reasons["expiry_too_soon"] = rejected_other_reasons.get("expiry_too_soon", 0) + 1
+                event_id = trade.get("conditionId") or trade.get("condition_id") or "unknown"
+                logger.info("signal_rejected_expiry",
+                           title=market_title[:120],
+                           event_id=event_id[:20] if isinstance(event_id, str) else str(event_id)[:20],
+                           days_to_expiry=dte,
+                           reason="too_soon_at_emit")
+                return None
+        
+        # Paranoia guard: verify trade's condition_id matches market's condition_id
+        trade_condition_id = (
+            trade.get("conditionId")
+            or trade.get("condition_id")
+            or trade.get("marketId")
+            or trade.get("market_id")
+            or "unknown"
+        )
+        
+        market_condition_id = (
+            (market_obj or {}).get("conditionId")
+            or (market_obj or {}).get("condition_id")
+            or "unknown"
+        )
+        
+        if trade_condition_id != "unknown" and market_condition_id != "unknown":
+            # Normalize for comparison (handle hex with/without 0x prefix)
+            def _normalize_cid(cid: str) -> str:
+                if not cid or cid == "unknown":
+                    return ""
+                cid = str(cid).lower().strip()
+                if cid.startswith("0x"):
+                    return cid
+                if all(c in "0123456789abcdef" for c in cid):
+                    return f"0x{cid}"
+                return cid
+            
+            trade_norm = _normalize_cid(trade_condition_id)
+            market_norm = _normalize_cid(market_condition_id)
+            
+            if trade_norm and market_norm and trade_norm != market_norm:
+                rejected_other += 1
+                rejected_other_reasons["trade_market_mismatch"] = rejected_other_reasons.get("trade_market_mismatch", 0) + 1
+                logger.warning("trade_market_condition_mismatch",
+                            requested_market_condition_id=market_condition_id[:20],
+                            trade_condition_id=trade_condition_id[:20],
+                            wallet=trade_wallet[:8])
+                return None
+        
+        # Calculate days_to_expiry for signal (for debugging/display)
+        market_for_expiry = market_obj or {}
+        dte = _days_to_expiry(market_for_expiry)
+        
         # Generate signal directly (single trade ≥ $10k)
+        # Extract outcome fields from trade
+        outcome_name = trade.get("outcome") or trade.get("name", "")
+        outcome_index = trade.get("outcomeIndex") or trade.get("outcome_index")
+        
         signal = {
             "timestamp": datetime.now().isoformat(),
-            "wallet": wallet,
+            "wallet": trade_wallet,
             "whale_score": whale["score"],
-            "category": market_category if market_category else category,
+            "category": category,
+            "category_inferred": category_inferred,
             "market": trade.get("title", "Unknown"),
             "slug": trade.get("slug", ""),
             "condition_id": trade.get("conditionId", ""),
@@ -991,6 +1508,10 @@ async def process_trade(session: aiohttp.ClientSession, trade: Dict, market_cate
             "transaction_hash": trade.get("transactionHash", ""),
             "cluster_trades_count": 1,
             "cluster_window_minutes": 0,
+            "days_to_expiry": dte,  # Add for debugging/display
+            "token_id": token_id_used,  # Store the token_id we actually used for midpoint fetching
+            "outcome_name": outcome_name,  # Store outcome name for paper trades
+            "outcome_index": outcome_index,  # Store outcome index for paper trades
         }
         
         # Exclude categories filter (even for single trade signals)
@@ -1017,9 +1538,11 @@ async def add_trade_to_cluster(session: aiohttp.ClientSession, trade: Dict, whal
     Add trade to cluster and generate signal if cluster reaches threshold.
     Returns signal dict if cluster threshold met, None otherwise.
     """
-    wallet = trade.get("proxyWallet") or trade.get("makerAddress", "")
+    cluster_wallet = trade.get("proxyWallet") or trade.get("wallet") or trade.get("makerAddress", "")
+    if not cluster_wallet:
+        cluster_wallet = "unknown"
     market_id = trade.get("conditionId", trade.get("slug", "unknown"))
-    cluster_key = get_cluster_key(wallet, market_id)
+    cluster_key = get_cluster_key(cluster_wallet, market_id)
     
     size = trade.get("size", 0.0)
     price = trade.get("price", 0.0)
@@ -1063,7 +1586,7 @@ async def add_trade_to_cluster(session: aiohttp.ClientSession, trade: Dict, whal
             "first_trade_time": now,
             "whale": whale,
             "category": category,
-            "wallet": wallet,
+            "wallet": cluster_wallet,
             "market_id": market_id,
             "market_title": trade.get("title", "Unknown"),
             "slug": trade.get("slug", ""),
@@ -1077,7 +1600,7 @@ async def add_trade_to_cluster(session: aiohttp.ClientSession, trade: Dict, whal
     
     logger.info("cluster_updated",
                 key=cluster_key[:30],
-                wallet=wallet[:20],
+                wallet=cluster_wallet[:20] if cluster_wallet != "unknown" else "unknown",
                 market=market_id[:20],
                 trades=len(cluster["trades"]),
                 total_usd=cluster["total_usd"],
@@ -1112,7 +1635,7 @@ async def add_trade_to_cluster(session: aiohttp.ClientSession, trade: Dict, whal
             if reason != "other_cluster_fail":
                 rejected_below_cluster_min += 1
                 logger.debug("cluster_rejected",
-                            wallet=wallet[:8],
+                            wallet=cluster_wallet[:8] if cluster_wallet != "unknown" else "unknown",
                             market=market_id[:20],
                             total_usd=cluster["total_usd"],
                             trades_count=len(cluster["trades"]),
@@ -1131,7 +1654,7 @@ async def add_trade_to_cluster(session: aiohttp.ClientSession, trade: Dict, whal
                         reason="avg_hold_too_short",
                         avg_hold_minutes=avg_hold_minutes,
                         required=CLUSTER_MIN_AVG_HOLD_MINUTES,
-                        wallet=wallet[:20])
+                        wallet=cluster_wallet[:20] if cluster_wallet != "unknown" else "unknown")
             return None
         
         # Generate signal from cluster
@@ -1172,10 +1695,15 @@ async def generate_cluster_signal(session: aiohttp.ClientSession, cluster: Dict)
         logger.debug("cluster_rejected", reason="missing_condition_id", wallet=cluster["wallet"][:8])
         return None
     
-    # Extract token_id from first trade (Path A: direct from trade payload)
+    # Extract token_id from first trade (Path A: prefer "asset" field - most reliable)
+    # "asset" is the outcome token id that the trade is actually for
     first_trade = cluster["trades"][0]
-    token_id = (first_trade.get("tokenId") or first_trade.get("clobTokenId") or 
+    token_id = (first_trade.get("asset") or first_trade.get("token_id") or 
+                first_trade.get("tokenId") or first_trade.get("clobTokenId") or 
                 first_trade.get("asset_id") or first_trade.get("outcomeId"))
+    
+    outcome_name = first_trade.get("outcome") or first_trade.get("name", "")
+    outcome_index = first_trade.get("outcomeIndex")
     
     # Path B: If not in trade, get from conditionId → clobTokenIds mapping
     if not token_id:
@@ -1191,7 +1719,7 @@ async def generate_cluster_signal(session: aiohttp.ClientSession, cluster: Dict)
                     reason="token_id_resolve_failed", 
                     wallet=cluster["wallet"][:8], 
                     condition_id=condition_id[:20],
-                    outcome=first_trade.get("outcome"))
+                    outcome=outcome_name)
         return None
     
     # Fetch midpoint price: try CLOB first, fallback to Gamma market bestBid/bestAsk
@@ -1207,6 +1735,26 @@ async def generate_cluster_signal(session: aiohttp.ClientSession, cluster: Dict)
                     condition_id=condition_id[:20])
         return None
     
+    # Safety: If trade is for "No" or "Down" outcome and midpoint seems wrong, flip it
+    # Binary markets: if outcome is "No"/"Down" and midpoint is very low (< 0.1), 
+    # we might have fetched the "Yes"/"Up" midpoint - flip it
+    outcome_lower = outcome_name.lower() if outcome_name else ""
+    is_no_or_down = outcome_lower in ["no", "down"] or (outcome_index == 1 and outcome_lower != "yes")
+    
+    if is_no_or_down and current_price is not None and current_price < 0.1:
+        # Likely fetched midpoint for opposite outcome - flip it
+        flipped_price = 1.0 - current_price
+        logger.debug("cluster_midpoint_flipped_for_outcome",
+                    wallet=cluster["wallet"][:8],
+                    outcome_name=outcome_name,
+                    original_midpoint=current_price,
+                    flipped_midpoint=flipped_price,
+                    token_id=str(token_id)[:20])
+        current_price = flipped_price
+    
+    # Store the token_id we actually used for midpoint fetching (for signal dict and logs)
+    token_id_used = str(token_id) if token_id else None
+    
     # Calculate discount: entry_price vs current midpoint
     # Use side from first trade in cluster
     side = cluster["trades"][0].get("side", "BUY") if cluster["trades"] else "BUY"
@@ -1220,12 +1768,16 @@ async def generate_cluster_signal(session: aiohttp.ClientSession, cluster: Dict)
     
     # Check discount filter (bypass if enabled)
     bypass_discount = os.getenv("BYPASS_LOW_DISCOUNT", "False") == "True"
-    min_discount = float(os.getenv("MIN_LOW_DISCOUNT", "0.0"))
+    # MIN_LOW_DISCOUNT is in percentage (e.g., 0.01 = 0.01%), convert to fraction for comparison
+    # discount_pct is now a fraction (0.0005 = 0.05%), so convert threshold to fraction too
+    min_discount_pct = float(os.getenv("MIN_LOW_DISCOUNT", "0.0"))
+    min_discount = min_discount_pct / 100.0  # Convert percentage to fraction (0.01% -> 0.0001)
     
     logger.debug("cluster_discount_bypass_check",
                 bypass_enabled=bypass_discount,
                 calculated_discount=discount_pct,
                 min_required=min_discount,
+                min_required_pct=min_discount_pct,
                 entry_price=whale_entry_price,
                 midpoint=current_price if current_price else "none")
     
@@ -1262,25 +1814,96 @@ async def generate_cluster_signal(session: aiohttp.ClientSession, cluster: Dict)
             logger.debug("market_metadata_fetch_failed", condition_id=condition_id[:20], error=str(e))
     
     # Use category from market metadata (preferred) or fallback to cluster category
+    signal_category = None
+    category_inferred = False
+    market_title = cluster.get("market_title", "Unknown")
+    market_slug = cluster.get("slug", "")
+    
     if market_meta and market_meta.get("category"):
         signal_category = market_meta["category"].lower().strip()
-        market_title = market_meta.get("title", cluster.get("market_title", "Unknown"))
-        market_slug = market_meta.get("slug", cluster.get("slug", ""))
+        market_title = market_meta.get("title", market_title)
+        market_slug = market_meta.get("slug", market_slug)
     else:
         signal_category = cluster.get("category", "").lower().strip()
-        market_title = cluster.get("market_title", "Unknown")
-        market_slug = cluster.get("slug", "")
+    
+    # Infer category if still unknown
+    if not signal_category or signal_category == "unknown":
+        inferred = infer_category_from_title_slug(market_title, market_slug)
+        if inferred:
+            signal_category = inferred
+            category_inferred = True
+        else:
+            signal_category = "unknown"
+            # Debug log for unknown categories to discover available fields
+            candidate_keys = ["tags", "groupSlug", "eventSlug", "marketType", "category", "raw_category", "marketCategory"]
+            available_fields = {}
+            for key in candidate_keys:
+                val = market_meta.get(key) if market_meta else None
+                if val:
+                    available_fields[key] = str(val)[:50]  # Truncate long values
+            logger.debug("market_category_debug",
+                        category="unknown",
+                        title=market_title[:100],
+                        slug=market_slug[:50],
+                        available_fields=available_fields if available_fields else "none",
+                        market_meta_keys=list(market_meta.keys())[:20] if market_meta else "none")
     
     # Exclude categories filter (even for normal signals)
     if signal_category and signal_category in EXCLUDE_CATEGORIES:
         logger.debug("signal_rejected", category=signal_category, reason="excluded_category")
         return None
     
+    # --- STRICT SHORT TERM: hard gate at signal emission ---
+    # Require expiry to be known and within window when STRICT_SHORT_TERM=1
+    market_obj_for_expiry = market_meta if market_meta else {
+        "title": market_title,
+        "slug": market_slug,
+        "conditionId": condition_id,
+    }
+    
+    if STRICT_SHORT_TERM:
+        # Paranoia safety net: check title for far-future dates
+        title_dte = _title_days_to_expiry(market_title)
+        if title_dte is not None and title_dte > MAX_DAYS_TO_EXPIRY:
+            logger.info("signal_rejected_expiry_title_safety_net",
+                       title_dte=title_dte,
+                       max_days=MAX_DAYS_TO_EXPIRY,
+                       market_title=market_title[:120],
+                       event_id=condition_id[:20] if condition_id else "unknown")
+            return None
+        
+        dte = _days_to_expiry(market_obj_for_expiry)
+        if dte is None:
+            logger.info("signal_rejected_expiry",
+                       title=market_title[:120],
+                       event_id=condition_id[:20] if condition_id else "unknown",
+                       reason="expiry_unknown_at_emit")
+            return None
+        if dte > MAX_DAYS_TO_EXPIRY:
+            logger.info("signal_rejected_expiry",
+                       title=market_title[:120],
+                       event_id=condition_id[:20] if condition_id else "unknown",
+                       days_to_expiry=dte,
+                       reason="too_long_at_emit")
+            return None
+        if dte * 24.0 < MIN_HOURS_TO_EXPIRY:
+            logger.info("signal_rejected_expiry",
+                       title=market_title[:120],
+                       event_id=condition_id[:20] if condition_id else "unknown",
+                       days_to_expiry=dte,
+                       reason="too_soon_at_emit")
+            return None
+    
+    # Extract outcome fields from first trade
+    outcome_name = first_trade.get("outcome") or first_trade.get("name", "")
+    outcome_index = first_trade.get("outcomeIndex") or first_trade.get("outcome_index")
+    
     signal = {
         "timestamp": datetime.now().isoformat(),
         "wallet": cluster["wallet"],
         "whale_score": cluster["whale"]["score"],
         "category": signal_category,
+        "category_inferred": category_inferred,
         "market": market_title,
         "slug": market_slug,
         "condition_id": condition_id,
@@ -1296,6 +1919,10 @@ async def generate_cluster_signal(session: aiohttp.ClientSession, cluster: Dict)
         "cluster_trades_count": len(cluster["trades"]),
         "cluster_window_minutes": CLUSTER_WINDOW_MINUTES,
         "phase": "normal",
+        "days_to_expiry": dte,  # Add for debugging/display
+        "token_id": token_id_used,  # Store the token_id we actually used for midpoint fetching
+        "outcome_name": outcome_name,  # Store outcome name for paper trades
+        "outcome_index": outcome_index,  # Store outcome index for paper trades
     }
     
     logger.info("cluster_signal_generated",
@@ -1303,7 +1930,13 @@ async def generate_cluster_signal(session: aiohttp.ClientSession, cluster: Dict)
                 market=cluster["market_title"][:50],
                 cluster_total=cluster["total_usd"],
                 trades_count=len(cluster["trades"]),
-                discount=discount_pct)
+                discount=discount_pct,
+                side=side,
+                trade_price=whale_entry_price,
+                midpoint=current_price,
+                first_trade_outcome_index=cluster["trades"][0].get('outcomeIndex') if cluster["trades"] else None,
+                first_trade_outcome=cluster["trades"][0].get('outcome') if cluster["trades"] else None,
+                token_id=token_id_used)  # Log the token_id we actually used
     
     # DEDUPE: mark cluster as triggered so we don't re-fire
     cluster["triggered"] = True
@@ -1530,7 +2163,13 @@ def audit_data_quality():
         avg_cluster_size = _py(avg_cluster_size)
         
         # Average discount (convert numpy types to native Python)
-        avg_discount = df['discount_pct'].mean() if 'discount_pct' in df.columns else 0.0
+        # Filter out insane outliers (discounts should be fractions between -1.0 and 1.0)
+        if 'discount_pct' in df.columns:
+            valid_discounts = df['discount_pct'].dropna()
+            valid_discounts = valid_discounts[(valid_discounts >= -1.0) & (valid_discounts <= 1.0)]
+            avg_discount = valid_discounts.mean() if len(valid_discounts) > 0 else 0.0
+        else:
+            avg_discount = 0.0
         avg_discount = _py(avg_discount)
         
         # Market category distribution
@@ -1606,9 +2245,21 @@ def audit_data_quality():
                    audit_file=audit_file)
         
     except Exception as e:
-        logger.error("audit_failed", error=str(e))
+        logger.error(
+            "audit_failed",
+            extra={
+                "event": "audit_failed",
+                "error": str(e),
+            }
+        )
         import traceback
-        logger.error("audit_traceback", traceback=traceback.format_exc())
+        logger.error(
+            "audit_traceback",
+            extra={
+                "event": "audit_traceback",
+                "traceback": traceback.format_exc(),
+            }
+        )
 
 
 # Telegram functions removed - paper trading mode (CSV + console logging only)
@@ -1616,8 +2267,20 @@ def audit_data_quality():
 # Global SignalStats instance for periodic Telegram notifications
 stats = SignalStats(notify_every_signals=10, notify_every_seconds=15*60)
 
+# Global SignalStore instance for SQLite persistence
+# Ensure logs directory exists before initializing
+log_dir = os.path.join(os.path.dirname(__file__), "..", "..", "logs")
+os.makedirs(log_dir, exist_ok=True)
+signal_store = SignalStore()
+
 async def main_loop():
     """Main polling loop - polls top markets by volume (gamma-api → conditionId bridge)."""
+    # Declare global counters at function start (required for all scopes in this function)
+    global rejected_below_cluster_min, rejected_low_score, rejected_low_discount
+    global rejected_score_missing, rejected_score_unavailable, rejected_discount_missing
+    global rejected_depth, rejected_conflicting, rejected_daily_limit, rejected_other
+    global rejected_other_reasons, signals_generated, trades_considered
+    
     # Log production mode status
     if PRODUCTION_MODE:
         logger.info("production_mode_enabled",
@@ -1636,53 +2299,99 @@ async def main_loop():
                     bypass_score=BYPASS_SCORE_ON_STATS_FAIL,
                     min_discount=MIN_DISCOUNT_PCT)
     
-    logger.info("engine_started", poll_interval=POLL_INTERVAL_SECONDS, mode="multi_event")
+    logger.info("engine_started", scan_interval_seconds=SCAN_INTERVAL_SECONDS, mode="multi_event", heartbeat_interval_seconds=HEARTBEAT_INTERVAL_SECONDS)
+    
+    # Clear any legacy rollups from previous runs (prevents old-format rollups from being sent)
+    _whale_rollup.clear()
+    logger.info("rollups_cleared_on_startup")
+    
+    # Log config snapshot to confirm MIN_LOW_DISCOUNT is loaded correctly
+    logger.info("config_snapshot",
+               MIN_LOW_DISCOUNT=MIN_LOW_DISCOUNT,
+               MIN_LOW_DISCOUNT_PCT=MIN_LOW_DISCOUNT * 100.0)
+    
+    # Track last heartbeat time
+    last_heartbeat = time()
+    
+    # Track last dashboard time
+    last_dashboard = time()
     
     async with aiohttp.ClientSession() as session:
         while True:
+            cycle_started = time()
             try:
+                # Reset counters at start of each cycle (globals already declared at function start)
+                rejected_below_cluster_min = 0
+                rejected_low_score = 0
+                rejected_low_discount = 0
+                rejected_score_missing = 0
+                rejected_score_unavailable = 0
+                rejected_discount_missing = 0
+                rejected_depth = 0
+                rejected_conflicting = 0
+                rejected_daily_limit = 0
+                rejected_other = 0
+                rejected_other_reasons = {}  # Reset reason tracking
+                signals_generated = 0
+                trades_considered = 0
+                
                 # 1. Fetch top markets by volume (gamma-api → conditionId bridge)
-                # Limit to 10 markets in production mode for faster testing
-                market_limit = 10 if PRODUCTION_MODE else 20
-                markets = await fetch_top_markets(session, limit=market_limit, offset=0)
+                # Fetch many markets to increase chance of finding short-term ones
+                # Use reasonable page size (200) and fetch multiple pages if needed
+                # Note: "closingSoon" order causes 422 error, so we use "volume" (default)
+                markets = await fetch_top_markets(session, limit=200, offset=0, order="volume", pages=2 if PRODUCTION_MODE else 3)
                 
                 if not markets:
                     logger.warning("no_markets_found")
-                    await asyncio.sleep(POLL_INTERVAL_SECONDS)
+                    # Still sleep for full scan interval even if no markets found
+                    elapsed = time() - cycle_started
+                    sleep_for = max(0, SCAN_INTERVAL_SECONDS - elapsed)
+                    await asyncio.sleep(sleep_for)
                     continue
                 
                 logger.info("fetched_markets", count=len(markets))
                 
                 # Filter markets by expiry time (same-day / 1-2 day markets only)
-                max_days = float(os.getenv("MAX_DAYS_TO_EXPIRY", "9999"))
-                min_hours = float(os.getenv("MIN_HOURS_TO_EXPIRY", "0"))
+                # Try expiry from market object first (best-effort parsing)
                 filtered_markets = []
                 for m in markets:
+                    # Try to get expiry directly from market object (many endpoints include endDate/closeTime)
                     dte = _days_to_expiry(m)
+                    
                     if dte is None:
-                        # Expiry missing - keep market (don't reject until we fetch full metadata)
-                        logger.debug("market_expiry_missing",
+                        # Expiry missing from market object - log and check STRICT_SHORT_TERM
+                        logger.info("market_expiry_unknown",
                                     market_title=m.get("title", m.get("slug", "unknown"))[:50],
                                     condition_id=m.get("conditionId", "unknown")[:20],
-                                    note="keeping market, expiry not in top_markets response")
+                                    strict_short_term=STRICT_SHORT_TERM)
+                        if STRICT_SHORT_TERM:
+                            # Reject markets with unknown expiry in strict mode
+                            logger.debug("market_rejected_expiry",
+                                        market_title=m.get("title", m.get("slug", "unknown"))[:50],
+                                        condition_id=m.get("conditionId", "unknown")[:20],
+                                        reason="expiry_unknown")
+                            continue
+                        # Non-strict mode: keep market for now, will try metadata fetch later
                         filtered_markets.append(m)
                         continue
-                    if dte > max_days:
+                    
+                    # Expiry found - apply window filter
+                    if dte > MAX_DAYS_TO_EXPIRY:
                         # Too long - skip this market
                         logger.debug("market_rejected_expiry",
                                     market_title=m.get("title", m.get("slug", "unknown"))[:50],
                                     condition_id=m.get("conditionId", "unknown")[:20],
                                     days_to_expiry=dte,
-                                    max_days=max_days,
+                                    max_days=MAX_DAYS_TO_EXPIRY,
                                     reason="too_long")
                         continue
-                    if dte * 24.0 < min_hours:
+                    if dte * 24.0 < MIN_HOURS_TO_EXPIRY:
                         # Too close / already ending - skip this market
                         logger.debug("market_rejected_expiry",
                                     market_title=m.get("title", m.get("slug", "unknown"))[:50],
                                     condition_id=m.get("conditionId", "unknown")[:20],
                                     days_to_expiry=dte,
-                                    min_hours=min_hours,
+                                    min_hours=MIN_HOURS_TO_EXPIRY,
                                     reason="too_close")
                         continue
                     # Market passes expiry filter
@@ -1691,8 +2400,9 @@ async def main_loop():
                 logger.info("markets_after_expiry_filter",
                            fetched=len(markets),
                            filtered=len(filtered_markets),
-                           max_days=max_days,
-                           min_hours=min_hours)
+                           max_days=MAX_DAYS_TO_EXPIRY,
+                           min_hours=MIN_HOURS_TO_EXPIRY,
+                           strict_short_term=STRICT_SHORT_TERM)
                 
                 # 2. Poll trades for each market using conditionId
                 total_trades_processed = 0
@@ -1708,57 +2418,192 @@ async def main_loop():
                             logger.debug("market_missing_conditionId", market_title=market_info[:50])
                             continue
                         
+                        # Extract category from market object (once, before processing trades)
+                        market_title = (m.get("title") or m.get("question") or m.get("name") or "").strip()
+                        market_slug = (m.get("slug") or "").strip()
+                        market_category = (m.get("category") or m.get("marketCategory") or "").strip().lower()
+                        
+                        # Nested event / events fallback
+                        ev = m.get("event") if isinstance(m.get("event"), dict) else {}
+                        if not market_category:
+                            market_category = str(ev.get("category") or "").strip().lower()
+                        
+                        evs = m.get("events") or []
+                        if not market_category and evs and isinstance(evs, list) and len(evs) > 0:
+                            ev0 = evs[0] if isinstance(evs[0], dict) else {}
+                            market_category = str(ev0.get("category") or "").strip().lower()
+                        
+                        if not market_category:
+                            market_category = "unknown"
+                        
+                        # Infer category from title/slug if API didn't provide one
+                        category_inferred = False
+                        if market_category == "unknown":
+                            inferred = infer_category_from_title_slug(market_title, market_slug)
+                            if inferred:
+                                market_category = inferred
+                                category_inferred = True
+                        
+                        # Debug log for unknown categories to discover available fields
+                        if market_category == "unknown":
+                            candidate_keys = ["tags", "groupSlug", "eventSlug", "marketType", "category", "raw_category", "marketCategory"]
+                            available_fields = {}
+                            for key in candidate_keys:
+                                val = m.get(key)
+                                if val:
+                                    available_fields[key] = str(val)[:50]  # Truncate long values
+                            # Also check nested event fields
+                            evs = m.get("events") or []
+                            if evs and isinstance(evs, list) and len(evs) > 0:
+                                ev0 = evs[0] if isinstance(evs[0], dict) else {}
+                                for key in candidate_keys:
+                                    val = ev0.get(key)
+                                    if val:
+                                        available_fields[f"event.{key}"] = str(val)[:50]
+                            
+                            logger.debug("market_category_debug",
+                                       category="unknown",
+                                       title=market_title[:100] if market_title else "",
+                                       slug=market_slug[:50] if market_slug else "",
+                                       available_fields=available_fields if available_fields else "none",
+                                       market_keys=list(m.keys())[:20])
+                        
+                        # Check if we already have expiry from market object (best-effort parsing)
+                        dte_from_market = _days_to_expiry(m)
+                        
                         # Validate condition_id before fetching metadata (real Polymarket conditionIds are longer)
                         if len(event_id) < 20 or not event_id.startswith("0x"):
-                            logger.debug("bad_condition_id_for_expiry_fetch",
-                                        condition_id=event_id[:30],
-                                        market_title=m.get("title", m.get("slug", "unknown"))[:50],
-                                        note="condition_id too short or invalid, skipping expiry filter")
-                            # Keep market - don't reject for bad condition_id
-                        else:
-                            # Fetch full market metadata to get expiry (if not already in top_markets response)
-                            market_meta = await fetch_market_metadata_by_condition(session, event_id)
-                            if market_meta:
-                                # Try to get expiry from full metadata
-                                dte_from_meta = _days_to_expiry(market_meta)
-                                if dte_from_meta is not None:
-                                    # Apply expiry filter using full metadata (only when expiry is reliably known)
-                                    max_days = float(os.getenv("MAX_DAYS_TO_EXPIRY", "9999"))
-                                    min_hours = float(os.getenv("MIN_HOURS_TO_EXPIRY", "0"))
-                                    if dte_from_meta > max_days:
-                                        logger.debug("market_rejected_expiry_from_metadata",
-                                                    market_title=market_meta.get("title", m.get("title", "unknown"))[:50],
-                                                    condition_id=event_id[:30],
-                                                    days_to_expiry=dte_from_meta,
-                                                    max_days=max_days,
-                                                    reason="too_long")
-                                        continue
-                                    if dte_from_meta * 24.0 < min_hours:
-                                        logger.debug("market_rejected_expiry_from_metadata",
-                                                    market_title=market_meta.get("title", m.get("title", "unknown"))[:50],
-                                                    condition_id=event_id[:30],
-                                                    days_to_expiry=dte_from_meta,
-                                                    min_hours=min_hours,
-                                                    reason="too_close")
-                                        continue
-                                    # Expiry found and within limits - keep market
-                                else:
-                                    # Expiry missing after full fetch - KEEP market (don't reject)
-                                    logger.debug("market_expiry_missing_after_full_fetch",
-                                                market_title=market_meta.get("title", m.get("title", "unknown"))[:50],
-                                                condition_id=event_id[:30],
-                                                note="keeping market, expiry not in full metadata")
-                                    # Continue processing - don't reject
-                            else:
-                                # Metadata fetch failed - KEEP market (don't reject)
-                                logger.debug("market_metadata_fetch_failed",
-                                            condition_id=event_id[:30],
+                            # Bad condition_id - only keep if we already determined expiry from market object
+                            if dte_from_market is None:
+                                logger.info("bad_condition_id_no_expiry",
                                             market_title=m.get("title", m.get("slug", "unknown"))[:50],
-                                            note="keeping market, metadata fetch returned None")
-                                # Continue processing - don't reject
+                                            condition_id=event_id[:30],
+                                            strict_short_term=STRICT_SHORT_TERM)
+                                if STRICT_SHORT_TERM:
+                                    logger.debug("market_rejected_expiry",
+                                                market_title=m.get("title", m.get("slug", "unknown"))[:50],
+                                                condition_id=event_id[:30],
+                                                reason="expiry_unknown_bad_condition_id")
+                                    continue
+                                # Non-strict mode: keep market and continue processing
+                            else:
+                                # Expiry known from market object - apply window filter
+                                if dte_from_market > MAX_DAYS_TO_EXPIRY:
+                                    logger.debug("market_rejected_expiry",
+                                                market_title=m.get("title", m.get("slug", "unknown"))[:50],
+                                                condition_id=event_id[:30],
+                                                days_to_expiry=dte_from_market,
+                                                max_days=MAX_DAYS_TO_EXPIRY,
+                                                reason="too_long")
+                                    continue
+                                if dte_from_market * 24.0 < MIN_HOURS_TO_EXPIRY:
+                                    logger.debug("market_rejected_expiry",
+                                                market_title=m.get("title", m.get("slug", "unknown"))[:50],
+                                                condition_id=event_id[:30],
+                                                days_to_expiry=dte_from_market,
+                                                min_hours=MIN_HOURS_TO_EXPIRY,
+                                                reason="too_close")
+                                    continue
+                                # Market passes expiry filter - continue processing trades
+                        else:
+                            # Fetch full market metadata to get expiry (only if not already determined from market object)
+                            if dte_from_market is None:
+                                market_meta = await fetch_market_metadata_by_condition(session, event_id)
+                                if market_meta:
+                                    # Try to get expiry from full metadata
+                                    dte_from_meta = _days_to_expiry(market_meta)
+                                    if dte_from_meta is not None:
+                                        # Apply expiry filter using full metadata (only when expiry is reliably known)
+                                        if dte_from_meta > MAX_DAYS_TO_EXPIRY:
+                                            logger.debug("market_rejected_expiry_from_metadata",
+                                                        market_title=market_meta.get("title", m.get("title", "unknown"))[:50],
+                                                        condition_id=event_id[:30],
+                                                        days_to_expiry=dte_from_meta,
+                                                        max_days=MAX_DAYS_TO_EXPIRY,
+                                                        reason="too_long")
+                                            continue
+                                        if dte_from_meta * 24.0 < MIN_HOURS_TO_EXPIRY:
+                                            logger.debug("market_rejected_expiry_from_metadata",
+                                                        market_title=market_meta.get("title", m.get("title", "unknown"))[:50],
+                                                        condition_id=event_id[:30],
+                                                        days_to_expiry=dte_from_meta,
+                                                        min_hours=MIN_HOURS_TO_EXPIRY,
+                                                        reason="too_close")
+                                            continue
+                                        # Expiry found and within limits - keep market
+                                    else:
+                                        # Expiry missing after full fetch - check STRICT_SHORT_TERM
+                                        logger.info("market_expiry_unknown",
+                                                    market_title=market_meta.get("title", m.get("title", "unknown"))[:50],
+                                                    condition_id=event_id[:30],
+                                                    strict_short_term=STRICT_SHORT_TERM)
+                                        if STRICT_SHORT_TERM:
+                                            logger.debug("market_rejected_expiry",
+                                                        market_title=market_meta.get("title", m.get("title", "unknown"))[:50],
+                                                        condition_id=event_id[:30],
+                                                        reason="expiry_unknown")
+                                            continue
+                                        # Non-strict mode: continue processing
+                                else:
+                                    # Metadata fetch failed - check STRICT_SHORT_TERM
+                                    logger.info("market_expiry_unknown",
+                                                condition_id=event_id[:30],
+                                                market_title=m.get("title", m.get("slug", "unknown"))[:50],
+                                                strict_short_term=STRICT_SHORT_TERM,
+                                                note="metadata_fetch_failed")
+                                    if STRICT_SHORT_TERM:
+                                        logger.debug("market_rejected_expiry",
+                                                    condition_id=event_id[:30],
+                                                    market_title=m.get("title", m.get("slug", "unknown"))[:50],
+                                                    reason="expiry_unknown_metadata_fetch_failed")
+                                        continue
+                                    # Non-strict mode: continue processing
+                            else:
+                                # Expiry already determined from market object - apply window filter if needed
+                                if dte_from_market > MAX_DAYS_TO_EXPIRY:
+                                    logger.debug("market_rejected_expiry",
+                                                market_title=m.get("title", m.get("slug", "unknown"))[:50],
+                                                condition_id=event_id[:30],
+                                                days_to_expiry=dte_from_market,
+                                                max_days=MAX_DAYS_TO_EXPIRY,
+                                                reason="too_long")
+                                    continue
+                                if dte_from_market * 24.0 < MIN_HOURS_TO_EXPIRY:
+                                    logger.debug("market_rejected_expiry",
+                                                market_title=m.get("title", m.get("slug", "unknown"))[:50],
+                                                condition_id=event_id[:30],
+                                                days_to_expiry=dte_from_market,
+                                                min_hours=MIN_HOURS_TO_EXPIRY,
+                                                reason="too_close")
+                                    continue
+                                # Market passes expiry filter - continue processing
                         
-                        # Fetch trades for this market (client-side scanning, 25 pages = 2500 trades max)
-                        trades = await fetch_trades_scanned(session, event_id, API_MIN_SIZE_USD, pages=25, limit=100)
+                        # Fetch trades for this market (probe API params to find correct scoping)
+                        # Extract market_id from market object (trades may identify by market_id, not just condition_id)
+                        market_id = m.get("id") or m.get("marketId") or m.get("market_id")
+                        
+                        # condition_id MUST be full 66-char hex (0x + 64 chars)
+                        requested_condition_id = event_id  # This must be the full one logged in scan_summary
+                        if not isinstance(requested_condition_id, str) or len(requested_condition_id) < 60:
+                            logger.error("bad_requested_condition_id",
+                                       condition_id=requested_condition_id,
+                                       condition_id_len=len(str(requested_condition_id)),
+                                       market_title=m.get("title", "unknown")[:50])
+                            continue
+                        
+                        # Probe API params to find correct scoping (verifies trades match requested condition_id)
+                        trades = await fetch_trades_scanned(
+                            session,
+                            market_id=str(market_id) if market_id is not None else None,
+                            condition_id=str(requested_condition_id) if requested_condition_id is not None else None,
+                            api_min_size_usd=API_MIN_SIZE_USD,
+                            pages=3,
+                            limit=100,
+                        )
+                        
+                        # IMPORTANT: Convert to list immediately to prevent iterator consumption
+                        # (logging/debugging can consume generators, leaving empty list for processing)
+                        trades = list(trades) if trades else []
                         
                         # Process each trade (use API_MIN_SIZE_USD filter, clustering happens inside process_trade)
                         for trade in trades:
@@ -1783,24 +2628,20 @@ async def main_loop():
                             if size_usd < API_MIN_SIZE_USD:
                                 continue  # Skip trades below API filter threshold
                             
-                            global trades_considered
                             trades_considered += 1
-                            # Get category from market metadata (more accurate than trade inference)
-                            # fetch_top_markets now includes category in the returned dict
-                            market_category = m.get("category", "").lower().strip() or get_category_from_trade(trade)
-                            signal = await process_trade(session, trade, market_category=market_category)
+                            # Category already extracted from market object above (with inference fallback)
+                            # Pass it to process_trade along with inferred flag and market object for expiry check
+                            signal = await process_trade(session, trade, market_category=market_category, category_inferred=category_inferred, market_obj=m)
                             total_trades_processed += 1
                             
                             if signal:
                                 # Final validation: reject if score or discount is None
                                 if signal.get("whale_score") is None:
-                                    global rejected_score_missing
                                     rejected_score_missing += 1
                                     logger.debug("signal_rejected", reason="rejected_score_missing", wallet=signal.get("wallet", "unknown")[:8])
                                     continue
                                 
                                 if signal.get("discount_pct") is None:
-                                    global rejected_discount_missing
                                     rejected_discount_missing += 1
                                     logger.debug("signal_rejected", reason="rejected_discount_missing", wallet=signal.get("wallet", "unknown")[:8])
                                     continue
@@ -1816,7 +2657,6 @@ async def main_loop():
                                             required=min_trades)
                                 
                                 if not bypass_cluster and trade_count < min_trades:
-                                    global rejected_below_cluster_min
                                     rejected_below_cluster_min += 1
                                     logger.debug("signal_rejected", reason="below_cluster_min", 
                                                trade_count=trade_count,
@@ -1824,25 +2664,219 @@ async def main_loop():
                                                wallet=signal.get("wallet", "unknown")[:8])
                                     continue
                                 
-                                global signals_generated
+                                # Hard de-dupe cooldown: prevent repeated alerts on same market/outcome
+                                # Include wallet in dedupe key to allow multiple distinct whales on same market/side
+                                event_id_for_dedup = signal.get("condition_id") or signal.get("market_id") or event_id
+                                outcome_index_for_dedup = signal.get("outcome_index") or (trade.get("outcomeIndex") if 'trade' in locals() else None)
+                                side_for_dedup = signal.get("side", "BUY")
+                                wallet_for_dedup = signal.get("wallet", "unknown")[:10] if signal.get("wallet") else "unknown"
+                                dedup_key = (event_id_for_dedup, outcome_index_for_dedup, side_for_dedup, wallet_for_dedup)
+                                now_ts = time()
+                                last_signal_time = _recent_signal_keys.get(dedup_key)
+                                
+                                if last_signal_time and (now_ts - last_signal_time) < SIGNAL_COOLDOWN_SECONDS:
+                                    rejected_other_reasons["signal_deduped"] = rejected_other_reasons.get("signal_deduped", 0) + 1
+                                    logger.debug("signal_deduped", 
+                                               key=str(dedup_key), 
+                                               age_sec=int(now_ts - last_signal_time),
+                                               event_id=event_id_for_dedup[:20] if event_id_for_dedup else None)
+                                    continue
+                                
+                                # Record this signal timestamp
+                                _recent_signal_keys[dedup_key] = now_ts
+                                
                                 signals_generated += 1
+                                
+                                # Compute confidence from whale_score
+                                whale_score = signal.get("whale_score")
+                                if whale_score is not None:
+                                    try:
+                                        confidence = int(round(float(whale_score) * 100))
+                                    except Exception:
+                                        confidence = 0
+                                else:
+                                    confidence = signal.get("confidence", 0)
+                                
+                                # Add confidence to signal dict
+                                signal["confidence"] = confidence
+                                
                                 # Log signal to CSV
                                 log_signal_to_csv(signal)
+                                
+                                # Store signal in SQLite database
+                                signal_id = signal_store.insert_signal(signal)
                                 recent_signals.append(signal)
                                 
-                                # Notify via Telegram (real signal notification)
-                                notify_signal(signal)
+                                # Paper trading: create paper trade if enabled and all filters pass
+                                if PAPER_TRADING and signal_id and should_paper_trade(confidence):
+                                    # Apply paper trading filters for fast feedback
+                                    skip_reasons = []
+                                    
+                                    # Filter 1: days_to_expiry must be present and <= PAPER_MAX_DTE_DAYS
+                                    days_to_expiry = signal.get("days_to_expiry")
+                                    if days_to_expiry is None:
+                                        skip_reasons.append("days_to_expiry_missing")
+                                    elif days_to_expiry > PAPER_MAX_DTE_DAYS:
+                                        skip_reasons.append(f"days_to_expiry_too_long_{days_to_expiry:.1f}d")
+                                    
+                                    # Filter 2: discount_pct must be present and >= PAPER_MIN_DISCOUNT_PCT
+                                    discount_pct = signal.get("discount_pct")
+                                    if discount_pct is None:
+                                        skip_reasons.append("discount_pct_missing")
+                                    elif discount_pct < PAPER_MIN_DISCOUNT_PCT:
+                                        skip_reasons.append(f"discount_too_low_{discount_pct:.6f}")
+                                    
+                                    # Filter 3: trade_value_usd must be >= PAPER_MIN_TRADE_USD
+                                    trade_value_usd = signal.get("trade_value_usd")
+                                    if trade_value_usd is None:
+                                        skip_reasons.append("trade_value_usd_missing")
+                                    elif trade_value_usd < PAPER_MIN_TRADE_USD:
+                                        skip_reasons.append(f"trade_value_too_low_{trade_value_usd:.2f}")
+                                    
+                                    # If any filter fails, skip paper trade creation
+                                    if skip_reasons:
+                                        logger.debug(
+                                            "paper_trade_skipped",
+                                            signal_id=signal_id,
+                                            confidence=confidence,
+                                            reasons=skip_reasons,
+                                            days_to_expiry=days_to_expiry,
+                                            discount_pct=discount_pct,
+                                            trade_value_usd=trade_value_usd,
+                                            max_dte_days=PAPER_MAX_DTE_DAYS,
+                                            min_discount_pct=PAPER_MIN_DISCOUNT_PCT,
+                                            min_trade_usd=PAPER_MIN_TRADE_USD,
+                                        )
+                                    else:
+                                        # All filters passed - create paper trade
+                                        # Calculate stake from confidence (stake_eur_from_confidence handles threshold)
+                                        from src.polymarket.paper_trading import stake_eur_from_confidence
+                                        stake_eur = round(stake_eur_from_confidence(confidence), 2)
+                                        
+                                        # Skip if stake is 0 (confidence too low)
+                                        if stake_eur <= 0:
+                                            logger.debug(
+                                                "paper_trade_skipped",
+                                                signal_id=signal_id,
+                                                confidence=confidence,
+                                                reason="stake_zero_below_threshold",
+                                            )
+                                        else:
+                                            # Check if there's already an open paper trade for this market
+                                            condition_id_for_check = signal.get("condition_id") or signal.get("event_id") or event_id
+                                            if condition_id_for_check and signal_store.has_open_paper_trade(condition_id_for_check):
+                                                logger.debug(
+                                                    "paper_trade_skipped",
+                                                    signal_id=signal_id,
+                                                    condition_id=condition_id_for_check[:20],
+                                                    reason="open_trade_exists_for_market",
+                                                )
+                                            else:
+                                                # Create paper trade with confidence-based stake
+                                                trade_dict = open_paper_trade(signal, confidence=confidence)
+                                                trade_dict["signal_id"] = signal_id
+                                                trade_dict["days_to_expiry"] = days_to_expiry
+                                                
+                                                # Insert paper trade (pass computed stake_eur)
+                                                trade_id = signal_store.insert_paper_trade(
+                                                    signal_id, signal, stake_eur, FX_EUR_USD
+                                                )
+                                                
+                                                if trade_id:
+                                                    # Notify paper trade opened
+                                                    from src.polymarket.telegram import send_telegram
+                                                    telegram_msg = format_paper_trade_telegram(trade_dict)
+                                                    send_telegram(telegram_msg)
+                                
+                                # Market/outcome dedupe check: prevent duplicate alerts for same market+outcome
+                                market_id = signal.get("market_id") or signal.get("condition_id") or event_id
+                                outcome_index = signal.get("outcome_index")
+                                dedupe_key = (market_id, outcome_index)
+                                now_ts = time()
+                                
+                                # Check if we've alerted on this market/outcome recently
+                                if dedupe_key in _market_outcome_alerts:
+                                    last_alert = _market_outcome_alerts[dedupe_key]
+                                    if now_ts - last_alert < SIGNAL_COOLDOWN_SECONDS:
+                                        # Skip - still in cooldown
+                                        logger.debug("signal_deduped", 
+                                                   market_id=market_id[:20] if market_id else "unknown",
+                                                   outcome_index=outcome_index,
+                                                   time_since_last=now_ts - last_alert,
+                                                   cooldown=SIGNAL_COOLDOWN_SECONDS)
+                                        continue
+                                
+                                # --- HARD DISCOUNT GATE (normalize keys) - BEFORE ROLLUP ---
+                                try:
+                                    min_low_discount = float(os.getenv("MIN_LOW_DISCOUNT", "0.02"))
+                                except Exception:
+                                    min_low_discount = 0.02
+                                
+                                # Your signal objects might use `discount` or `discount_pct` key
+                                signal_discount = signal.get("discount_pct", None)
+                                if signal_discount is None:
+                                    signal_discount = signal.get("discount", None)
+                                
+                                # If still missing, treat as 0 (reject)
+                                try:
+                                    signal_discount = float(signal_discount) if signal_discount is not None else 0.0
+                                except Exception:
+                                    signal_discount = 0.0
+                                
+                                if signal_discount < min_low_discount:
+                                    # Track rejection (rejected_low_discount is already declared as global at top of main_loop)
+                                    rejected_low_discount += 1
+                                    logger.info("rejected_low_discount",
+                                               discount=signal_discount,
+                                               min_low_discount=min_low_discount,
+                                               market=(signal.get("market") or "")[:80],
+                                               wallet=signal.get("wallet"))
+                                    continue
+                                # --- END GATE ---
+                                
+                                # Rollup whale signals instead of sending immediately
+                                # (Only signals that passed the discount gate above reach here)
+                                condition_id_for_rollup = signal.get("condition_id") or signal.get("event_id") or event_id
+                                if condition_id_for_rollup:
+                                    r = _whale_rollup[condition_id_for_rollup]
+                                    r["market"] = signal.get("market", r["market"])
+                                    r["outcome_name"] = signal.get("outcome_name", r["outcome_name"])
+                                    r["wallets"].add(signal.get("wallet", "unknown"))
+                                    r["trades"] += 1
+                                    trade_usd = float(signal.get("trade_value_usd") or signal.get("total_usd") or 0.0)
+                                    r["total_usd"] += trade_usd
+                                    r["max_trade_usd"] = max(r["max_trade_usd"], trade_usd)
+                                    # Store dedupe key for this rollup
+                                    r["dedupe_key"] = dedupe_key
+                                    # Track minimum discount in rollup (for filtering when flushing)
+                                    # Ensure signal_discount is a float (already computed above)
+                                    d = float(signal_discount) if signal_discount is not None else 0.0
+                                    cur = r.get("min_discount")
+                                    r["min_discount"] = d if cur is None else min(cur, d)
+                                else:
+                                    # No condition_id - send immediately (shouldn't happen)
+                                    notify_signal(signal)
+                                    # Mark as alerted
+                                    _market_outcome_alerts[dedupe_key] = now_ts
                                 
                                 # Periodic stats update (every 10 signals or 15 min)
                                 stats.bump(extra_line="signal recorded")
                                 
-                                # Console log
+                                # Console log with debug info for discount diagnosis
                                 signal_wallet = signal.get('wallet', 'unknown')
+                                # Add debug fields to help diagnose negative discount issue
                                 logger.info("signal_generated", 
                                            wallet=signal_wallet[:20] if signal_wallet else "unknown",
                                            discount=signal['discount_pct'],
                                            market=signal['market'][:50],
-                                           event_id=event_id)
+                                           event_id=event_id,
+                                           side=signal.get('side', 'unknown'),
+                                           trade_price=signal.get('whale_entry_price'),
+                                           midpoint=signal.get('current_price'),
+                                           cluster_trades_count=signal.get('cluster_trades_count', 1),
+                                           outcome_index=trade.get('outcomeIndex') if 'trade' in locals() else None,
+                                           outcome_name=trade.get('outcome') if 'trade' in locals() else None,
+                                           token_id=signal.get('token_id'))  # Use token_id from signal dict (the one we actually used)
                                 
                                 # Signal notification already sent via notify_signal() above
                     except Exception as e:
@@ -1860,9 +2894,12 @@ async def main_loop():
                         try:
                             logger.error(
                                 "market_processing_error",
-                                error=str(e),
-                                wallet=wallet_val,
-                                condition_id=condition_val,
+                                extra={
+                                    "event": "market_processing_error",
+                                    "wallet": wallet_val,
+                                    "condition_id": condition_val,
+                                    "error": str(e),
+                                }
                             )
                         except Exception:
                             # last resort: swallow logging failures
@@ -1872,9 +2909,11 @@ async def main_loop():
                 
                 logger.info("processing_complete", 
                            markets=len(markets), 
-                           trades_processed=total_trades_processed)
+                           trades_processed=trades_considered)  # Use trades_considered which tracks all trades that passed initial filters
                 
                 # Log filter breakdown
+                # Sort rejected_other_reasons by count (descending) and take top 15
+                top_reasons = dict(sorted(rejected_other_reasons.items(), key=lambda x: x[1], reverse=True)[:15]) if rejected_other_reasons else {}
                 logger.info("gate_breakdown",
                            trades_considered=trades_considered,
                            rejected_below_cluster_min=rejected_below_cluster_min,
@@ -1887,7 +2926,30 @@ async def main_loop():
                            rejected_conflicting=rejected_conflicting,
                            rejected_daily_limit=rejected_daily_limit,
                            rejected_other=rejected_other,
+                           rejected_other_reasons=top_reasons,
                            signals_generated=signals_generated)
+                
+                # Track rolling metrics for dashboard (last hour)
+                now_ts = time()
+                _rolling_metrics["signals"].append((now_ts, signals_generated))
+                _rolling_metrics["trades_considered"].append((now_ts, trades_considered))
+                _rolling_metrics["timestamps"].append(now_ts)
+                
+                # Track rejections
+                if rejected_low_discount > 0:
+                    _rolling_metrics["rejections"]["low_discount"] = _rolling_metrics["rejections"].get("low_discount", 0) + rejected_low_discount
+                if rejected_low_score > 0:
+                    _rolling_metrics["rejections"]["low_score"] = _rolling_metrics["rejections"].get("low_score", 0) + rejected_low_score
+                if rejected_discount_missing > 0:
+                    _rolling_metrics["rejections"]["discount_missing"] = _rolling_metrics["rejections"].get("discount_missing", 0) + rejected_discount_missing
+                if rejected_below_cluster_min > 0:
+                    _rolling_metrics["rejections"]["below_cluster_min"] = _rolling_metrics["rejections"].get("below_cluster_min", 0) + rejected_below_cluster_min
+                
+                # Clean old metrics (keep only last hour)
+                cutoff = now_ts - 3600  # 1 hour ago
+                _rolling_metrics["signals"] = [(ts, val) for ts, val in _rolling_metrics["signals"] if ts > cutoff]
+                _rolling_metrics["trades_considered"] = [(ts, val) for ts, val in _rolling_metrics["trades_considered"] if ts > cutoff]
+                _rolling_metrics["timestamps"] = [ts for ts in _rolling_metrics["timestamps"] if ts > cutoff]
                 
                 # Write status line to file for easy tracking
                 append_status_line(
@@ -1910,6 +2972,143 @@ async def main_loop():
                 # Clean up expired clusters
                 cleanup_expired_clusters()
                 
+                # Flush whale signal rollups (send aggregated summaries)
+                now = time()
+                
+                # Clean up old dedupe entries (keep only entries within cooldown window)
+                cutoff_ts = now - SIGNAL_COOLDOWN_SECONDS
+                expired_keys = [k for k, ts in _market_outcome_alerts.items() if ts < cutoff_ts]
+                for k in expired_keys:
+                    del _market_outcome_alerts[k]
+                from src.polymarket.telegram import send_telegram
+                
+                for cid, r in list(_whale_rollup.items()):
+                    last = _last_whale_alert_at.get(cid, 0)
+                    if now - last < WHALE_SIGNAL_COOLDOWN_SECONDS:
+                        continue
+                    
+                    if r["trades"] <= 0:
+                        continue
+                    
+                    # --- DISCOUNT GATE FOR ROLLUP (filter low-discount rollups) ---
+                    try:
+                        min_low_discount = float(os.getenv("MIN_LOW_DISCOUNT", "0.02"))
+                    except Exception:
+                        min_low_discount = 0.02
+                    
+                    # Get minimum discount from rollup
+                    md = r.get("min_discount")
+                    market_text = r.get("market") or "Unknown"
+                    
+                    # OLD ROLLUP FORMAT (no discount tracking) => DO NOT KEEP IT AROUND
+                    if md is None:
+                        logger.info("rejected_rollup_missing_discount",
+                                   condition_id=cid[:20],
+                                   market=market_text[:80])
+                        del _whale_rollup[cid]
+                        continue
+                    
+                    # Low discount rollup => reject and delete
+                    if md < min_low_discount:
+                        logger.info("rejected_rollup_low_discount",
+                                   condition_id=cid[:20],
+                                   min_discount=md,
+                                   min_low_discount=min_low_discount,
+                                   market=market_text[:80],
+                                   trades=r["trades"])
+                        del _whale_rollup[cid]
+                        continue
+                    # --- END DISCOUNT GATE FOR ROLLUP ---
+                    
+                    # Check market/outcome dedupe before sending
+                    dedupe_key = r.get("dedupe_key")
+                    if dedupe_key and dedupe_key in _market_outcome_alerts:
+                        last_alert = _market_outcome_alerts[dedupe_key]
+                        if now - last_alert < SIGNAL_COOLDOWN_SECONDS:
+                            # Skip - still in cooldown for this market/outcome
+                            logger.debug("rollup_deduped", 
+                                       condition_id=cid[:20],
+                                       dedupe_key=dedupe_key,
+                                       time_since_last=now - last_alert,
+                                       cooldown=SIGNAL_COOLDOWN_SECONDS)
+                            continue
+                    
+                    wallets_n = len(r["wallets"])
+                    outcome = r["outcome_name"] or "UNKNOWN"
+                    market_text = r["market"] or "Unknown"
+                    market_short = (market_text[:80] + "...") if len(market_text) > 80 else market_text
+                    
+                    # --- HARD GATE: DO NOT SEND ROLLUPS BELOW THRESHOLD ---
+                    # Re-check min_discount right before sending (defense in depth)
+                    # Use global MIN_LOW_DISCOUNT constant (already loaded from env at startup)
+                    md_gate = r.get("min_discount", None)
+                    
+                    if md_gate is None:
+                        logger.info("rejected_rollup_missing_discount",
+                                   condition_id=cid[:20],
+                                   market=market_text[:80],
+                                   outcome=outcome,
+                                   min_discount=md_gate,
+                                   min_low_discount=MIN_LOW_DISCOUNT)
+                        try:
+                            del _whale_rollup[cid]
+                        except Exception:
+                            _whale_rollup.pop(cid, None)
+                        continue
+                    
+                    if md_gate < MIN_LOW_DISCOUNT:
+                        logger.info("rejected_rollup_low_discount",
+                                   condition_id=cid[:20],
+                                   market=market_text[:80],
+                                   outcome=outcome,
+                                   min_discount=md_gate,
+                                   min_low_discount=MIN_LOW_DISCOUNT,
+                                   min_discount_pct=md_gate * 100.0,
+                                   min_low_discount_pct=MIN_LOW_DISCOUNT * 100.0)
+                        try:
+                            del _whale_rollup[cid]
+                        except Exception:
+                            _whale_rollup.pop(cid, None)
+                        continue
+                    # --- END HARD GATE ---
+                    
+                    # Format min_discount for display (convert fraction to percentage)
+                    min_discount_display = md_gate * 100.0 if md_gate is not None else 0.0
+                    
+                    # Log right before sending (proves this code path is executing)
+                    logger.info("about_to_send_rollup",
+                               min_discount=md_gate,
+                               min_low_discount=MIN_LOW_DISCOUNT,
+                               min_discount_pct=min_discount_display,
+                               min_low_discount_pct=MIN_LOW_DISCOUNT * 100.0,
+                               pid=os.getpid(),
+                               condition_id=cid[:20],
+                               market=market_short[:80])
+                    
+                    msg = (
+                        "🐋 Whale activity (rollup)\n"
+                        f"Market: {market_short}\n"
+                        f"Outcome: {outcome}\n"
+                        f"Wallets: {wallets_n}\n"
+                        f"Trades: {r['trades']}\n"
+                        f"Total USD: ${r['total_usd']:.2f}\n"
+                        f"Max single trade: ${r['max_trade_usd']:.2f}\n"
+                        f"Min discount: {min_discount_display:.4f}%\n"
+                        f"{ENGINE_FINGERPRINT}"
+                    )
+                    
+                    try:
+                        send_telegram(msg)
+                    except Exception:
+                        pass  # Don't crash on Telegram errors
+                    
+                    # Mark as alerted (both condition_id and dedupe_key)
+                    _last_whale_alert_at[cid] = now
+                    if dedupe_key:
+                        _market_outcome_alerts[dedupe_key] = now
+                    
+                    del _whale_rollup[cid]
+                
                 # Calibration mode: log histogram every 10 cycles
                 global CALIBRATION_CYCLE_COUNT
                 CALIBRATION_CYCLE_COUNT += 1
@@ -1917,10 +3116,154 @@ async def main_loop():
                     log_calibration_histogram()
                 
             except Exception as e:
-                logger.error("loop_error", error=str(e))
+                logger.error(
+                    "loop_error",
+                    extra={
+                        "event": "loop_error",
+                        "error": str(e),
+                    }
+                )
             
-            # Wait before next poll
-            await asyncio.sleep(POLL_INTERVAL_SECONDS)
+            # Send heartbeat if interval has passed (with gate_breakdown status)
+            now = time()
+            if (now - last_heartbeat) >= HEARTBEAT_INTERVAL_SECONDS:
+                # Globals already declared at function start
+                try:
+                    from src.polymarket.telegram import send_telegram
+                    
+                    # Build heartbeat message with latest gate_breakdown stats
+                    # Get top rejection reason
+                    top_reason = "none"
+                    top_reason_count = 0
+                    if rejected_other_reasons:
+                        top_reason, top_reason_count = max(rejected_other_reasons.items(), key=lambda x: x[1])
+                    elif rejected_low_discount > 0:
+                        top_reason = "low_discount"
+                        top_reason_count = rejected_low_discount
+                    elif rejected_low_score > 0:
+                        top_reason = "low_score"
+                        top_reason_count = rejected_low_score
+                    elif rejected_discount_missing > 0:
+                        top_reason = "discount_missing"
+                        top_reason_count = rejected_discount_missing
+                    elif rejected_below_cluster_min > 0:
+                        top_reason = "below_cluster_min"
+                        top_reason_count = rejected_below_cluster_min
+                    
+                    heartbeat_msg = (
+                        f"✅ Alive ({ENGINE_FINGERPRINT})\n"
+                        f"Last cycle:\n"
+                        f"• Trades processed: {trades_considered}\n"
+                        f"• Signals generated: {signals_generated}\n"
+                        f"• Top reject: {top_reason} ({top_reason_count})"
+                    )
+                    
+                    # Add rejection breakdown if there were any rejects
+                    if trades_considered > 0 and signals_generated == 0:
+                        heartbeat_msg += (
+                            f"\n\nReject breakdown:\n"
+                            f"• Low discount: {rejected_low_discount}\n"
+                            f"• Low score: {rejected_low_score}\n"
+                            f"• Missing discount: {rejected_discount_missing}\n"
+                            f"• Below cluster min: {rejected_below_cluster_min}\n"
+                            f"• Depth: {rejected_depth}\n"
+                            f"• Other: {rejected_other}"
+                        )
+                    
+                    send_telegram(heartbeat_msg)
+                    last_heartbeat = now
+                except Exception as e:
+                    logger.warning(
+                        "heartbeat_failed",
+                        extra={
+                            "event": "heartbeat_failed",
+                            "error": str(e),
+                        }
+                    )
+            
+            # Send operator dashboard if interval has passed
+            dashboard_now = time()
+            if DASHBOARD_INTERVAL_SECONDS > 0 and (dashboard_now - last_dashboard) >= DASHBOARD_INTERVAL_SECONDS:
+                try:
+                    from src.polymarket.telegram import send_telegram
+                    import sqlite3
+                    from pathlib import Path
+                    
+                    # Calculate metrics from last hour
+                    hour_ago = dashboard_now - 3600
+                    signals_last_hour = sum(val for ts, val in _rolling_metrics["signals"] if ts > hour_ago)
+                    trades_last_hour = sum(val for ts, val in _rolling_metrics["trades_considered"] if ts > hour_ago)
+                    
+                    # Get top rejection reason
+                    top_reject_reason = "none"
+                    top_reject_count = 0
+                    if _rolling_metrics["rejections"]:
+                        top_reject_reason, top_reject_count = max(_rolling_metrics["rejections"].items(), key=lambda x: x[1])
+                    
+                    # Get paper trade stats
+                    script_dir = Path(__file__).parent.parent.parent
+                    db_path = script_dir / "logs" / "paper_trading.sqlite"
+                    paper_open = 0
+                    paper_resolved = 0
+                    paper_open_delta = 0
+                    paper_resolved_delta = 0
+                    
+                    if db_path.exists():
+                        conn = sqlite3.connect(str(db_path))
+                        conn.row_factory = sqlite3.Row
+                        
+                        def one(sql, params=()):
+                            cur = conn.execute(sql, params)
+                            row = cur.fetchone()
+                            return row[0] if row else 0
+                        
+                        paper_open = one("SELECT COUNT(*) FROM paper_trades WHERE status='OPEN'")
+                        paper_resolved = one("SELECT COUNT(*) FROM paper_trades WHERE status='RESOLVED'")
+                        
+                        # Get delta (new opens/resolves in last hour)
+                        hour_ago_iso = datetime.fromtimestamp(hour_ago, tz=timezone.utc).isoformat()
+                        paper_open_delta = one(
+                            "SELECT COUNT(*) FROM paper_trades WHERE status='OPEN' AND created_at > ?",
+                            (hour_ago_iso,)
+                        )
+                        paper_resolved_delta = one(
+                            "SELECT COUNT(*) FROM paper_trades WHERE status='RESOLVED' AND resolved_at > ?",
+                            (hour_ago_iso,)
+                        )
+                        
+                        conn.close()
+                    
+                    # Format dashboard message
+                    dashboard_msg = (
+                        f"📊 Operator Dashboard ({ENGINE_FINGERPRINT})\n"
+                        f"Last hour:\n"
+                        f"• Signals: {signals_last_hour}\n"
+                        f"• Trades considered: {trades_last_hour}\n"
+                        f"• Top reject: {top_reject_reason} ({top_reject_count})\n"
+                        f"\nPaper trades:\n"
+                        f"• OPEN: {paper_open} (+{paper_open_delta})\n"
+                        f"• RESOLVED: {paper_resolved} (+{paper_resolved_delta})"
+                    )
+                    
+                    send_telegram(dashboard_msg)
+                    last_dashboard = dashboard_now
+                    
+                    # Reset rejection counters for next period
+                    _rolling_metrics["rejections"] = {}
+                except Exception as e:
+                    logger.warning(
+                        "dashboard_failed",
+                        extra={
+                            "event": "dashboard_failed",
+                            "error": str(e),
+                        }
+                    )
+            
+            # Calculate elapsed time and sleep until next cycle
+            elapsed = time() - cycle_started
+            sleep_for = max(0, SCAN_INTERVAL_SECONDS - elapsed)
+            logger.info("cycle_complete", elapsed_s=round(elapsed, 2), sleep_s=round(sleep_for, 2))
+            await asyncio.sleep(sleep_for)
 
 
 async def shutdown():
@@ -1953,8 +3296,13 @@ async def main():
     print(f"\n🔧 ENV_SETTINGS: {env_settings}\n")  # Force print to console
     logger.info("ENV_SETTINGS", **env_settings)  # Also log normally
     
-    # Notify engine start
-    notify_engine_start()
+    # Notify engine start with fingerprint and config
+    from src.polymarket.telegram import send_telegram
+    startup_msg = (
+        f"✅ Engine started ({ENGINE_FINGERPRINT}) | "
+        f"MIN_LOW_DISCOUNT={MIN_LOW_DISCOUNT} ({MIN_LOW_DISCOUNT*100:.2f}%)"
+    )
+    send_telegram(startup_msg)
     
     # Log file location
     day = datetime.utcnow().strftime("%Y-%m-%d")
@@ -1962,17 +3310,56 @@ async def main():
     logger.info("engine_starting", mode="paper_trading", logging="csv_and_console", log_file=str(log_file))
     print(f"\n📝 Console output is being logged to: {log_file}\n")
     
+    resolver_task = None
+    telegram_poll_task = None
+    
     try:
+        # Start Telegram command polling in background
+        try:
+            from src.polymarket.telegram import poll_telegram_commands
+            logger.info("telegram_commands_started", interval_seconds=5)
+            telegram_poll_task = asyncio.create_task(poll_telegram_commands(interval_seconds=5))
+        except Exception as e:
+            logger.warning("telegram_commands_failed_to_start", error=str(e))
+        
+        # Start resolver loop in background if paper trading is enabled
+        if PAPER_TRADING:
+            logger.info("resolver_started", interval_seconds=RESOLVER_INTERVAL_SECONDS)
+            resolver_task = asyncio.create_task(
+                run_resolver_loop(signal_store, fetch_outcome, RESOLVER_INTERVAL_SECONDS)
+            )
+        
+        # Run main loop (runs forever until KeyboardInterrupt or exception)
         await main_loop()
+        
+        # Cancel background tasks (should never reach here if main_loop runs forever)
+        if resolver_task:
+            resolver_task.cancel()
+            try:
+                await resolver_task
+            except asyncio.CancelledError:
+                pass
+        
+        if telegram_poll_task:
+            telegram_poll_task.cancel()
+            try:
+                await telegram_poll_task
+            except asyncio.CancelledError:
+                pass
+                
     except KeyboardInterrupt:
-        logger.info("shutdown_requested")
+        logger.info("shutdown_requested", reason="keyboard_interrupt")
         notify_engine_stop()
-    except Exception as e:
-        from src.polymarket.telegram import notify_engine_crash
-        notify_engine_crash(f"{type(e).__name__}: {e}")
-        raise
-    finally:
         await shutdown()
+    except Exception as e:
+        logger.exception("engine_crashed", error=str(e))
+        from src.polymarket.telegram import notify_engine_crash
+        try:
+            notify_engine_crash(f"{type(e).__name__}: {e}")
+        except Exception:
+            pass  # Don't crash on Telegram failure
+        await shutdown()
+        raise
 
 
 if __name__ == "__main__":

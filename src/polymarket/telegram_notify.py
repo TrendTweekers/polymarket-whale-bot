@@ -26,8 +26,8 @@ def send_telegram(text: str) -> None:
 
 @dataclass
 class SignalStats:
-    notify_every_signals: int = 10
-    notify_every_seconds: int = 15*60
+    notify_every_signals: int = int(os.getenv("STATS_NOTIFY_EVERY_SIGNALS", "10"))
+    notify_every_seconds: int = int(os.getenv("STATS_NOTIFY_EVERY_SECONDS", "900"))  # Default 15 min (900 seconds)
     started_at: float = time.time()
     total_signals: int = 0
     last_notify_at: float = 0.0
