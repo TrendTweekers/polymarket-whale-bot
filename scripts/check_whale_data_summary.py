@@ -45,7 +45,7 @@ print()
 
 # Filter whale trades
 whale_trades = [t for t in trades if t.get('wallet', '').lower() in monitored_whales]
-large_trades = [t for t in trades if t.get('value', 0) >= 100 and t.get('wallet', '').lower() not in monitored_whales]
+large_trades = [t for t in trades if t.get('value', 0) >= 100 and not t.get('is_monitored_whale', False)]
 
 print("="*80)
 print("🐋 WHALE ACTIVITY")
@@ -65,11 +65,16 @@ if whale_trades:
         whale_activity[wallet]['total_value'] += trade.get('value', 0)
         whale_activity[wallet]['markets'].add(trade.get('market', 'Unknown'))
         
-        trade_time = trade.get('timestamp', '')
-        if not whale_activity[wallet]['first_trade'] or trade_time < whale_activity[wallet]['first_trade']:
-            whale_activity[wallet]['first_trade'] = trade_time
-        if not whale_activity[wallet]['last_trade'] or trade_time > whale_activity[wallet]['last_trade']:
-            whale_activity[wallet]['last_trade'] = trade_time
+        trade_time = trade.get('timestamp', 0)
+        if isinstance(trade_time, (int, float)):
+            trade_time_str = datetime.fromtimestamp(trade_time).isoformat() if trade_time > 1000000000 else str(trade_time)
+        else:
+            trade_time_str = str(trade_time)
+        
+        if not whale_activity[wallet]['first_trade'] or trade_time_str < whale_activity[wallet]['first_trade']:
+            whale_activity[wallet]['first_trade'] = trade_time_str
+        if not whale_activity[wallet]['last_trade'] or trade_time_str > whale_activity[wallet]['last_trade']:
+            whale_activity[wallet]['last_trade'] = trade_time_str
     
     # Sort by total value
     sorted_whales = sorted(whale_activity.items(), key=lambda x: x[1]['total_value'], reverse=True)
@@ -92,8 +97,12 @@ if whale_trades:
         for trade in top_trades:
             value = trade.get('value', 0)
             market = trade.get('market', 'Unknown')[:50]
-            time = trade.get('timestamp', '')[:19]
-            print(f"      ${value:,.2f} | {market} | {time}")
+            ts = trade.get('timestamp', 0)
+            if isinstance(ts, (int, float)) and ts > 1000000000:
+                time_str = datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
+            else:
+                time_str = str(ts)[:19]
+            print(f"      ${value:,.2f} | {market} | {time_str}")
         print()
     
     print("="*80)
@@ -122,10 +131,19 @@ print()
 
 # Time range
 if trades:
-    times = [t.get('timestamp', '') for t in trades if t.get('timestamp')]
-    if times:
-        print(f"First Trade: {min(times)[:19]}")
-        print(f"Last Trade: {max(times)[:19]}")
+    timestamps = []
+    for t in trades:
+        ts = t.get('timestamp', 0)
+        if isinstance(ts, (int, float)) and ts > 1000000000:
+            timestamps.append(ts)
+    
+    if timestamps:
+        first_ts = min(timestamps)
+        last_ts = max(timestamps)
+        print(f"First Trade: {datetime.fromtimestamp(first_ts).strftime('%Y-%m-%d %H:%M:%S')}")
+        print(f"Last Trade: {datetime.fromtimestamp(last_ts).strftime('%Y-%m-%d %H:%M:%S')}")
+        duration = last_ts - first_ts
+        print(f"Duration: {int(duration / 3600)}h {int((duration % 3600) / 60)}m")
         print()
 
 print(f"Total Trades Detected: {len(trades)}")

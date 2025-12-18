@@ -1,0 +1,78 @@
+"""Show current whale discovery filters"""
+from dynamic_whale_manager import DynamicWhaleManager
+
+print("="*80)
+print("🔍 CURRENT WHALE DISCOVERY FILTERS")
+print("="*80)
+print()
+
+# Dynamic Whale Manager filters
+m = DynamicWhaleManager()
+
+print("📊 DYNAMIC WHALE MANAGER FILTERS:")
+print("-" * 80)
+print(f"  • Activity Threshold: {m.activity_threshold.days * 24 + m.activity_threshold.seconds // 3600} hours")
+print(f"    → Whales inactive for >{m.activity_threshold.days * 24 + m.activity_threshold.seconds // 3600}h are marked inactive")
+print()
+print(f"  • Minimum Confidence: {m.min_confidence:.0%}")
+print(f"    → Whales below {m.min_confidence:.0%} confidence are filtered out")
+print()
+print("  • Discovery Criteria:")
+print("    → Any trade ≥$100 triggers whale discovery")
+print("    → No minimum trade count required")
+print("    → No minimum total value required")
+print("    → Confidence starts at 50% for new whales")
+print("    → Confidence increases +5% per additional trade")
+print("    → Confidence decays if inactive >72 hours")
+print()
+
+# Realtime Watcher filters
+print("📡 REALTIME WATCHER FILTERS:")
+print("-" * 80)
+print("  • Minimum Trade Size: $100")
+print("    → Only trades ≥$100 are processed")
+print("    → Smaller trades are ignored")
+print()
+print("  • Telegram Notifications:")
+print("    → Monitored whale trades: ANY size")
+print("    → Large trades: ≥$1,000 (any wallet)")
+print()
+
+# Anomaly Detector filters
+print("🚨 ANOMALY DETECTOR FILTERS:")
+print("-" * 80)
+print("  • Rapid Price Move: ≥5% change")
+print("  • Volume Spike: ≥10x average trade size")
+print("  • One-Sided Pressure: ≥2% directional move")
+print()
+
+# Current stats
+stats = m.get_whale_stats()
+print("📈 CURRENT STATISTICS:")
+print("-" * 80)
+print(f"  • Total Whales: {stats['total_whales']}")
+print(f"  • Active Whales: {stats['active_whales']}")
+print(f"  • High Confidence (≥70%): {stats['high_confidence']}")
+print(f"  • Average Confidence: {stats['avg_confidence']:.1%}")
+print()
+
+# Filter summary
+print("="*80)
+print("📋 FILTER SUMMARY:")
+print("="*80)
+print()
+print("TO BE DISCOVERED AS A WHALE:")
+print("  ✅ Make a trade ≥$100")
+print()
+print("TO BE CONSIDERED ACTIVE:")
+print("  ✅ Trade within last 72 hours")
+print()
+print("TO BE HIGH CONFIDENCE (≥70%):")
+print("  ✅ Have ≥4 trades (50% + 4×5% = 70%)")
+print("  ✅ OR have high activity/volume")
+print()
+print("TO BE INCLUDED IN ACTIVE LIST:")
+print("  ✅ Active = True")
+print("  ✅ Confidence ≥30%")
+print()
+print("="*80)

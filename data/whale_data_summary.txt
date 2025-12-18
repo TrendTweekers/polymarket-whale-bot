@@ -1,0 +1,7 @@
+Whale Data Summary - 2025-12-18 19:01:29
+================================================================================
+
+Total Trades: 7989
+Whale Trades: 0
+Active Whales: 0
+Total Whale Value: $0.00
