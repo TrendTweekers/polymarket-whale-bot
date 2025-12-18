@@ -6,6 +6,10 @@ import asyncio
 import yaml
 import structlog
 from pathlib import Path
+from dotenv import load_dotenv
+
+# Load environment variables FIRST
+load_dotenv()
 
 from src.polymarket import WhaleBot
 

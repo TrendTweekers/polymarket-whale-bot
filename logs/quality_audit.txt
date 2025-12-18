@@ -1,25 +1,27 @@
 ======================================================================
-DATA QUALITY AUDIT - 2025-12-16
+DATA QUALITY AUDIT - 2025-12-17
 ======================================================================
 
-Timestamp: 2025-12-16T15:29:08.406641
-Signals File: C:\Users\User\Documents\polymarket-whale-engine\src\polymarket\..\..\logs\signals_2025-12-16.csv
+Timestamp: 2025-12-17T23:59:52.651308
+Signals File: C:\Users\User\Documents\polymarket-whale-engine\src\polymarket\..\..\logs\signals_2025-12-17.csv
 
 SUMMARY METRICS
 ----------------------------------------------------------------------
-Total Signals: 21
+Total Signals: 856
 Average Cluster Size: 1.00 trades
-Average Discount: 0.54%
-Signals with Score < 0.70: 4 (19.05%)
+Average Discount: 0.03%
+Signals with Score < 0.70: 551 (64.37%)
 
 CATEGORY DISTRIBUTION
 ----------------------------------------------------------------------
-  crypto: 19 (90.48%)
-  elections: 2 (9.52%)
+  crypto: 592 (69.16%)
+  unknown: 166 (19.39%)
+  stocks: 50 (5.84%)
+  macro: 42 (4.91%)
+  social: 6 (0.70%)
 
 MARKET TYPE DISTRIBUTION
 ----------------------------------------------------------------------
-  Crypto: 8 (38.10%)
-  Elections: 2 (9.52%)
+  Crypto: 297 (34.70%)
 
 ======================================================================

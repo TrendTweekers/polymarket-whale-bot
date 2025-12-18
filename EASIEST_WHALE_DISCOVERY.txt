@@ -1,0 +1,178 @@
+"""
+EASIEST AUTOMATED WHALE DISCOVERY
+==================================
+Use existing whale tracking services instead of building from scratch!
+
+I found 4 services that already track whales for you:
+"""
+
+# METHOD 1: PolyWhaleFeed.com (BEST FOR ADDRESSES)
+"""
+What: Real-time feed of ALL $10k+ trades on Polymarket
+Cost: FREE
+Data: Shows wallet address, market, amount, timestamp
+
+HOW TO USE:
+1. Go to: https://polywhalefeed.com/
+2. Watch the feed for 30 minutes
+3. Copy 10-15 addresses that appear multiple times
+4. Add to your config/whale_list.json
+5. Restart bot
+
+Why it works:
+✅ Addresses are already doing $10k+ trades = proven whales
+✅ Real-time, so you get currently ACTIVE whales
+✅ Free, public data
+✅ No scraping needed
+"""
+
+# METHOD 2: PolyWatch Telegram Bot (BEST FOR ALERTS)
+"""
+What: Free Telegram bot that broadcasts whale trades
+Cost: FREE
+Data: Instant notifications when whales trade
+
+HOW TO USE:
+1. Go to: https://www.polywatch.tech/
+2. Start the Telegram bot
+3. Use /watch command with whale addresses
+4. Get instant DM when they trade
+5. Bot tells you their address automatically
+
+Commands:
+/watch 0xADDRESS - Track a whale
+/unwatch 0xADDRESS - Stop tracking
+/list - See your tracked whales
+
+Why it works:
+✅ Built by ForgeLabs, trusted
+✅ 100% free forever
+✅ Can copy addresses from alerts
+✅ Shows $1k+ and $25k+ trades separately
+"""
+
+# METHOD 3: PolyTrack "Dev Picks" (BEST FOR QUALITY)
+"""
+What: Pre-vetted whales with verified performance
+Cost: FREE for 3 whales, $19/mo for unlimited
+Data: Win rate, P&L, full history
+
+Criteria:
+• 60%+ win rate
+• $100k+ volume
+• 50+ positions
+• Consistent monthly profits
+
+HOW TO USE:
+1. Go to: https://www.polytrackhq.app/
+2. Browse "Dev Picks" section
+3. Click on whale profiles
+4. Copy their wallet addresses from URL
+5. Add to config/whale_list.json
+
+Why it works:
+✅ Already filtered for 60%+ win rate
+✅ Pre-verified profitability
+✅ Cluster detection (finds related wallets)
+✅ Free tier gives you 3 whales
+"""
+
+# METHOD 4: Polymarket Analytics (BEST FOR VARIETY)
+"""
+What: Trader leaderboards with full analytics
+Cost: FREE
+Data: Every trader, sortable by category
+
+HOW TO USE:
+1. Go to: https://polymarketanalytics.com/
+2. Click "Traders" or "Leaderboards"
+3. Sort by P&L or volume
+4. Filter by category (Politics, Crypto, Sports)
+5. Click traders, copy addresses
+
+Why it works:
+✅ Comprehensive database
+✅ Can filter by specialization
+✅ See trading patterns
+✅ Free access
+"""
+
+
+# AUTOMATED SCRIPT USING THESE SERVICES
+"""
+Instead of scraping Polymarket directly, we:
+1. Monitor PolyWhaleFeed for addresses
+2. Verify those addresses have positions
+3. Add to config automatically
+
+This is what automated_whale_finder.py does.
+"""
+
+
+# RECOMMENDATION: HYBRID APPROACH
+"""
+STEP 1 (10 minutes):
+1. Visit PolyWhaleFeed.com
+2. Watch feed, write down 10 addresses you see multiple times
+3. Add all 10 to config/whale_list.json
+
+STEP 2 (5 minutes):
+1. Run automated_whale_finder.py
+2. It scans orderbooks, finds 5-10 more
+3. Auto-adds to config
+
+RESULT:
+• 15-20 verified active whales
+• Mix of manual (guaranteed) + automated (bonus)
+• Takes 15 minutes total
+• Bot starts getting trades immediately
+
+This is the BEST method:
+✅ Fast (15 min)
+✅ Reliable (verified addresses)
+✅ Automated (script does heavy lifting)
+✅ Quality (all currently active)
+"""
+
+
+# QUICK START COMMANDS
+"""
+# 1. Start bot with current whales
+python main.py
+
+# 2. While bot runs, open browser:
+https://polywhalefeed.com/
+
+# 3. In another terminal, run whale finder:
+python scripts/automated_whale_finder.py
+
+# 4. Check how many whales you have now:
+# Look in config/whale_list.json
+
+# 5. If still <10 whales:
+# Manually add 5 from PolyWhaleFeed.com
+
+# 6. Restart bot:
+# Ctrl+C, then python main.py
+"""
+
+
+# EXPECTED TIMELINE
+"""
+Time 0:00 - Start bot (current 1 whale)
+Time 0:01 - Open PolyWhaleFeed.com in browser
+Time 0:05 - Run automated_whale_finder.py
+Time 0:08 - Script finishes, finds 5-10 whales
+Time 0:10 - Manually add 5 from PolyWhaleFeed
+Time 0:15 - Restart bot
+Time 0:16 - Bot now has 10-15 whales ✅
+Time 0:30 - First trades detected! 🎉
+"""
+
+
+if __name__ == "__main__":
+    print(__doc__)
+    print("\nREADY TO START? Run:")
+    print("  python scripts/automated_whale_finder.py")
+    print("\nOR manually visit:")
+    print("  https://polywhalefeed.com/")

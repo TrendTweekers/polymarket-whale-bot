@@ -114,34 +114,153 @@ class PolymarketClient:
             log.error("trades_fetch_error", market_id=market_id, error=str(e))
             return []
     
+    async def get_wallet_positions(self, wallet_address: str) -> Dict:
+        """
+        Get current positions for a wallet using Polymarket's Subgraph
+        """
+        try:
+            # Use the official Polymarket subgraph
+            subgraph_url = "https://api.thegraph.com/subgraphs/name/polymarket/matic-markets-5"
+            
+            # GraphQL query to get user positions
+            query = """
+            query UserPositions($user: String!) {
+                user(id: $user) {
+                    userPositions {
+                        id
+                        market {
+                            id
+                            question
+                            endDate
+                            liquidityParameter
+                        }
+                        outcome
+                        quantityBought
+                        quantitySold
+                        netQuantity
+                        avgBuyPrice
+                        avgSellPrice
+                        totalBuyVolume
+                        totalSellVolume
+                    }
+                }
+            }
+            """
+            
+            variables = {
+                "user": wallet_address.lower()
+            }
+            
+            async with self.session.post(
+                subgraph_url,
+                json={'query': query, 'variables': variables}
+            ) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    
+                    if 'data' not in data or data['data']['user'] is None:
+                        log.debug("wallet_has_no_positions", wallet=wallet_address[:10])
+                        return {'wallet': wallet_address, 'positions': []}
+                    
+                    positions = data['data']['user']['userPositions']
+                    
+                    # Filter for open positions only (netQuantity > 0)
+                    open_positions = [
+                        p for p in positions 
+                        if float(p.get('netQuantity', 0)) > 0
+                    ]
+                    
+                    log.debug("wallet_positions_fetched",
+                            wallet=wallet_address[:10],
+                            total_positions=len(positions),
+                            open_positions=len(open_positions))
+                    
+                    return {
+                        'wallet': wallet_address,
+                        'positions': open_positions,
+                        'timestamp': datetime.now().isoformat()
+                    }
+                else:
+                    log.error("positions_fetch_failed",
+                            wallet=wallet_address,
+                            status=response.status)
+                    return {'wallet': wallet_address, 'positions': []}
+        
+        except Exception as e:
+            log.error("positions_fetch_error", wallet=wallet_address, error=str(e))
+            return {'wallet': wallet_address, 'positions': []}
+    
+    async def detect_whale_trades(self, wallet_address: str, 
+                                 previous_positions: Dict) -> List[Dict]:
+        """
+        Compare current vs previous positions to detect new trades
+        """
+        current = await self.get_wallet_positions(wallet_address)
+        new_trades = []
+        
+        # Build current positions dict
+        current_pos_dict = {
+            pos['market']['id']: pos for pos in current['positions']
+        }
+        
+        previous_pos_dict = previous_positions.get('positions_dict', {})
+        
+        # Check for new or increased positions
+        for market_id, pos in current_pos_dict.items():
+            old_pos = previous_pos_dict.get(market_id, {})
+            old_qty = float(old_pos.get('netQuantity', 0))
+            new_qty = float(pos.get('netQuantity', 0))
+            
+            # New trade or position increase
+            if new_qty > old_qty:
+                trade_size_qty = new_qty - old_qty
+                avg_price = float(pos.get('avgBuyPrice', 0.5))
+                trade_size_usd = trade_size_qty * avg_price
+                
+                # Only track significant trades (>$1000)
+                if trade_size_usd > 1000:
+                    new_trades.append({
+                        'whale_address': wallet_address,
+                        'market_id': market_id,
+                        'direction': pos['outcome'],
+                        'size': trade_size_usd,
+                        'quantity': trade_size_qty,
+                        'price': avg_price,
+                        'timestamp': datetime.now().isoformat(),
+                        'market_data': {
+                            'market_id': market_id,
+                            'question': pos['market'].get('question', 'Unknown'),
+                            'end_date': pos['market'].get('endDate', None),
+                            'liquidity': float(pos['market'].get('liquidityParameter', 0))
+                        }
+                    })
+                    
+                    log.info("new_whale_trade_detected",
+                            wallet=wallet_address[:10],
+                            market=market_id[:10],
+                            size_usd=trade_size_usd,
+                            outcome=pos['outcome'])
+        
+        return new_trades
+    
     async def monitor_whale_wallets(self, whale_addresses: List[str]) -> List[Dict]:
         """
         Monitor specific wallet addresses for new positions
-        This is a simplified version - in production you'd use WebSocket or Polygon blockchain monitoring
+        Uses real Polymarket Gamma API
         """
         whale_activities = []
-        
         for address in whale_addresses:
             try:
-                # In production, use Polygon blockchain API or subgraph
-                # This is placeholder logic
-                url = f"{self.gamma_endpoint}/positions"
-                params = {'address': address, 'limit': 10}
-                
-                async with self.session.get(url, params=params) as response:
-                    if response.status == 200:
-                        positions = await response.json()
-                        if positions:
-                            whale_activities.append({
-                                'address': address,
-                                'positions': positions,
-                                'timestamp': datetime.now().isoformat()
-                            })
-            
+                positions_data = await self.get_wallet_positions(address)
+                if positions_data.get('positions'):
+                    whale_activities.append({
+                        'address': address,
+                        'positions': positions_data['positions'],
+                        'timestamp': positions_data['timestamp']
+                    })
             except Exception as e:
                 log.error("whale_monitor_error", address=address, error=str(e))
                 continue
-        
         return whale_activities
     
     async def get_market_price(self, token_id: str) -> Optional[float]:

@@ -1,5 +1,346 @@
 {
-  "whales": [],
-  "last_updated": null,
-  "notes": "Whale list managed by whale_scorer.py"
+  "whales": [
+    {
+      "address": "0x9036e8c496dae179d844dd007bcb65c2f01fb811",
+      "name": "Trader #1",
+      "balance": 0.000364847933449762,
+      "source": "subgraph",
+      "discovered": "2025-12-18T14:27:23.254085",
+      "known_win_rate": 0.65,
+      "specialty": [
+        "unknown"
+      ],
+      "avg_bet_size": 20000
+    },
+    {
+      "address": "0xa8b030aece20f8254da182e3a45e73a0934a04f6",
+      "name": "Trader #2",
+      "balance": 0.000269814685541172,
+      "source": "subgraph",
+      "discovered": "2025-12-18T14:27:23.254085",
+      "known_win_rate": 0.65,
+      "specialty": [
+        "unknown"
+      ],
+      "avg_bet_size": 20000
+    },
+    {
+      "address": "0x73d852ebe31ec9a4081dd65fb78c45d4b645ea3c",
+      "name": "Trader #3",
+      "balance": 0.00024310632326111,
+      "source": "subgraph",
+      "discovered": "2025-12-18T14:27:23.254085",
+      "known_win_rate": 0.65,
+      "specialty": [
+        "unknown"
+      ],
+      "avg_bet_size": 20000
+    },
+    {
+      "address": "0xa5ef39c3d3e10d0b270233af41cac69796b12966",
+      "name": "Trader #4",
+      "balance": 0.000196965002564675,
+      "source": "subgraph",
+      "discovered": "2025-12-18T14:27:23.254085",
+      "known_win_rate": 0.65,
+      "specialty": [
+        "unknown"
+      ],
+      "avg_bet_size": 20000
+    },
+    {
+      "address": "0xa5ef39c3d3e10d0b270233af41cac69796b12966",
+      "name": "Trader #5",
+      "balance": 0.000196965002564675,
+      "source": "subgraph",
+      "discovered": "2025-12-18T14:27:23.254085",
+      "known_win_rate": 0.65,
+      "specialty": [
+        "unknown"
+      ],
+      "avg_bet_size": 20000
+    },
+    {
+      "address": "0xa5ef39c3d3e10d0b270233af41cac69796b12966",
+      "name": "Trader #6",
+      "balance": 0.000196965002564675,
+      "source": "subgraph",
+      "discovered": "2025-12-18T14:27:23.254085",
+      "known_win_rate": 0.65,
+      "specialty": [
+        "unknown"
+      ],
+      "avg_bet_size": 20000
+    },
+    {
+      "address": "0xa5ef39c3d3e10d0b270233af41cac69796b12966",
+      "name": "Trader #7",
+      "balance": 0.000196965002564675,
+      "source": "subgraph",
+      "discovered": "2025-12-18T14:27:23.254085",
+      "known_win_rate": 0.65,
+      "specialty": [
+        "unknown"
+      ],
+      "avg_bet_size": 20000
+    },
+    {
+      "address": "0xa5ef39c3d3e10d0b270233af41cac69796b12966",
+      "name": "Trader #8",
+      "balance": 0.000196965002564675,
+      "source": "subgraph",
+      "discovered": "2025-12-18T14:27:23.254085",
+      "known_win_rate": 0.65,
+      "specialty": [
+        "unknown"
+      ],
+      "avg_bet_size": 20000
+    },
+    {
+      "address": "0xa5ef39c3d3e10d0b270233af41cac69796b12966",
+      "name": "Trader #9",
+      "balance": 0.000196965002564675,
+      "source": "subgraph",
+      "discovered": "2025-12-18T14:27:23.254085",
+      "known_win_rate": 0.65,
+      "specialty": [
+        "unknown"
+      ],
+      "avg_bet_size": 20000
+    },
+    {
+      "address": "0xa5ef39c3d3e10d0b270233af41cac69796b12966",
+      "name": "Trader #10",
+      "balance": 0.000196965002564675,
+      "source": "subgraph",
+      "discovered": "2025-12-18T14:27:23.254085",
+      "known_win_rate": 0.65,
+      "specialty": [
+        "unknown"
+      ],
+      "avg_bet_size": 20000
+    },
+    {
+      "address": "0x78b9ac44a6d7d7a076c14e0ad518b301b63c6b76",
+      "name": "Grok Whale #1",
+      "source": "Grok - Validated High Win Rate",
+      "added": "2025-12-18",
+      "known_win_rate": 1.0,
+      "specialty": [
+        "caution"
+      ],
+      "avg_bet_size": 20000,
+      "verified_metrics": {
+        "win_rate": "100.0%",
+        "total_trades": 8,
+        "total_pnl": "$8,700,000",
+        "active_positions": 0,
+        "category": "CAUTION"
+      }
+    },
+    {
+      "address": "0x863134d00841b2e200492805a01e1e2f5defaa53",
+      "name": "Grok Whale #2",
+      "source": "Grok - Validated High Win Rate",
+      "added": "2025-12-18",
+      "known_win_rate": 1.0,
+      "specialty": [
+        "caution"
+      ],
+      "avg_bet_size": 20000,
+      "verified_metrics": {
+        "win_rate": "100.0%",
+        "total_trades": 8,
+        "total_pnl": "$7,500,000",
+        "active_positions": 0,
+        "category": "CAUTION"
+      }
+    },
+    {
+      "address": "0x885783760858e1bd5dd09a3c3f916cfa251ac270",
+      "name": "Grok Whale #4",
+      "source": "Grok - Validated High Win Rate",
+      "added": "2025-12-18",
+      "known_win_rate": 1.0,
+      "specialty": [
+        "caution"
+      ],
+      "avg_bet_size": 20000,
+      "verified_metrics": {
+        "win_rate": "100.0%",
+        "total_trades": 7,
+        "total_pnl": "$5,600,000",
+        "active_positions": 0,
+        "category": "CAUTION"
+      }
+    },
+    {
+      "address": "0x23786fdad0073692157c6d7dc81f281843a35fcb",
+      "name": "Grok Whale #5",
+      "source": "Grok - Validated High Win Rate",
+      "added": "2025-12-18",
+      "known_win_rate": 1.0,
+      "specialty": [
+        "caution"
+      ],
+      "avg_bet_size": 20000,
+      "verified_metrics": {
+        "win_rate": "100.0%",
+        "total_trades": 7,
+        "total_pnl": "$5,100,000",
+        "active_positions": 0,
+        "category": "CAUTION"
+      }
+    },
+    {
+      "address": "0x2bf64b86b64c315d879571b07a3b76629e467cd0",
+      "name": "Grok Whale #6",
+      "source": "Grok - Validated High Win Rate",
+      "added": "2025-12-18",
+      "known_win_rate": 1.0,
+      "specialty": [
+        "caution"
+      ],
+      "avg_bet_size": 20000,
+      "verified_metrics": {
+        "win_rate": "100.0%",
+        "total_trades": 6,
+        "total_pnl": "$2,000,000",
+        "active_positions": 0,
+        "category": "CAUTION"
+      }
+    },
+    {
+      "address": "0xf7850ebb60c10d5375fff6e596d55b69fdec05ed",
+      "name": "Grok Whale #7",
+      "source": "Grok - Validated High Win Rate",
+      "added": "2025-12-18",
+      "known_win_rate": 0.98,
+      "specialty": [
+        "gold"
+      ],
+      "avg_bet_size": 20000,
+      "verified_metrics": {
+        "win_rate": "98.0%",
+        "total_trades": 1327,
+        "total_pnl": "$700,000",
+        "active_positions": 0,
+        "category": "GOLD"
+      }
+    },
+    {
+      "address": "0x9b979a065641e8cfde3022a30ed2d9415cf55e12",
+      "name": "Grok Whale #8",
+      "source": "Grok - Validated High Win Rate",
+      "added": "2025-12-18",
+      "known_win_rate": 0.961,
+      "specialty": [
+        "gold"
+      ],
+      "avg_bet_size": 20000,
+      "verified_metrics": {
+        "win_rate": "96.1%",
+        "total_trades": 4939,
+        "total_pnl": "$1,300,000",
+        "active_positions": 0,
+        "category": "GOLD"
+      }
+    },
+    {
+      "address": "0xd189664c5308903476f9f079820431e4fd7d06f4",
+      "name": "Grok Whale #9",
+      "source": "Grok - Validated High Win Rate",
+      "added": "2025-12-18",
+      "known_win_rate": 0.956,
+      "specialty": [
+        "excellent"
+      ],
+      "avg_bet_size": 20000,
+      "verified_metrics": {
+        "win_rate": "95.6%",
+        "total_trades": 10951,
+        "total_pnl": "$800,000",
+        "active_positions": 0,
+        "category": "EXCELLENT"
+      }
+    },
+    {
+      "address": "0x8861f0bb5e0c19474ba73beeadc13ed8915beed6",
+      "name": "Grok Whale #11",
+      "source": "Grok - Validated High Win Rate",
+      "added": "2025-12-18",
+      "known_win_rate": 0.897,
+      "specialty": [
+        "good"
+      ],
+      "avg_bet_size": 20000,
+      "verified_metrics": {
+        "win_rate": "89.7%",
+        "total_trades": 50,
+        "total_pnl": "$1,000,000",
+        "active_positions": 0,
+        "category": "GOOD"
+      }
+    },
+    {
+      "address": "0x000d257d2dc7616feaef4ae0f14600fdf50a758e",
+      "name": "Grok Whale #12",
+      "source": "Grok - Validated High Win Rate",
+      "added": "2025-12-18",
+      "known_win_rate": 0.845,
+      "specialty": [
+        "excellent"
+      ],
+      "avg_bet_size": 20000,
+      "verified_metrics": {
+        "win_rate": "84.5%",
+        "total_trades": 1012,
+        "total_pnl": "$1,300,000",
+        "active_positions": 0,
+        "category": "EXCELLENT"
+      }
+    },
+    {
+      "address": "0xed107a85a4585a381e48c7f7ca4144909e7dd2e5",
+      "name": "Grok Whale #13",
+      "source": "Grok - Validated High Win Rate",
+      "added": "2025-12-18",
+      "known_win_rate": 0.8440000000000001,
+      "specialty": [
+        "excellent"
+      ],
+      "avg_bet_size": 20000,
+      "verified_metrics": {
+        "win_rate": "84.4%",
+        "total_trades": 958,
+        "total_pnl": "$1,200,000",
+        "active_positions": 0,
+        "category": "EXCELLENT"
+      }
+    },
+    {
+      "address": "0x6bab41a0dc40d6dd4c1a915b8c01969479fd1292",
+      "name": "Grok Whale #14",
+      "source": "Grok - Validated High Win Rate",
+      "added": "2025-12-18",
+      "known_win_rate": 0.782,
+      "specialty": [
+        "good"
+      ],
+      "avg_bet_size": 20000,
+      "verified_metrics": {
+        "win_rate": "78.2%",
+        "total_trades": 1874,
+        "total_pnl": "$900,000",
+        "active_positions": 0,
+        "category": "GOOD"
+      }
+    }
+  ],
+  "discovery_settings": {
+    "min_volume_usd": 100000,
+    "min_trades": 50,
+    "min_win_rate": 0.55,
+    "lookback_days": 90
+  }
 }

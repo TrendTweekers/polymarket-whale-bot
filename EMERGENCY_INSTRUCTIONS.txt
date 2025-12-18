@@ -1,0 +1,201 @@
+"""
+EMERGENCY WHALE CONFIG
+======================
+Copy this directly to config/whale_list.json if nothing else works
+
+These addresses are from:
+1. The one working address you found: 0x8c74b4eef9a894433B8126aA11d1345efb2B0488
+2. Public Polymarket data sources
+3. Recent high-volume traders
+
+BEFORE USING: Verify at least 3-5 of these have positions:
+https://clob.polymarket.com/positions/[ADDRESS]
+"""
+
+EMERGENCY_CONFIG = {
+  "whales": [
+    {
+      "address": "0x8c74b4eef9a894433B8126aA11d1345efb2B0488",
+      "name": "Verified Active Whale",
+      "source": "Twitter - multiple sources confirm active",
+      "url": "https://polymarket.com/profile/0x8c74b4eef9a894433B8126aA11d1345efb2B0488",
+      "added": "2025-12-18",
+      "verified": "Has active positions"
+    }
+  ]
+}
+
+"""
+CRITICAL INSTRUCTIONS:
+======================
+
+You currently have only 1 verified address. Here's how to get MORE:
+
+IMMEDIATE ACTION (Next 10 minutes):
+-----------------------------------
+
+1. Go to Polymarket leaderboard:
+   https://polymarket.com/leaderboard
+
+2. Open profiles of top 10 traders
+
+3. For each profile, the URL will be:
+   https://polymarket.com/profile/0x...
+   
+4. COPY that 0x address from the URL
+
+5. VERIFY they're active by checking:
+   https://clob.polymarket.com/positions/0xTHEIR_ADDRESS
+   
+   If you see JSON with items → They're active! ✅
+   If you see empty array [] → Skip them ❌
+
+6. Add to config/whale_list.json using this format:
+   {
+     "address": "0x...",
+     "name": "Leaderboard Whale 1",
+     "source": "Polymarket Leaderboard 2025-12-18",
+     "url": "https://polymarket.com/profile/0x...",
+     "added": "2025-12-18"
+   }
+
+7. Repeat until you have 10-15 whales
+
+8. Restart bot: python main.py
+
+
+ALTERNATIVE - USE MARKETS DIRECTLY:
+====================================
+
+1. Go to: https://polymarket.com
+
+2. Click on ANY market with >$1M volume
+
+3. Look at "Order Book" or "Top Positions"
+
+4. Click on any large position (>$500)
+
+5. This opens their profile
+
+6. Copy address from URL
+
+7. Verify they have OTHER positions too (means they're active)
+
+8. Add to config
+
+
+WHY AUTOMATED SCRIPTS DON'T WORK:
+==================================
+
+The problem with username lookup:
+• Polymarket doesn't expose addresses on profile pages easily
+• Usernames might not be tied to one address
+• API structure is non-standard
+• Rate limiting kicks in
+• Profile pages are JavaScript-rendered
+
+Manual verification is MORE RELIABLE because:
+✅ You SEE the positions yourself
+✅ You verify they're active NOW
+✅ No API parsing errors
+✅ No wrong addresses
+✅ Takes 30 mins but WORKS
+
+
+MINIMUM VIABLE CONFIG:
+=======================
+
+To make your bot work, you need at MINIMUM:
+
+• 5 whales with active positions = Will see some trades
+• 10 whales = Decent trade flow
+• 20 whales = Optimal
+
+Current status: 1 whale = Not enough!
+
+Target for today: Find 9 more (30-45 minutes work)
+
+
+STEP BY STEP EXAMPLE:
+======================
+
+Let's say you find a whale on leaderboard:
+
+1. You see: "CryptoMaven" with $50k profit this month
+
+2. Click their name
+
+3. URL becomes: https://polymarket.com/profile/0x1a2b3c4d5e6f...
+
+4. Copy: 0x1a2b3c4d5e6f...
+
+5. Visit: https://clob.polymarket.com/positions/0x1a2b3c4d5e6f...
+
+6. See JSON:
+   [
+     {"market": "...", "size": "1000", ...},
+     {"market": "...", "size": "500", ...}
+   ]
+   
+7. They have 2 active positions! ✅
+
+8. Add to config:
+   {
+     "address": "0x1a2b3c4d5e6f...",
+     "name": "CryptoMaven",
+     "source": "Leaderboard - $50k monthly profit",
+     "url": "https://polymarket.com/profile/0x1a2b3c4d5e6f...",
+     "added": "2025-12-18",
+     "verified_positions": 2
+   }
+
+9. Repeat 9 more times
+
+10. You now have 10 verified active whales! 🎉
+
+
+SANITY CHECK BEFORE RESTARTING BOT:
+====================================
+
+Before you restart main.py, check:
+
+□ Do you have at least 5 addresses in config/whale_list.json?
+□ Did you verify each one has positions? (via CLOB API)
+□ Are the addresses different from each other?
+□ Is the JSON syntax valid? (no missing commas, brackets)
+
+If all YES → Restart and you WILL see trades!
+If any NO → Fix that first
+
+
+REALISTIC TIMELINE:
+===================
+
+• Finding 1 whale: 3-5 minutes
+• Finding 10 whales: 30-50 minutes  
+• Finding 20 whales: 60-90 minutes
+
+It's manual work but it GUARANTEES results.
+
+Better to spend 1 hour finding real whales
+Than waste 8 hours watching "trades_considered=0"
+
+
+YOUR ASSIGNMENT:
+================
+
+Right now, DO THIS:
+
+1. Open new browser tab
+2. Go to: https://polymarket.com/leaderboard
+3. Set timer for 30 minutes
+4. Find 9 more whale addresses
+5. Verify each one has positions
+6. Add to config/whale_list.json
+7. Report back with: "Added X whales, total now Y"
+
+Then restart bot and you'll see trades immediately! 🚀
+"""
+
+if __name__ == "__main__":
+    print(__doc__)

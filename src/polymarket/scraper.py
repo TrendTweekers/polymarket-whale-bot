@@ -80,6 +80,11 @@ async def fetch_market_metadata_by_condition(session: aiohttp.ClientSession, con
             "slug": market.get("slug", ""),
             "category": (market.get("category") or market.get("marketCategory") or "").lower().strip(),
             "conditionId": condition_id,
+            # include common expiry fields for engine _days_to_expiry()
+            "endDate": market.get("endDate"),
+            "endDateIso": market.get("endDateIso") or market.get("end_date_iso"),
+            "closeTime": market.get("closeTime") or market.get("close_time"),
+            "resolutionTime": market.get("resolutionTime") or market.get("resolution_time"),
         }
     except Exception:
         return None
@@ -185,29 +190,205 @@ async def fetch_trades(session, event_id, limit=100, offset=0, min_size_usd=1000
         return data
 
 
-async def fetch_trades_scanned(session, event_id: int, api_min_size_usd: float, pages: int = 5, limit: int = 100):
-    """Scan multiple pages client-side and filter by size."""
+def _trade_market_id(trade: dict) -> str:
+    """Extract market_id from trade dict. Returns full ID (never truncated)."""
+    market_obj = trade.get("market") if isinstance(trade.get("market"), dict) else {}
+    return (
+        str(trade.get("marketId") or trade.get("market_id") or trade.get("market") or "")
+        or str(market_obj.get("id") or "")
+        or ""
+    ).strip()
+
+
+def _trade_condition_id(trade: dict) -> str:
+    """Extract condition_id from trade dict. Returns full ID (never truncated)."""
+    market_obj = trade.get("market") if isinstance(trade.get("market"), dict) else {}
+    condition_obj = trade.get("condition") if isinstance(trade.get("condition"), dict) else {}
+    return (
+        str(trade.get("conditionId") or trade.get("condition_id") or "")
+        or str(condition_obj.get("id") or "")
+        or str(market_obj.get("conditionId") or market_obj.get("condition_id") or "")
+        or ""
+    ).strip()
+
+
+def _normalize_condition_id(cid: str) -> str:
+    """
+    Normalize condition_id for comparison (lowercase, strip, handle hex with/without 0x).
+    NEVER truncates - returns full ID for accurate matching.
+    """
+    if not cid:
+        return ""
+    cid = str(cid).strip().lower()
+    # Normalize hex: ensure 0x prefix for consistency
+    if cid.startswith("0x"):
+        return cid
+    # Allow raw hex without 0x - add prefix
+    if all(c in "0123456789abcdef" for c in cid):
+        return "0x" + cid
+    return cid
+
+
+def filter_trades_for_market(trades: list[dict], requested_market_id: str, requested_condition_id: str) -> tuple[list[dict], int, int]:
+    """
+    Filter trades to only include those matching the requested market_id OR condition_id.
+    Uses FULL normalized IDs for comparison (never truncated).
+    Returns (kept_trades, mismatched_count, missing_ids_count) tuple.
+    """
+    want_mid = str(requested_market_id or "").strip().lower()
+    want_cid = _normalize_condition_id(requested_condition_id or "")
+    
+    kept = []
+    mismatched = 0
+    missing_ids = 0
+    
+    for t in trades:
+        got_mid = _trade_market_id(t).lower().strip()
+        got_cid = _normalize_condition_id(_trade_condition_id(t))
+        
+        mid_ok = bool(want_mid and got_mid and got_mid == want_mid)
+        cid_ok = bool(want_cid and got_cid and got_cid == want_cid)
+        
+        if mid_ok or cid_ok:
+            kept.append(t)
+        else:
+            # Count separately so we can see what's going on
+            if not got_mid and not got_cid:
+                missing_ids += 1
+            else:
+                mismatched += 1
+    
+    return kept, mismatched, missing_ids
+
+
+async def fetch_trades_scanned(
+    session,
+    *,
+    market_id: Optional[str] = None,
+    condition_id: Optional[str] = None,
+    api_min_size_usd: float = 1000.0,
+    pages: int = 3,
+    limit: int = 100,
+):
+    """
+    Fetch trades for ONE market using Data-API /trades endpoint.
+    
+    According to Polymarket docs, Data-API expects:
+    - market = comma-separated list of condition IDs (0x... hex strings)
+    - OR eventId = integer event IDs (mutually exclusive with market)
+    
+    We use the `market` parameter with the condition_id to scope trades.
+    """
     kept = []
     scanned = 0
+    
+    # Normalize condition_id for market parameter (Data-API expects full 0x... hex)
+    # IMPORTANT: market must be a single comma-separated string, not a list
+    requested_condition = None
+    if condition_id:
+        requested_condition = _normalize_condition_id(condition_id)
+    
+    url = f"{BASE}/trades"
+    
     for offset in range(0, pages * limit, limit):
-        url = f"{BASE}/trades"
-        params = {"eventId": event_id, "limit": limit, "offset": offset}
+        # Build params - market must be a STRING (comma-separated if multiple), not a list
+        params = {
+            "limit": limit,
+            "offset": offset,
+            "takerOnly": "true",
+        }
+        
+        # IMPORTANT: Data-API expects `market` as a single comma-separated string of condition IDs
+        # Do NOT send eventId, conditionId, condition_id, marketId, etc. - only market
+        if requested_condition:
+            params["market"] = requested_condition  # STRING, not list
+        
+        # Log request parameters for verification (right before request)
+        if requested_condition:
+            logger.info("trades_request_params",
+                       market_param_head=requested_condition[:10],
+                       market_param_tail=requested_condition[-10:],
+                       market_param_len=len(requested_condition),
+                       api_min_size_usd=api_min_size_usd,
+                       pages=pages,
+                       limit=limit,
+                       offset=offset)
+        
         async with session.get(url, params=params, headers=HEADERS) as resp:
             if resp.status != 200:
-                logger.warning("trades_fetch_failed", event_id=event_id, status=resp.status)
+                logger.warning("trades_fetch_failed",
+                             status=resp.status,
+                             url=str(resp.url),
+                             market_param_len=len(requested_condition) if requested_condition else 0)
                 return kept
+            
             trades = await resp.json()
             scanned += len(trades)
+            
             for t in trades:
                 size = float(t.get("size") or 0.0)
                 price = float(t.get("price") or 0.0)
                 usd = size * price
                 if usd >= api_min_size_usd:
                     kept.append(t)
+            
             if not trades:
                 break  # no more pages
-    logger.info("scan_summary", event_id=event_id, scanned=scanned, kept=len(kept), api_min_size_usd=api_min_size_usd, pages=pages)
-    log_scan_stats(event_id, scanned, len(kept), api_min_size_usd, pages, limit)
+    
+    # Safety net: filter trades by market_id OR condition_id to prevent leaks
+    # (should be redundant if API scoping works, but keeps us safe)
+    if market_id or requested_condition:
+        # Debug: log what we have before filtering
+        logger.debug("trade_filter_before",
+                    scanned=scanned,
+                    kept_before_usd_filter=len(kept),
+                    requested_market_id=str(market_id) if market_id else "",
+                    requested_condition_id_head=requested_condition[:10] if requested_condition else "")
+        
+        kept_trades, mismatched, missing_ids = filter_trades_for_market(kept, str(market_id) if market_id else "", requested_condition or "")
+        
+        # Debug: if no trades kept, show what IDs the trades actually have
+        if len(kept_trades) == 0 and len(kept) > 0:
+            sample_trade = kept[0]
+            sample_market_id = _trade_market_id(sample_trade)
+            sample_condition_id = _trade_condition_id(sample_trade)
+            logger.warning("trade_filter_zero_kept_sample",
+                         returned=scanned,
+                         kept_before_filter=len(kept),
+                         kept_after_filter=len(kept_trades),
+                         requested_market_id=str(market_id) if market_id else "",
+                         requested_condition_id_head=requested_condition[:10] if requested_condition else "",
+                         requested_condition_id_tail=requested_condition[-10:] if requested_condition else "",
+                         sample_trade_market_id=sample_market_id[:20] if sample_market_id else "none",
+                         sample_trade_condition_id_head=sample_condition_id[:10] if sample_condition_id else "none",
+                         sample_trade_condition_id_tail=sample_condition_id[-10:] if sample_condition_id else "none",
+                         sample_trade_keys=list(sample_trade.keys())[:30])
+        elif len(kept_trades) == 0 and scanned > 0:
+            # No trades kept and none passed USD filter - log why
+            logger.debug("trade_filter_no_usd_qualifiers",
+                        scanned=scanned,
+                        api_min_size_usd=api_min_size_usd,
+                        kept_after_usd_filter=len(kept))
+        
+        logger.info("trade_market_filter",
+                   returned=scanned,
+                   kept=len(kept_trades),
+                   mismatched=mismatched,
+                   missing_ids=missing_ids,
+                   requested_market_id=str(market_id) if market_id else "",
+                   requested_condition_id_head=requested_condition[:10] if requested_condition else "",
+                   requested_condition_id_tail=requested_condition[-10:] if requested_condition else "",
+                   requested_len=len(requested_condition) if requested_condition else 0)
+        
+        kept = kept_trades
+    
+    logger.info("scan_summary",
+               event_id=requested_condition or "none",
+               scanned=scanned,
+               kept=len(kept),
+               api_min_size_usd=api_min_size_usd,
+               pages=pages)
+    
     return kept
 
 
@@ -295,31 +476,117 @@ async def get_mid_price_cached(session: aiohttp.ClientSession, cache_key: str, o
     return None
 
 
-async def fetch_top_markets(session, limit=20, offset=0):
+async def fetch_top_markets(session, limit=200, offset=0, order="volume", pages=1):
     """
-    Fetch top active markets from gamma-api and return conditionIds with clobTokenIds.
+    Fetch active markets from gamma-api.
+    Returns conditionIds with clobTokenIds.
     This is the reliable bridge between Gamma → Data-API trades.
+    
+    Args:
+        session: aiohttp session
+        limit: Markets per page (default 200, max safe limit)
+        offset: Starting offset for pagination
+        order: Ordering strategy - "volume" (default, safe) or "closingSoon" (may cause 422)
+        pages: Number of pages to fetch (default 1, increase for more coverage)
     """
-    url = f"{GAMMA_BASE}/markets"
-    params = {
-        "active": "true",
-        "closed": "false",
-        "limit": str(limit),
-        "offset": str(offset),
-        "order": "volume"
-    }
-    async with session.get(url, headers=HEADERS, params=params) as resp:
-        resp.raise_for_status()
-        markets = await resp.json()
+    all_markets = []
+    page_size = min(limit, 200)  # Keep page size reasonable to avoid API limits
+    
+    for page in range(pages):
+        current_offset = offset + (page * page_size)
+        url = f"{GAMMA_BASE}/markets"
+        
+        # Try with order parameter first (if specified)
+        params_with_order = {
+            "active": "true",
+            "closed": "false",
+            "limit": str(page_size),
+            "offset": str(current_offset),
+        }
+        
+        # Only add order if it's not "closingSoon" (which causes 422)
+        if order and order != "closingSoon":
+            params_with_order["order"] = order
+        
+        # Try fetch with order first, fallback to no order if 422
+        page_markets = None
+        try:
+            async with session.get(url, headers=HEADERS, params=params_with_order) as resp:
+                if resp.status == 422:
+                    # 422 error - retry without order parameter
+                    logger.debug("market_fetch_422_retry", page=page, order=order, retrying_without_order=True)
+                    params_no_order = {
+                        "active": "true",
+                        "closed": "false",
+                        "limit": str(page_size),
+                        "offset": str(current_offset),
+                    }
+                    async with session.get(url, headers=HEADERS, params=params_no_order) as retry_resp:
+                        retry_resp.raise_for_status()
+                        page_markets = await retry_resp.json()
+                else:
+                    resp.raise_for_status()
+                    page_markets = await resp.json()
+        except Exception as e:
+            logger.warning(
+                "market_fetch_page_failed",
+                extra={
+                    "event": "market_fetch_page_failed",
+                    "page": page,
+                    "offset": current_offset,
+                    "error": str(e),
+                }
+            )
+            break
+        
+        if not page_markets:
+            break  # No more markets
+        all_markets.extend(page_markets)
+        if len(page_markets) < page_size:
+            break  # Last page
+    
+    markets = all_markets
 
     out = []
     for m in markets:
+        # ---- Robust title/category extraction (Gamma fields vary) ----
+        ev = m.get("event") if isinstance(m.get("event"), dict) else {}
+        ev0 = (m.get("events") or [{}])[0] if isinstance(m.get("events"), list) and m.get("events") else {}
+        
+        raw_title = (
+            m.get("title")
+            or m.get("question")
+            or m.get("name")
+            or ev.get("title")
+            or ev.get("name")
+            or ev0.get("title")
+            or ev0.get("name")
+            or ""
+        )
+        
+        market_category = (
+            m.get("category")
+            or m.get("marketCategory")
+            or ev.get("category")
+            or ev0.get("category")
+            or ""
+        )
+        market_category = str(market_category).lower().strip()
+        
         # Filter out excluded categories
-        market_category = (m.get("category") or m.get("marketCategory") or "").lower().strip()
         if market_category and market_category in EXCLUDE_CATEGORIES:
             continue  # Skip excluded categories
         
-        cid = m.get("conditionId") or m.get("condition_id")
+        # Extract condition_id from multiple possible fields (don't truncate!)
+        condition_obj = m.get("condition") if isinstance(m.get("condition"), dict) else {}
+        cid = (
+            m.get("conditionId")
+            or m.get("condition_id")
+            or condition_obj.get("id")
+            or condition_obj.get("conditionId")
+            or ""
+        )
+        
         if cid:
             # Extract clobTokenIds (array of token IDs for YES/NO outcomes)
             clob_token_ids = m.get("clobTokenIds")
@@ -339,13 +606,22 @@ async def fetch_top_markets(session, limit=20, offset=0):
                 "timestamp": time.time()
             }
             
-            out.append({
-                "conditionId": cid,
-                "title": m.get("title", ""),
-                "slug": m.get("slug", ""),
-                "category": market_category,  # Include category from market metadata
-                "clobTokenIds": clob_token_ids
+            # Build market dict: keep full raw market object + normalized fields
+            market_dict = dict(m)  # Keep everything from raw market object
+            market_dict.update({
+                "conditionId": cid,  # Ensure conditionId is set
+                "title": raw_title,  # Normalized title
+                "category": market_category,  # Normalized category
             })
+            
+            # Debug log to verify condition_id length
+            logger.info("market_id_debug",
+                       title=raw_title[:50] if raw_title else "",
+                       condition_id=cid,
+                       condition_id_len=len(cid) if cid else 0,
+                       keys=list(m.keys())[:30])
+            
+            out.append(market_dict)
     logger.info("fetched_markets", count=len(out), excluded_categories=len(EXCLUDE_CATEGORIES))
     return out
 

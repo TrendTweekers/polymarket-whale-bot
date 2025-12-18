@@ -8,11 +8,30 @@
 
 ## Running the Engine
 
-Start the engine in paper-trading mode:
+Start the engine in paper-trading mode with fast feedback filters:
 
-```bash
-python src/polymarket/engine.py
+**PowerShell:**
+```powershell
+$env:PAPER_TRADING='1'
+$env:PAPER_MAX_DTE_DAYS='2'
+$env:PAPER_MIN_CONFIDENCE='60'
+$env:PAPER_MIN_DISCOUNT_PCT='0.0001'
+$env:PAPER_MIN_TRADE_USD='50'
+$env:PAPER_STAKE_EUR='2.0'
+$env:FX_EUR_USD='1.10'
+$env:RESOLVER_INTERVAL_SECONDS='300'
+python .\src\polymarket\engine.py
 ```
+
+**Environment Variables:**
+- `PAPER_TRADING=1` - Enable paper trading
+- `PAPER_MAX_DTE_DAYS=2` - Only trade markets expiring within 2 days (for fast feedback)
+- `PAPER_MIN_CONFIDENCE=60` - Minimum confidence (0-100) to open paper trade
+- `PAPER_MIN_DISCOUNT_PCT=0.0001` - Minimum discount (as fraction, e.g., 0.0001 = 0.01%)
+- `PAPER_MIN_TRADE_USD=50` - Minimum trade value USD
+- `PAPER_STAKE_EUR=2.0` - Stake per trade in EUR
+- `FX_EUR_USD=1.10` - EUR to USD exchange rate
+- `RESOLVER_INTERVAL_SECONDS=300` - Resolver check interval (5 minutes)
 
 ## What Happens
 
@@ -70,11 +89,31 @@ Once you have 30+ signals, we'll build `backtest.py` to:
 
 ## Monitoring
 
-Check signal count:
-```bash
-# Count signals in today's log
+**Check paper trading statistics:**
+```powershell
+python .\scripts\paper_report.py
+```
+
+**Check signal statistics:**
+```powershell
+python .\scripts\signals_report.py
+```
+
+**Count signals in today's CSV:**
+```powershell
 Get-Content logs/signals_$(Get-Date -Format 'yyyy-MM-dd').csv | Measure-Object -Line
 ```
+
+## Paper Trading Filters
+
+Paper trades are only created when **all** of these conditions are met:
+
+1. ✅ `confidence >= PAPER_MIN_CONFIDENCE` (default: 60)
+2. ✅ `days_to_expiry <= PAPER_MAX_DTE_DAYS` (default: 2.0 days)
+3. ✅ `discount_pct >= PAPER_MIN_DISCOUNT_PCT` (default: 0.0001)
+4. ✅ `trade_value_usd >= PAPER_MIN_TRADE_USD` (default: 50.0)
+
+If any filter fails, the signal is still stored but no paper trade is created. Check logs for `paper_trade_skipped` events to see why trades were filtered out.
 
 ## Stopping the Engine
 

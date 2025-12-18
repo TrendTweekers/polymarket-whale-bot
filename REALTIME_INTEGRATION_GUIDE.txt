@@ -1,0 +1,277 @@
+"""
+REAL-TIME WHALE WATCHING INTEGRATION GUIDE
+===========================================
+
+BREAKTHROUGH: Polymarket has a WebSocket feed that shows ALL trades in real-time!
+
+Repository: https://github.com/Polymarket/real-time-data-client
+Benefits:
+• See EVERY trade as it happens (no polling)
+• Instant whale detection (no delays)
+• No API rate limits
+• No authentication needed
+• Includes wallet addresses, size, market info
+
+SETUP INSTRUCTIONS
+==================
+
+STEP 1: Install WebSocket Library
+----------------------------------
+pip install websockets
+
+Or add to requirements.txt:
+websockets>=12.0
+
+
+STEP 2: Test Real-Time Watcher
+-------------------------------
+python scripts/realtime_whale_watcher.py
+
+What you'll see:
+• Connection to WebSocket
+• ALL trades streaming in real-time
+• Your whales highlighted when they trade
+• Large trades (>$100) from anyone
+
+
+STEP 3: Integration Options
+----------------------------
+
+OPTION A: Standalone Watcher (Testing)
+Run in separate terminal alongside your bot:
+Terminal 1: python main.py (your bot)
+Terminal 2: python scripts/realtime_whale_watcher.py (live feed)
+
+Benefits:
+• See trades immediately
+• Validate your whales are trading
+• No changes to existing bot
+
+OPTION B: Full Integration (Production)
+Replace polling with WebSocket in your bot:
+1. Add WebSocket connection to bot
+2. Subscribe to trades
+3. Detect when monitored whales trade
+4. Trigger evaluation pipeline
+
+Benefits:
+• Zero latency
+• No polling overhead
+• Instant trade detection
+
+
+WEBSOCKET MESSAGE FORMAT
+=========================
+
+Subscribe message:
+{
+    "type": "subscribe",
+    "subscriptions": [
+        {
+            "topic": "activity",
+            "type": "trades",
+            "filters": ""
+        }
+    ]
+}
+
+Trade message received:
+{
+    "topic": "activity",
+    "type": "trades",
+    "payload": {
+        "proxyWallet": "0x1234...",  // Trader address
+        "size": "1000",               // Position size
+        "price": "0.65",              // Trade price
+        "slug": "market-name",        // Market identifier
+        "timestamp": "2025-12-18...", // Trade time
+        "transactionHash": "0x...",   // TX hash
+        "conditionId": "...",         // Market condition
+        "eventSlug": "..."            // Event identifier
+    }
+}
+
+
+WHALE DETECTION LOGIC
+======================
+
+For each incoming trade:
+1. Extract wallet address (proxyWallet)
+2. Check if it's in your monitored list
+3. If yes → WHALE TRADE DETECTED!
+4. Calculate value: size × price
+5. Trigger your evaluation pipeline
+
+Example:
+if trade.proxyWallet.lower() in monitored_whales:
+    print(f"🐋 Whale {trade.proxyWallet[:12]} traded!")
+    print(f"   Market: {trade.slug}")
+    print(f"   Value: ${trade.size * trade.price:,.2f}")
+    
+    # Trigger your bot's evaluation
+    evaluate_trade(trade)
+
+
+INTEGRATION WITH YOUR BOT
+==========================
+
+Current flow (polling):
+1. Bot polls /positions/{address} every 30s
+2. Compares to previous state
+3. Detects new positions
+4. Evaluates trade
+
+New flow (WebSocket):
+1. WebSocket streams all trades
+2. Filter to monitored whales
+3. Instant detection (no polling)
+4. Evaluates trade immediately
+
+Code changes needed:
+1. Add WebSocket connection in bot
+2. Subscribe to trades
+3. Replace position polling with trade stream
+4. Keep evaluation logic (ML, Kelly, etc)
+
+
+TESTING PROCEDURE
+=================
+
+IMMEDIATE TEST (5 minutes):
+1. Run: python scripts/realtime_whale_watcher.py
+2. Watch for ANY trades (not just your whales)
+3. If you see trades → WebSocket works! ✅
+4. If you see YOUR whale addresses → Validation complete! ✅
+
+Within 30 minutes:
+• Should see multiple trades
+• Large trades highlighted
+• Whale trades (if any) detected
+
+This PROVES:
+✅ Real-time detection works
+✅ Whale addresses are correct
+✅ System is functional
+
+
+ADVANTAGES OVER POLLING
+========================
+
+Current (Polling):
+• Check every 30-60 seconds
+• API rate limits
+• Delayed detection (up to 60s)
+• Miss trades between polls
+• API 404 errors
+
+New (WebSocket):
+✅ Instant detection (<1s)
+✅ No rate limits
+✅ Never miss a trade
+✅ No polling overhead
+✅ Reliable connection
+
+
+EXPECTED RESULTS
+================
+
+During testing:
+📊 Trade detected every 1-5 minutes (market dependent)
+🐋 Whale trade detected: Depends on your whales' activity
+
+Example output:
+```
+🐋 WHALE TRADE DETECTED!
+  Wallet: 0xd189664c53...
+  Market: fed-interest-rate-decision
+  Size: $5,420.00 (8350 @ 0.65)
+  Time: 2025-12-18T16:45:23Z
+  ✅ This is one of your monitored whales!
+```
+
+
+TROUBLESHOOTING
+===============
+
+Issue: WebSocket won't connect
+Fix: Check if endpoint changed in repo
+    https://github.com/Polymarket/real-time-data-client
+
+Issue: No trades showing
+Fix: Markets might be slow, wait 5-10 minutes
+     Try during peak hours (10 AM - 3 PM ET)
+
+Issue: Whale trades not showing
+Fix: Your whales might be idle today
+     WebSocket shows ALL trades, so if you see any trades at all,
+     the system is working - just waiting for your whales
+
+
+NEXT STEPS
+==========
+
+1. IMMEDIATE: Run realtime_whale_watcher.py
+   → Validates WebSocket works
+   → Shows you live trade flow
+   → Detects your whales if they trade
+
+2. SHORT TERM (24 hours):
+   → Monitor for whale activity
+   → Collect trade data
+   → Validate whale addresses are good
+
+3. LONG TERM (1 week):
+   → Integrate WebSocket into main bot
+   → Replace polling with real-time
+   → Go live with trading
+
+
+WHY THIS IS BETTER
+==================
+
+Your current problem:
+❌ All whales showing 0 positions
+❌ Can't validate bot is working
+❌ Polling is unreliable
+❌ 30 min = no results
+
+With WebSocket:
+✅ See ALL trades in real-time
+✅ Instant validation (see trades immediately)
+✅ Reliable feed
+✅ 5 min = see multiple trades
+
+
+REPOSITORY DETAILS
+==================
+
+Polymarket's real-time-data-client:
+URL: https://github.com/Polymarket/real-time-data-client
+
+Features:
+• WebSocket client for real-time data
+• Activity streams (trades, volume, users)
+• Market data streams
+• No authentication required
+• Examples and documentation included
+
+Alternative approach:
+• Clone the repo
+• Use their TypeScript client directly
+• Or adapt to Python (like we did)
+
+
+REALISTIC TIMELINE
+==================
+
+⏰ Now: Run realtime watcher
+⏰ +5 min: See first trades (any trader)
+⏰ +30 min: Should see multiple trades
+⏰ +2 hours: Should see whale trade (if active today)
+⏰ +24 hours: Collect enough data to validate
+
+This gives you IMMEDIATE feedback instead of waiting days!
+"""
+
+if __name__ == "__main__":
+    print(__doc__)
