@@ -306,9 +306,9 @@ class RealtimeWhaleWatcher:
                 print(f"  ✅ This is one of your monitored whales!")
             print()
             
-            # Send Telegram notification ONLY for high-confidence whales (≥70%)
-            # This reduces spam by 90% - only signal, no noise
-            if is_whale and whale_confidence and whale_confidence >= 0.70:
+            # Send Telegram notification for high-confidence whales (≥65%)
+            # Lowered from 70% to 65% to catch more monitored whale trades
+            if is_whale and whale_confidence and whale_confidence >= 0.65:
                 self.whale_trades_detected += 1
                 
                 telegram_msg = (
@@ -319,7 +319,7 @@ class RealtimeWhaleWatcher:
                     f"<b>Size:</b> ${trade_value:,.2f}\n"
                     f"<b>Price:</b> {price:.2%}\n"
                     f"<b>Time:</b> {timestamp[:19]}\n\n"
-                    f"✅ High-confidence whale (≥70%)\n\n"
+                    f"✅ High-confidence whale (≥65%)\n\n"
                     f"<i>[Real-Time Detection]</i>"
                 )
                 await self.send_telegram(telegram_msg)
@@ -378,6 +378,7 @@ class RealtimeWhaleWatcher:
                 'price': price,
                 'value': trade_value,
                 'is_monitored_whale': is_whale,
+                'whale_confidence': whale_confidence if is_whale else None,  # Save confidence for analysis
                 'tx_hash': tx_hash
             }
             self.detected_trades.append(trade_record)

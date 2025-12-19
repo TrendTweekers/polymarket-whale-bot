@@ -21,6 +21,14 @@ from .notifications.telegram_notifier import TelegramNotifier
 from .notifications.command_handler import CommandHandler
 from .storage.trade_database import TradeDatabase
 
+# Risk management (Kimi's requirements)
+import sys
+from pathlib import Path
+project_root = Path(__file__).parent.parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+from src.risk import RiskManager
+
 log = structlog.get_logger()
 
 
@@ -36,6 +44,11 @@ class WhaleBot:
         self.capital_tracker = CapitalEfficiencyTracker(
             bankroll=config['trading']['bankroll'],
             max_days=config['trading']['max_days_to_resolution']
+        )
+        
+        # Risk Manager (Kimi's requirements - hard limits)
+        self.risk_manager = RiskManager(
+            bankroll=config['trading']['bankroll']
         )
         
         self.whale_scorer = SelfImprovingWhaleScorer()
@@ -69,6 +82,9 @@ class WhaleBot:
         self.whale_metadata: Dict[str, Dict] = {}
         self.previous_positions: Dict[str, Dict] = {}  # Track previous positions for trade detection
         self.is_running = False
+        
+        # Daily reset task for risk manager
+        self._daily_reset_task = None
         
         log.info("whale_bot_initialized",
                 bankroll=config['trading']['bankroll'],
@@ -395,6 +411,32 @@ class WhaleBot:
             log.info("trade_rejected_capital", reason=capital_reason)
             return evaluation
         
+        # FILTER 4: Risk Manager (Kimi's hard limits)
+        risk_allowed, risk_reason = self.risk_manager.can_trade(position_size)
+        
+        evaluation['filters_passed']['risk'] = risk_allowed
+        evaluation['reasons'].append(risk_reason)
+        
+        if not risk_allowed:
+            log.warning("trade_rejected_risk",
+                       reason=risk_reason,
+                       position_size=position_size,
+                       risk_status=self.risk_manager.get_risk_status())
+            
+            # Send Telegram alert if kill switch activated
+            if self.risk_manager.kill_switch_active:
+                try:
+                    await self.telegram.send_message(
+                        f"🚨 <b>KILL SWITCH ACTIVATED</b>\n\n"
+                        f"Reason: {risk_reason}\n"
+                        f"Daily P&L: ${self.risk_manager.daily_pnl:.2f}\n"
+                        f"Trading halted until daily reset."
+                    )
+                except:
+                    pass
+            
+            return evaluation
+        
         # SCORING 1: Bayesian whale score
         market_category = market_data.get('category', 'unknown')
         bayesian_ok, bayesian_score, bayesian_reason = self.whale_scorer.get_copy_decision(
@@ -521,6 +563,22 @@ class WhaleBot:
             whale_id=whale_data['whale_id']
         )
         
+        # Add position to Risk Manager (Kimi's requirement)
+        side = 'YES' if bet_data.get('direction') == 'YES' else 'NO'
+        risk_success, risk_msg = self.risk_manager.add_position(
+            market_slug=market_data.get('slug', market_data['market_id']),
+            entry_price=bet_data.get('entry_price', 0.5),
+            size=evaluation['position_size'],
+            side=side,
+            whale_address=whale_data['whale_id']
+        )
+        
+        if not risk_success:
+            log.error("risk_manager_add_position_failed",
+                     reason=risk_msg,
+                     trade_id=trade_record['trade_id'])
+            # This shouldn't happen if can_trade() passed, but log it anyway
+        
         # Save to database
         self.db.add_trade(trade_record)
         
@@ -557,6 +615,47 @@ class WhaleBot:
         
         # Update capital tracker
         self.capital_tracker.close_position(trade['market_id'], pnl)
+        
+        # Record trade outcome in Risk Manager (Kimi's requirement)
+        market_slug = trade.get('market_id', '')
+        exit_price = 1.0 if outcome else 0.0
+        
+        risk_closed, risk_pnl = self.risk_manager.close_position(
+            market_slug=market_slug,
+            exit_price=exit_price
+        )
+        
+        if risk_closed:
+            log.info("risk_manager_trade_closed",
+                    trade_id=trade_id,
+                    pnl=risk_pnl,
+                    daily_pnl=self.risk_manager.daily_pnl)
+        else:
+            # Position not found in risk manager (might have been added before integration)
+            # Record manually
+            self.risk_manager.record_trade(
+                size=trade.get('position_size', 0),
+                pnl=pnl,
+                market_slug=market_slug
+            )
+            log.info("risk_manager_trade_recorded_manually",
+                    trade_id=trade_id,
+                    pnl=pnl)
+        
+        # Check if kill switch activated after this trade
+        if self.risk_manager.kill_switch_active:
+            log.warning("kill_switch_activated_after_trade",
+                       trade_id=trade_id,
+                       daily_pnl=self.risk_manager.daily_pnl)
+            try:
+                await self.telegram.send_message(
+                    f"🚨 <b>KILL SWITCH ACTIVATED</b>\n\n"
+                    f"After trade: {trade_id}\n"
+                    f"Daily P&L: ${self.risk_manager.daily_pnl:.2f}\n"
+                    f"Trading halted until daily reset."
+                )
+            except:
+                pass
         
         # Update whale scorer
         market_category = 'unknown'  # Would get from market_data
@@ -799,16 +898,43 @@ class WhaleBot:
     async def stop(self):
         """Stop the bot"""
         self.is_running = False
+        
+        # Cancel daily reset task
+        if self._daily_reset_task:
+            self._daily_reset_task.cancel()
+            try:
+                await self._daily_reset_task
+            except asyncio.CancelledError:
+                pass
+        
+        # Log final risk status
+        risk_status = self.risk_manager.get_risk_status()
+        log.info("risk_manager_final_status",
+                daily_pnl=risk_status['daily_pnl'],
+                active_positions=risk_status['active_positions'],
+                total_trades=risk_status['total_trades'],
+                bankroll=risk_status['bankroll'])
+        
         log.info("bot_stopped")
     
     def get_performance_summary(self) -> Dict:
         """Get comprehensive performance summary"""
+        risk_status = self.risk_manager.get_risk_status()
+        
         return {
             'database_stats': self.db.get_stats_summary(),
             'capital_metrics': self.capital_tracker.get_velocity_metrics(),
             'ensemble_performance': self.ensemble.get_performance_summary(),
             'active_trades': len(self.active_trades),
-            'top_whales': self.whale_scorer.get_top_whales(5)
+            'top_whales': self.whale_scorer.get_top_whales(5),
+            'risk_status': {
+                'daily_pnl': risk_status['daily_pnl'],
+                'bankroll': risk_status['bankroll'],
+                'active_positions': risk_status['active_positions'],
+                'max_positions': risk_status['max_positions'],
+                'kill_switch_active': risk_status['kill_switch_active'],
+                'remaining_loss_capacity': risk_status['remaining_loss_capacity']
+            }
         }
     
     async def send_daily_summary(self):
