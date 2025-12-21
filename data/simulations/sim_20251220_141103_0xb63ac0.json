@@ -1,0 +1,21 @@
+{
+  "simulation_id": "sim_20251220_141103_0xb63ac0",
+  "whale_address": "0xb63ac06f20eed05d0a34f61116d0580a0afb4064",
+  "market_slug": "bitcoin-above-84k-on-december-23",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T14:11:03",
+    "market": "bitcoin-above-84k-on-december-23",
+    "price": 0.08,
+    "size": 16.6
+  },
+  "results": [],
+  "status": "pending",
+  "created_at": "2025-12-20T14:11:06.189036",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "simulation_id": "sim_20251220_141256_0xb63ac0",
+  "whale_address": "0xb63ac06f20eed05d0a34f61116d0580a0afb4064",
+  "market_slug": "ethereum-above-2700-on-december-23",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T14:12:56",
+    "market": "ethereum-above-2700-on-december-23",
+    "price": 0.034,
+    "size": 198.0
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T14:13:56",
+      "market_state_at_entry": {
+        "price": 0.034,
+        "timestamp": "2025-12-20T14:14:00.333946",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.034034,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:14:00.333946",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "pending",
+  "created_at": "2025-12-20T14:12:58.851272",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ]
+}

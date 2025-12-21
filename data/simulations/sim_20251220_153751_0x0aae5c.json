@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_153751_0x0aae5c",
+  "whale_address": "0x0aae5c4ec45339a64a1dd2fe4ba98c2a19eb251c",
+  "market_slug": "maduro-out-in-2025-411",
+  "is_elite": true,
+  "confidence": 0.7500000000000002,
+  "detection": {
+    "timestamp": "2025-12-20T15:37:51",
+    "market": "maduro-out-in-2025-411",
+    "price": 0.968,
+    "size": 10.0
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T15:38:51",
+      "market_state_at_entry": {
+        "price": 0.968,
+        "timestamp": "2025-12-20T15:39:01.857158",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.9689679999999998,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:39:01.857158",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T15:40:51",
+      "market_state_at_entry": {
+        "price": 0.968,
+        "timestamp": "2025-12-20T15:41:01.597373",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9689679999999998,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:41:01.597373",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T15:42:51",
+      "market_state_at_entry": {
+        "price": 0.968,
+        "timestamp": "2025-12-20T15:43:01.794917",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9689679999999998,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:43:01.794917",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T15:37:59.770294",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T15:43:01.794917"
+}

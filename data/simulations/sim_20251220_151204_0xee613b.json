@@ -1,0 +1,87 @@
+{
+  "simulation_id": "sim_20251220_151204_0xee613b",
+  "whale_address": "0xee613b3fc183ee44f9da9c05f53e2da107e3debf",
+  "market_slug": "cfb-tulane-miss-2025-12-20",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T15:12:04",
+    "market": "cfb-tulane-miss-2025-12-20",
+    "price": 0.88,
+    "size": 10.32
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T15:13:04",
+      "market_state_at_entry": {
+        "price": 0.4,
+        "timestamp": "2025-12-20T15:13:07.509936",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.4004,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:13:07.509936",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T15:13:04",
+      "market_state_at_entry": {
+        "price": 0.12,
+        "timestamp": "2025-12-20T15:13:08.149931",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.12011999999999998,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:13:08.149931",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T15:15:04",
+      "market_state_at_entry": {
+        "price": 0.59,
+        "timestamp": "2025-12-20T15:15:07.656321",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.59059,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:15:07.656321",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T15:15:04",
+      "market_state_at_entry": {
+        "price": 0.88,
+        "timestamp": "2025-12-20T15:15:08.150291",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.8808799999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:15:08.150291",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T15:12:07.589897",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T15:15:08.168292"
+}

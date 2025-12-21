@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_155529_0x16b29c",
+  "whale_address": "0x16b29c50f2439faf627209b2ac0c7bbddaa8a881",
+  "market_slug": "epl-wol-bre-2025-12-20-bre",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T15:55:29",
+    "market": "epl-wol-bre-2025-12-20-bre",
+    "price": 0.4500000030985916,
+    "size": 129.090908
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T15:56:29",
+      "market_state_at_entry": {
+        "price": 0.4500000030985916,
+        "timestamp": "2025-12-20T15:56:31.405388",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.45045000310169014,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:56:31.405388",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T15:58:29",
+      "market_state_at_entry": {
+        "price": 0.4599999401625932,
+        "timestamp": "2025-12-20T15:58:31.456488",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.46045994010275576,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:58:31.456488",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:00:29",
+      "market_state_at_entry": {
+        "price": 0.5400000063250003,
+        "timestamp": "2025-12-20T16:00:31.525040",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.5405400063313253,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:00:31.525040",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T15:55:30.674360",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T16:00:31.526040"
+}

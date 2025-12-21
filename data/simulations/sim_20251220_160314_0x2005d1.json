@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_160314_0x2005d1",
+  "whale_address": "0x2005d16a84ceefa912d4e380cd32e7ff827875ea",
+  "market_slug": "epl-mac-wes-2025-12-20-total-3pt5",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T16:03:14",
+    "market": "epl-mac-wes-2025-12-20-total-3pt5",
+    "price": 0.510000000931,
+    "size": 204.081631
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:04:14",
+      "market_state_at_entry": {
+        "price": 0.48,
+        "timestamp": "2025-12-20T16:04:32.403031",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.4804799999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:04:32.403031",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:06:14",
+      "market_state_at_entry": {
+        "price": 0.5400000218500017,
+        "timestamp": "2025-12-20T16:06:32.343722",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.5405400218718517,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:06:32.343722",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:08:14",
+      "market_state_at_entry": {
+        "price": 0.510000000931,
+        "timestamp": "2025-12-20T16:08:32.166684",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.5105100009319309,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:08:32.166684",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T16:03:29.606130",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T16:08:32.175692"
+}

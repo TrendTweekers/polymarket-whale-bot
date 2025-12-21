@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_170950_0x46bdb2",
+  "whale_address": "0x46bdb2025015fd8d467db9a4a73a264051d851ca",
+  "market_slug": "btc-updown-15m-1766246400",
+  "is_elite": true,
+  "confidence": 0.6000000000000001,
+  "detection": {
+    "timestamp": "2025-12-20T17:09:50",
+    "market": "btc-updown-15m-1766246400",
+    "price": 0.79,
+    "size": 72.77
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T17:10:50",
+      "market_state_at_entry": {
+        "price": 0.84,
+        "timestamp": "2025-12-20T17:11:08.208393",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.8408399999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T17:11:08.208393",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T17:12:50",
+      "market_state_at_entry": {
+        "price": 0.0700000093001022,
+        "timestamp": "2025-12-20T17:13:09.032760",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.07007000930940228,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T17:13:09.032760",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T17:14:50",
+      "market_state_at_entry": {
+        "price": 0.99,
+        "timestamp": "2025-12-20T17:15:07.835059",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.9909899999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T17:15:07.835059",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T17:10:06.543639",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T17:15:07.836063"
+}

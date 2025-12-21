@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_142511_0x3a8651",
+  "whale_address": "0x3a8651c42ac19aa3e3141531a298abc72f51dea8",
+  "market_slug": "will-nicols-maduro-be-the-next-leader-out-in-2025",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T14:25:11",
+    "market": "will-nicols-maduro-be-the-next-leader-out-in-2025",
+    "price": 0.0350000022107685,
+    "size": 9.046628
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T14:26:11",
+      "market_state_at_entry": {
+        "price": 0.965,
+        "timestamp": "2025-12-20T14:26:14.335755",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.9659649999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:26:14.335755",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T14:28:11",
+      "market_state_at_entry": {
+        "price": 0.0350000022107685,
+        "timestamp": "2025-12-20T14:28:14.603809",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.03503500221297927,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:28:14.603809",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T14:30:11",
+      "market_state_at_entry": {
+        "price": 0.0350000022107685,
+        "timestamp": "2025-12-20T14:30:14.367918",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.03503500221297927,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:30:14.367918",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T14:25:13.678601",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T14:30:14.378918"
+}

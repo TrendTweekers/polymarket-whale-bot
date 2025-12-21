@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_161407_0x0aae5c",
+  "whale_address": "0x0aae5c4ec45339a64a1dd2fe4ba98c2a19eb251c",
+  "market_slug": "will-apple-be-the-second-largest-company-in-the-world-by-market-cap-on-january-31",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T16:14:07",
+    "market": "will-apple-be-the-second-largest-company-in-the-world-by-market-cap-on-january-31",
+    "price": 0.89,
+    "size": 18.0
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:15:07",
+      "market_state_at_entry": {
+        "price": 0.89,
+        "timestamp": "2025-12-20T16:15:23.825410",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.89089,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:15:23.825410",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:17:07",
+      "market_state_at_entry": {
+        "price": 0.89,
+        "timestamp": "2025-12-20T16:17:23.819750",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.89089,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:17:23.819750",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:19:07",
+      "market_state_at_entry": {
+        "price": 0.89,
+        "timestamp": "2025-12-20T16:19:24.354397",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.89089,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:19:24.354397",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T16:14:22.847252",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T16:19:24.364399"
+}

@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_165634_0x507e52",
+  "whale_address": "0x507e52ef684ca2dd91f90a9d26d149dd3288beae",
+  "market_slug": "atp-blockx-kjaer-2025-12-20-set-totals-3pt5",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T16:56:34",
+    "market": "atp-blockx-kjaer-2025-12-20-set-totals-3pt5",
+    "price": 0.32,
+    "size": 546.5
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:57:34",
+      "market_state_at_entry": {
+        "price": 0.32,
+        "timestamp": "2025-12-20T16:57:42.956506",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.32032,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:57:42.956506",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:59:34",
+      "market_state_at_entry": {
+        "price": 0.32,
+        "timestamp": "2025-12-20T16:59:42.844448",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.32032,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:59:42.844448",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T17:01:34",
+      "market_state_at_entry": {
+        "price": 0.32,
+        "timestamp": "2025-12-20T17:01:42.837405",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.32032,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T17:01:42.837405",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T16:56:40.221161",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T17:01:42.852379"
+}

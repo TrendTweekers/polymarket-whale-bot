@@ -1,0 +1,54 @@
+{
+  "simulation_id": "sim_20251220_141109_0x6916cc",
+  "whale_address": "0x6916cc00aa1c3e75ecf4081df7cae7d2f3592fd4",
+  "market_slug": "will-solana-reach-170-in-december",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T14:11:09",
+    "market": "will-solana-reach-170-in-december",
+    "price": 0.98899999567807,
+    "size": 101.112233
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T14:12:09",
+      "market_state_at_entry": {
+        "price": 0.98899999567807,
+        "timestamp": "2025-12-20T14:12:13.736981",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.9899889956737479,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:12:13.736981",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T14:14:09",
+      "market_state_at_entry": {
+        "price": 0.98899999567807,
+        "timestamp": "2025-12-20T14:14:13.845948",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9899889956737479,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:14:13.845948",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "pending",
+  "created_at": "2025-12-20T14:11:22.528769",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ]
+}

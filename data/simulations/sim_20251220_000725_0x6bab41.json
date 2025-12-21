@@ -1,0 +1,62 @@
+{
+  "whale_address": "0x6bab41a0dc40d6dd4c1a915b8c01969479fd1292",
+  "market_slug": "will-michael-jackson-be-named-in-newly-released-epstein-files",
+  "whale_trade_time": "2025-12-20T00:07:25",
+  "whale_entry_price": 0.23,
+  "whale_trade_size": 10.34,
+  "detection_time": "2025-12-20T00:07:25",
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "entry_price": 0.23023,
+      "slippage_pct": 0.001,
+      "execution_time": "2025-12-20T00:08:25",
+      "market_state_at_entry": {
+        "price": 0.23,
+        "timestamp": "2025-12-20 00:07:25",
+        "data": {}
+      },
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false,
+      "resolution_time": null
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "entry_price": 0.23023,
+      "slippage_pct": 0.001,
+      "execution_time": "2025-12-20T00:10:25",
+      "market_state_at_entry": {
+        "price": 0.23,
+        "timestamp": "2025-12-20 00:07:25",
+        "data": {}
+      },
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false,
+      "resolution_time": null
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "entry_price": 0.23023,
+      "slippage_pct": 0.001,
+      "execution_time": "2025-12-20T00:12:25",
+      "market_state_at_entry": {
+        "price": 0.23,
+        "timestamp": "2025-12-20 00:07:25",
+        "data": {}
+      },
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false,
+      "resolution_time": null
+    }
+  ],
+  "best_delay": null,
+  "profitable": null,
+  "avg_pnl": null,
+  "is_elite": false
+}

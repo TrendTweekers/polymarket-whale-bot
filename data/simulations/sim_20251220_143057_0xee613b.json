@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_143057_0xee613b",
+  "whale_address": "0xee613b3fc183ee44f9da9c05f53e2da107e3debf",
+  "market_slug": "nba-ind-nop-2025-12-20",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T14:30:57",
+    "market": "nba-ind-nop-2025-12-20",
+    "price": 0.4300000002792531,
+    "size": 1253.343155
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T14:31:57",
+      "market_state_at_entry": {
+        "price": 0.44,
+        "timestamp": "2025-12-20T14:32:05.363927",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.44043999999999994,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:32:05.363927",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T14:33:57",
+      "market_state_at_entry": {
+        "price": 0.4300000002792531,
+        "timestamp": "2025-12-20T14:34:05.159360",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.4304300002795323,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:34:05.159360",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T14:35:57",
+      "market_state_at_entry": {
+        "price": 0.5500002025001114,
+        "timestamp": "2025-12-20T14:36:05.311811",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.5505502027026115,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:36:05.311811",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T14:31:04.337141",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T14:36:05.311811"
+}

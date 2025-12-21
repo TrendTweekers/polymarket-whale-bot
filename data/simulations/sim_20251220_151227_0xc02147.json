@@ -1,0 +1,54 @@
+{
+  "simulation_id": "sim_20251220_151227_0xc02147",
+  "whale_address": "0xc02147dee42356b7a4edbb1c35ac4ffa95f61fa8",
+  "market_slug": "will-gavin-newsom-win-the-2028-democratic-presidential-nomination-568",
+  "is_elite": true,
+  "confidence": 0.6000000000000001,
+  "detection": {
+    "timestamp": "2025-12-20T15:12:27",
+    "market": "will-gavin-newsom-win-the-2028-democratic-presidential-nomination-568",
+    "price": 0.34,
+    "size": 7.67
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T15:13:27",
+      "market_state_at_entry": {
+        "price": 0.66,
+        "timestamp": "2025-12-20T15:13:50.609933",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.6606599999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:13:50.609933",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T15:15:27",
+      "market_state_at_entry": {
+        "price": 0.35,
+        "timestamp": "2025-12-20T15:15:50.569293",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.35034999999999994,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:15:50.569293",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "pending",
+  "created_at": "2025-12-20T15:12:49.119555",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_150426_0x16b29c",
+  "whale_address": "0x16b29c50f2439faf627209b2ac0c7bbddaa8a881",
+  "market_slug": "cfb-tulane-miss-2025-12-20-spread-home-17pt5",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T15:04:26",
+    "market": "cfb-tulane-miss-2025-12-20-spread-home-17pt5",
+    "price": 0.5200000048000002,
+    "size": 41.666665
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T15:05:26",
+      "market_state_at_entry": {
+        "price": 0.4799999951999998,
+        "timestamp": "2025-12-20T15:05:47.350971",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.48047999519519974,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:05:47.350971",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T15:07:26",
+      "market_state_at_entry": {
+        "price": 0.5200000048000002,
+        "timestamp": "2025-12-20T15:07:47.329374",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.5205200048048001,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:07:47.329374",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T15:09:26",
+      "market_state_at_entry": {
+        "price": 0.5200000048000002,
+        "timestamp": "2025-12-20T15:09:47.936867",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.5205200048048001,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:09:47.936867",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T15:04:46.276357",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T15:09:47.956866"
+}

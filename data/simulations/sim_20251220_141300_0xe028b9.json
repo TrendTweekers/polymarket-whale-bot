@@ -1,0 +1,38 @@
+{
+  "simulation_id": "sim_20251220_141300_0xe028b9",
+  "whale_address": "0xe028b917d25346ddfd08327fa26f9006d6a1b4e4",
+  "market_slug": "btc-updown-15m-1766235600",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T14:13:00",
+    "market": "btc-updown-15m-1766235600",
+    "price": 0.99,
+    "size": 92.49
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T14:14:00",
+      "market_state_at_entry": {
+        "price": 0.99,
+        "timestamp": "2025-12-20T14:14:07.871949",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.9909899999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:14:07.871949",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "pending",
+  "created_at": "2025-12-20T14:13:06.786271",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ]
+}

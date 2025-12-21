@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_145702_0xb2304a",
+  "whale_address": "0xb2304a93c928e05c13e3b96b07be1f2ea8374193",
+  "market_slug": "epl-mac-wes-2025-12-20-mac",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T14:57:02",
+    "market": "epl-mac-wes-2025-12-20-mac",
+    "price": 0.18,
+    "size": 595.0
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T14:58:02",
+      "market_state_at_entry": {
+        "price": 0.82,
+        "timestamp": "2025-12-20T14:58:27.654360",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.8208199999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:58:27.654360",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T15:00:02",
+      "market_state_at_entry": {
+        "price": 0.8100001111605001,
+        "timestamp": "2025-12-20T15:00:27.495215",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.8108101112716605,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:00:27.495215",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T15:02:02",
+      "market_state_at_entry": {
+        "price": 0.1800000005178947,
+        "timestamp": "2025-12-20T15:02:27.510327",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.18018000051841257,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:02:27.510327",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T14:57:26.183463",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T15:02:27.510327"
+}

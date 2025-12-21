@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_150506_0xc8ab97",
+  "whale_address": "0xc8ab97a9089a9ff7e6ef0688e6e591a066946418",
+  "market_slug": "will-alphabet-be-the-third-largest-company-in-the-world-by-market-cap-on-december-31",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T15:05:06",
+    "market": "will-alphabet-be-the-third-largest-company-in-the-world-by-market-cap-on-december-31",
+    "price": 0.8899999945709999,
+    "size": 112.359549
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T15:06:06",
+      "market_state_at_entry": {
+        "price": 0.8899999945709999,
+        "timestamp": "2025-12-20T15:06:09.297790",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.8908899945655708,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:06:09.297790",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T15:08:06",
+      "market_state_at_entry": {
+        "price": 0.8899999945709999,
+        "timestamp": "2025-12-20T15:08:09.043725",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.8908899945655708,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:08:09.043725",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T15:10:06",
+      "market_state_at_entry": {
+        "price": 0.8899999945709999,
+        "timestamp": "2025-12-20T15:10:08.672871",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.8908899945655708,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:10:08.672871",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T15:05:07.364629",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T15:10:08.673872"
+}

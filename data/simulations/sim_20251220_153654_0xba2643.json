@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_153654_0xba2643",
+  "whale_address": "0xba264376d6fef08f23a44db4153d12d47f5f23c9",
+  "market_slug": "epl-mac-wes-2025-12-20-total-3pt5",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T15:36:54",
+    "market": "epl-mac-wes-2025-12-20-total-3pt5",
+    "price": 0.4900000044200003,
+    "size": 29.411763
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T15:37:54",
+      "market_state_at_entry": {
+        "price": 0.49,
+        "timestamp": "2025-12-20T15:37:58.189444",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.4904899999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:37:58.189444",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T15:39:54",
+      "market_state_at_entry": {
+        "price": 0.5099999969277099,
+        "timestamp": "2025-12-20T15:39:58.663147",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.5105099969246376,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:39:58.663147",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T15:41:54",
+      "market_state_at_entry": {
+        "price": 0.4900000044200003,
+        "timestamp": "2025-12-20T15:41:58.226484",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.49049000442442026,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:41:58.226484",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T15:36:56.879463",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T15:41:58.240485"
+}

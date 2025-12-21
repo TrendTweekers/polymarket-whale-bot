@@ -1,0 +1,21 @@
+{
+  "simulation_id": "sim_20251220_151605_0x2005d1",
+  "whale_address": "0x2005d16a84ceefa912d4e380cd32e7ff827875ea",
+  "market_slug": "epl-new-che-2025-12-20-draw",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T15:16:05",
+    "market": "epl-new-che-2025-12-20-draw",
+    "price": 0.6600000578000191,
+    "size": 5.882351
+  },
+  "results": [],
+  "status": "pending",
+  "created_at": "2025-12-20T15:16:06.342858",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ]
+}

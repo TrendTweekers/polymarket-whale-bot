@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_152836_0x6b7c75",
+  "whale_address": "0x6b7c75862e64d6e976d2c08ad9f9b54add6c5f83",
+  "market_slug": "lal-ovi-cel-2025-12-20-total-1pt5",
+  "is_elite": true,
+  "confidence": 0.8000000000000003,
+  "detection": {
+    "timestamp": "2025-12-20T15:28:36",
+    "market": "lal-ovi-cel-2025-12-20-total-1pt5",
+    "price": 0.88,
+    "size": 999.0
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T15:29:36",
+      "market_state_at_entry": {
+        "price": 0.88,
+        "timestamp": "2025-12-20T15:29:45.405358",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.8808799999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:29:45.405358",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T15:31:36",
+      "market_state_at_entry": {
+        "price": 0.9,
+        "timestamp": "2025-12-20T15:31:45.713315",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.9008999999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:31:45.713315",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T15:33:36",
+      "market_state_at_entry": {
+        "price": 0.88,
+        "timestamp": "2025-12-20T15:33:45.446361",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.8808799999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:33:45.446361",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T15:28:44.505366",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T15:33:45.447395"
+}

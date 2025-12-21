@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_141733_0xd9a301",
+  "whale_address": "0xd9a301d0e4ebecd8f755f3e096c9d8a13c80b1df",
+  "market_slug": "dota2-pari-og-2025-12-20",
+  "is_elite": true,
+  "confidence": 0.6500000000000001,
+  "detection": {
+    "timestamp": "2025-12-20T14:17:33",
+    "market": "dota2-pari-og-2025-12-20",
+    "price": 0.5800000001004091,
+    "size": 2191.037141
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T14:18:33",
+      "market_state_at_entry": {
+        "price": 0.57,
+        "timestamp": "2025-12-20T14:18:36.395067",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.5705699999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:18:36.395067",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T14:20:33",
+      "market_state_at_entry": {
+        "price": 0.58,
+        "timestamp": "2025-12-20T14:20:36.357638",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.5805799999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:20:36.357638",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T14:22:33",
+      "market_state_at_entry": {
+        "price": 0.5800000001004091,
+        "timestamp": "2025-12-20T14:22:36.749931",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.5805800001005095,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:22:36.749931",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T14:17:34.942474",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T14:22:36.749931"
+}

@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_163655_0xc2c89e",
+  "whale_address": "0xc2c89e23a69936da2991ddffdc7c99d4f0bd5471",
+  "market_slug": "lal-rea-sev-2025-12-20-sev",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T16:36:55",
+    "market": "lal-rea-sev-2025-12-20-sev",
+    "price": 0.93,
+    "size": 657.63
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:37:55",
+      "market_state_at_entry": {
+        "price": 0.07,
+        "timestamp": "2025-12-20T16:38:12.157593",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.07007,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:38:12.157593",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:39:55",
+      "market_state_at_entry": {
+        "price": 0.93,
+        "timestamp": "2025-12-20T16:40:10.702561",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9309299999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:40:10.702561",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:41:55",
+      "market_state_at_entry": {
+        "price": 0.93,
+        "timestamp": "2025-12-20T16:42:10.709162",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9309299999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:42:10.709162",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T16:37:08.222315",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T16:42:10.720128"
+}

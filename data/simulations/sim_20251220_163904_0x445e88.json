@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_163904_0x445e88",
+  "whale_address": "0x445e88628a68c596c857085eb26f6379a1f49be0",
+  "market_slug": "will-ohio-state-win-the-2026-college-football-national-championship",
+  "is_elite": true,
+  "confidence": 0.5,
+  "detection": {
+    "timestamp": "2025-12-20T16:39:04",
+    "market": "will-ohio-state-win-the-2026-college-football-national-championship",
+    "price": 0.2900000222745178,
+    "size": 7.183096
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:40:04",
+      "market_state_at_entry": {
+        "price": 0.7099999777254822,
+        "timestamp": "2025-12-20T16:40:14.135388",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.7107099777032075,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:40:14.135388",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:42:04",
+      "market_state_at_entry": {
+        "price": 0.2900000222745178,
+        "timestamp": "2025-12-20T16:42:14.144684",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.2902900222967923,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:42:14.144684",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:44:04",
+      "market_state_at_entry": {
+        "price": 0.2900000222745178,
+        "timestamp": "2025-12-20T16:44:14.092022",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.2902900222967923,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:44:14.092022",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T16:39:12.921491",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T16:44:14.092022"
+}

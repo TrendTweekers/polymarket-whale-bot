@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_144056_0x6916cc",
+  "whale_address": "0x6916cc00aa1c3e75ecf4081df7cae7d2f3592fd4",
+  "market_slug": "will-bitcoin-reach-105000-by-december-31-2025-784-751",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T14:40:56",
+    "market": "will-bitcoin-reach-105000-by-december-31-2025-784-751",
+    "price": 0.962,
+    "size": 5000.0
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T14:41:56",
+      "market_state_at_entry": {
+        "price": 0.038,
+        "timestamp": "2025-12-20T14:42:00.038132",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.038037999999999995,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:42:00.038132",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T14:43:56",
+      "market_state_at_entry": {
+        "price": 0.962,
+        "timestamp": "2025-12-20T14:43:59.514243",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9629619999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:43:59.514243",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T14:45:56",
+      "market_state_at_entry": {
+        "price": 0.962,
+        "timestamp": "2025-12-20T14:45:59.523874",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9629619999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:45:59.523874",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T14:40:58.390735",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T14:45:59.534873"
+}

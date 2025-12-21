@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_153752_0xfcf237",
+  "whale_address": "0xfcf2378f20cf408d077c21e731272f21cccea469",
+  "market_slug": "will-salvador-alejandro-csar-nasralla-salum-win-the-2025-honduras-presidential-election",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T15:37:52",
+    "market": "will-salvador-alejandro-csar-nasralla-salum-win-the-2025-honduras-presidential-election",
+    "price": 0.9440000095854731,
+    "size": 95.97857
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T15:38:52",
+      "market_state_at_entry": {
+        "price": 0.0580000003712,
+        "timestamp": "2025-12-20T15:39:02.852188",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.05805800037157119,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:39:02.852188",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T15:40:52",
+      "market_state_at_entry": {
+        "price": 0.9440000095854731,
+        "timestamp": "2025-12-20T15:41:03.312337",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9449440095950585,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:41:03.312337",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T15:42:52",
+      "market_state_at_entry": {
+        "price": 0.9440000095854731,
+        "timestamp": "2025-12-20T15:43:02.712275",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9449440095950585,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:43:02.712275",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T15:38:01.663295",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T15:43:02.712275"
+}

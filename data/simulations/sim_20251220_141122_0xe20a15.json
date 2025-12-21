@@ -1,0 +1,54 @@
+{
+  "simulation_id": "sim_20251220_141122_0xe20a15",
+  "whale_address": "0xe20a1538293903b746ffe6c4ce2d5c3c0300e469",
+  "market_slug": "nba-dal-phi-2025-12-20",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T14:11:22",
+    "market": "nba-dal-phi-2025-12-20",
+    "price": 0.57,
+    "size": 100.0
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T14:12:22",
+      "market_state_at_entry": {
+        "price": 0.57,
+        "timestamp": "2025-12-20T14:12:26.815703",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.5705699999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:12:26.815703",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T14:14:22",
+      "market_state_at_entry": {
+        "price": 0.57,
+        "timestamp": "2025-12-20T14:14:27.003405",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.5705699999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:14:27.003405",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "pending",
+  "created_at": "2025-12-20T14:11:25.833495",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ]
+}

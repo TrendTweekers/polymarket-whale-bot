@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_144223_0x08458f",
+  "whale_address": "0x08458f7e9d2858027de579e4c3ca305475496b6f",
+  "market_slug": "russia-x-ukraine-ceasefire-by-january-31-2026",
+  "is_elite": true,
+  "confidence": 0.7500000000000002,
+  "detection": {
+    "timestamp": "2025-12-20T14:42:23",
+    "market": "russia-x-ukraine-ceasefire-by-january-31-2026",
+    "price": 0.9,
+    "size": 200.0
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T14:43:23",
+      "market_state_at_entry": {
+        "price": 0.11,
+        "timestamp": "2025-12-20T14:43:32.666244",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.11010999999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:43:32.666244",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T14:45:23",
+      "market_state_at_entry": {
+        "price": 0.9,
+        "timestamp": "2025-12-20T14:45:32.510451",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9008999999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:45:32.510451",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T14:47:23",
+      "market_state_at_entry": {
+        "price": 0.9,
+        "timestamp": "2025-12-20T14:47:32.823433",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9008999999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:47:32.823433",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T14:42:31.370350",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T14:47:32.833432"
+}

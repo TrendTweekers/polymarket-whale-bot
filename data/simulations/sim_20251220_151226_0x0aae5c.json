@@ -1,0 +1,54 @@
+{
+  "simulation_id": "sim_20251220_151226_0x0aae5c",
+  "whale_address": "0x0aae5c4ec45339a64a1dd2fe4ba98c2a19eb251c",
+  "market_slug": "over-15m-committed-to-the-gensyn-public-sale",
+  "is_elite": true,
+  "confidence": 0.6000000000000001,
+  "detection": {
+    "timestamp": "2025-12-20T15:12:26",
+    "market": "over-15m-committed-to-the-gensyn-public-sale",
+    "price": 0.52,
+    "size": 300.0
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T15:13:26",
+      "market_state_at_entry": {
+        "price": 0.54,
+        "timestamp": "2025-12-20T15:13:48.746933",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.54054,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:13:48.746933",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T15:15:26",
+      "market_state_at_entry": {
+        "price": 0.43,
+        "timestamp": "2025-12-20T15:15:49.067291",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.4304299999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:15:49.067291",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "pending",
+  "created_at": "2025-12-20T15:12:46.752415",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_142957_0x6f2628",
+  "whale_address": "0x6f2628a8ac6e3f7bd857657d5316c33822ced136",
+  "market_slug": "bitcoin-above-88k-on-december-21",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T14:29:57",
+    "market": "bitcoin-above-88k-on-december-21",
+    "price": 0.5,
+    "size": 1410.0
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T14:30:57",
+      "market_state_at_entry": {
+        "price": 0.5,
+        "timestamp": "2025-12-20T14:31:09.316198",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.5005,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:31:09.316198",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T14:32:57",
+      "market_state_at_entry": {
+        "price": 0.5,
+        "timestamp": "2025-12-20T14:33:09.311433",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.5005,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:33:09.311433",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T14:34:57",
+      "market_state_at_entry": {
+        "price": 0.5,
+        "timestamp": "2025-12-20T14:35:09.357860",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.5005,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:35:09.357860",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T14:30:08.080188",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T14:35:09.366859"
+}

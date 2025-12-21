@@ -1,0 +1,38 @@
+{
+  "simulation_id": "sim_20251220_151412_0xa7ec2d",
+  "whale_address": "0xa7ec2d5ce6c38557443a044e627d6abd317279fb",
+  "market_slug": "tur-kon-kay-2025-12-20-kon",
+  "is_elite": true,
+  "confidence": 0.9000000000000004,
+  "detection": {
+    "timestamp": "2025-12-20T15:14:12",
+    "market": "tur-kon-kay-2025-12-20-kon",
+    "price": 0.999,
+    "size": 306.65
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T15:15:12",
+      "market_state_at_entry": {
+        "price": 0.999,
+        "timestamp": "2025-12-20T15:15:19.114319",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.9999989999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:15:19.114319",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "pending",
+  "created_at": "2025-12-20T15:14:15.387931",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ]
+}

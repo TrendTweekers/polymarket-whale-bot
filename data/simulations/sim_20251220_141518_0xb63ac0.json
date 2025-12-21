@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_141518_0xb63ac0",
+  "whale_address": "0xb63ac06f20eed05d0a34f61116d0580a0afb4064",
+  "market_slug": "will-bitcoin-dip-to-84k-december-15-21",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T14:15:18",
+    "market": "will-bitcoin-dip-to-84k-december-15-21",
+    "price": 0.04,
+    "size": 40.0
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T14:16:18",
+      "market_state_at_entry": {
+        "price": 0.9689999997383961,
+        "timestamp": "2025-12-20T14:16:40.413052",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.9699689997381344,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:16:40.413052",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T14:18:18",
+      "market_state_at_entry": {
+        "price": 0.04,
+        "timestamp": "2025-12-20T14:18:40.010950",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.04004,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:18:40.010950",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T14:20:18",
+      "market_state_at_entry": {
+        "price": 0.04,
+        "timestamp": "2025-12-20T14:20:39.930639",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.04004,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:20:39.930639",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T14:15:39.134421",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T14:20:39.954641"
+}

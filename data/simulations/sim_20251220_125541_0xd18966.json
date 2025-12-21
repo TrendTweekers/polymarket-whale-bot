@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_125541_0xd18966",
+  "whale_address": "0xd189664c5308903476f9f079820431e4fd7d06f4",
+  "market_slug": "bitcoin-up-or-down-december-20-6am-et",
+  "is_elite": false,
+  "confidence": 0.8500000000000003,
+  "detection": {
+    "timestamp": "2025-12-20T12:55:41",
+    "market": "bitcoin-up-or-down-december-20-6am-et",
+    "price": 0.99,
+    "size": 14.7
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T12:56:41",
+      "market_state_at_entry": {
+        "price": 0.001,
+        "timestamp": "2025-12-20T12:56:45.505441",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.001001,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T12:56:45.505441",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T12:58:41",
+      "market_state_at_entry": {
+        "price": 0.998999618354172,
+        "timestamp": "2025-12-20T12:58:45.485575",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.999998617972526,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T12:58:45.485575",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T13:00:41",
+      "market_state_at_entry": {
+        "price": 0.999,
+        "timestamp": "2025-12-20T13:00:45.502997",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.9999989999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T13:00:45.502997",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T12:55:44.616149",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T13:00:45.504997"
+}

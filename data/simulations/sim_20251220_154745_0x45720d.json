@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_154745_0x45720d",
+  "whale_address": "0x45720deb102f700682bfcb19b5872b5022ad83ff",
+  "market_slug": "dota2-ts8-ty-2025-12-20-game1",
+  "is_elite": true,
+  "confidence": 0.5,
+  "detection": {
+    "timestamp": "2025-12-20T15:47:45",
+    "market": "dota2-ts8-ty-2025-12-20-game1",
+    "price": 0.3035641051200935,
+    "size": 6552.158063
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T15:48:45",
+      "market_state_at_entry": {
+        "price": 0.69,
+        "timestamp": "2025-12-20T15:49:00.563375",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.69138,
+      "slippage_percent": 0.2,
+      "checked_at": "2025-12-20T15:49:00.563375",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T15:50:45",
+      "market_state_at_entry": {
+        "price": 0.710000001885,
+        "timestamp": "2025-12-20T15:50:59.907062",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.71142000188877,
+      "slippage_percent": 0.2,
+      "checked_at": "2025-12-20T15:50:59.907062",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T15:52:45",
+      "market_state_at_entry": {
+        "price": 0.3035641051200935,
+        "timestamp": "2025-12-20T15:52:59.794707",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.3041712333303337,
+      "slippage_percent": 0.2,
+      "checked_at": "2025-12-20T15:52:59.794707",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T15:47:57.675564",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T15:52:59.795709"
+}

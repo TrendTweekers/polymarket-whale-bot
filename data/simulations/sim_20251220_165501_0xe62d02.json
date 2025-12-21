@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_165501_0xe62d02",
+  "whale_address": "0xe62d0223966f7cee8cc77065150a2db417bcc34d",
+  "market_slug": "ethereum-above-3100-on-december-21",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T16:55:01",
+    "market": "ethereum-above-3100-on-december-21",
+    "price": 0.9510000033308699,
+    "size": 278.906121
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:56:01",
+      "market_state_at_entry": {
+        "price": 0.952,
+        "timestamp": "2025-12-20T16:56:17.083318",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.9529519999999998,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:56:17.083318",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:58:01",
+      "market_state_at_entry": {
+        "price": 0.9510000033308699,
+        "timestamp": "2025-12-20T16:58:17.084194",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9519510033342007,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:58:17.084194",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T17:00:01",
+      "market_state_at_entry": {
+        "price": 0.9510000033308699,
+        "timestamp": "2025-12-20T17:00:17.160886",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9519510033342007,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T17:00:17.160886",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T16:55:16.183220",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T17:00:17.160886"
+}

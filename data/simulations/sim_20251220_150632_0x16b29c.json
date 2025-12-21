@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_150632_0x16b29c",
+  "whale_address": "0x16b29c50f2439faf627209b2ac0c7bbddaa8a881",
+  "market_slug": "epl-wol-bre-2025-12-20-wol",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T15:06:32",
+    "market": "epl-wol-bre-2025-12-20-wol",
+    "price": 0.7300000253620378,
+    "size": 18.925924
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T15:07:32",
+      "market_state_at_entry": {
+        "price": 0.2699999746379622,
+        "timestamp": "2025-12-20T15:07:35.511738",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.27026997461260016,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:07:35.511738",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T15:09:32",
+      "market_state_at_entry": {
+        "price": 0.7300000253620378,
+        "timestamp": "2025-12-20T15:09:35.463870",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.7307300253873997,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:09:35.463870",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T15:11:32",
+      "market_state_at_entry": {
+        "price": 0.7300000253620378,
+        "timestamp": "2025-12-20T15:11:35.253869",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.7307300253873997,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:11:35.253869",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T15:06:34.117012",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T15:11:35.254870"
+}

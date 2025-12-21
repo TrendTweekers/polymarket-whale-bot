@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_144541_0x4fc19a",
+  "whale_address": "0x4fc19a907012ef58717ee7ceb1f89057f71aec92",
+  "market_slug": "bun-mai-pau-2025-12-21-mai",
+  "is_elite": true,
+  "confidence": 0.6500000000000001,
+  "detection": {
+    "timestamp": "2025-12-20T14:45:41",
+    "market": "bun-mai-pau-2025-12-21-mai",
+    "price": 0.51,
+    "size": 26.0
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T14:46:41",
+      "market_state_at_entry": {
+        "price": 0.51,
+        "timestamp": "2025-12-20T14:46:58.835869",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.5105099999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:46:58.835869",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T14:48:41",
+      "market_state_at_entry": {
+        "price": 0.51,
+        "timestamp": "2025-12-20T14:48:58.550611",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.5105099999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:48:58.550611",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T14:50:41",
+      "market_state_at_entry": {
+        "price": 0.51,
+        "timestamp": "2025-12-20T14:50:58.926354",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.5105099999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:50:58.926354",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T14:45:57.535019",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T14:50:58.935354"
+}

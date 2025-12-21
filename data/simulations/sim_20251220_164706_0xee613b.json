@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_164706_0xee613b",
+  "whale_address": "0xee613b3fc183ee44f9da9c05f53e2da107e3debf",
+  "market_slug": "cbb-ark-hou-2025-12-20",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T16:47:06",
+    "market": "cbb-ark-hou-2025-12-20",
+    "price": 0.66,
+    "size": 833.0
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:48:06",
+      "market_state_at_entry": {
+        "price": 0.68,
+        "timestamp": "2025-12-20T16:48:18.731607",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.68068,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:48:18.731607",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:50:06",
+      "market_state_at_entry": {
+        "price": 0.66,
+        "timestamp": "2025-12-20T16:50:18.149418",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.6606599999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:50:18.149418",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:52:06",
+      "market_state_at_entry": {
+        "price": 0.66,
+        "timestamp": "2025-12-20T16:52:17.841759",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.6606599999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:52:17.841759",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T16:47:16.819315",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T16:52:17.841759"
+}

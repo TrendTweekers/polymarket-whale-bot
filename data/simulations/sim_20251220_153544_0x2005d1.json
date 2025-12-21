@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_153544_0x2005d1",
+  "whale_address": "0x2005d16a84ceefa912d4e380cd32e7ff827875ea",
+  "market_slug": "bun-aug-wer-2025-12-20-total-2pt5",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T15:35:44",
+    "market": "bun-aug-wer-2025-12-20-total-2pt5",
+    "price": 0.5,
+    "size": 195.04
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T15:36:44",
+      "market_state_at_entry": {
+        "price": 0.5099999376063574,
+        "timestamp": "2025-12-20T15:36:48.874943",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.5105099375439637,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:36:48.874943",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T15:38:44",
+      "market_state_at_entry": {
+        "price": 0.5100000186200012,
+        "timestamp": "2025-12-20T15:38:49.333516",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.5105100186386211,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:38:49.333516",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T15:40:44",
+      "market_state_at_entry": {
+        "price": 0.4799998271998894,
+        "timestamp": "2025-12-20T15:40:49.621347",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.4804798270270892,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:40:49.621347",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T15:35:47.810051",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T15:40:49.631375"
+}

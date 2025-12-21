@@ -1,0 +1,54 @@
+{
+  "simulation_id": "sim_20251220_141310_0xba2643",
+  "whale_address": "0xba264376d6fef08f23a44db4153d12d47f5f23c9",
+  "market_slug": "nhl-chi-ott-2025-12-20",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T14:13:10",
+    "market": "nhl-chi-ott-2025-12-20",
+    "price": 0.3,
+    "size": 3.22
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T14:14:10",
+      "market_state_at_entry": {
+        "price": 0.3,
+        "timestamp": "2025-12-20T14:14:13.349943",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.30029999999999996,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:14:13.349943",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T14:14:10",
+      "market_state_at_entry": {
+        "price": 0.3,
+        "timestamp": "2025-12-20T14:14:22.886405",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.30029999999999996,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:14:22.886405",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "pending",
+  "created_at": "2025-12-20T14:13:21.729309",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_145247_0xc2c89e",
+  "whale_address": "0xc2c89e23a69936da2991ddffdc7c99d4f0bd5471",
+  "market_slug": "bun-hei-bay-2025-12-21-hei",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T14:52:47",
+    "market": "bun-hei-bay-2025-12-21-hei",
+    "price": 0.0599999459999946,
+    "size": 16.666665
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T14:53:47",
+      "market_state_at_entry": {
+        "price": 0.0599999459999946,
+        "timestamp": "2025-12-20T14:53:58.341061",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.060059945945994585,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:53:58.341061",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T14:55:47",
+      "market_state_at_entry": {
+        "price": 0.0599999459999946,
+        "timestamp": "2025-12-20T14:55:58.516668",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.060059945945994585,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:55:58.516668",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T14:57:47",
+      "market_state_at_entry": {
+        "price": 0.0599999459999946,
+        "timestamp": "2025-12-20T14:57:58.561008",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.060059945945994585,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:57:58.561008",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T14:52:57.045081",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T14:57:58.572008"
+}

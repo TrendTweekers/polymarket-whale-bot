@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_144734_0x60b2a1",
+  "whale_address": "0x60b2a17f0472db7361ae3189ad99063efe0b3cce",
+  "market_slug": "epl-bri-sun-2025-12-20-sun",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T14:47:34",
+    "market": "epl-bri-sun-2025-12-20-sun",
+    "price": 0.810000054162905,
+    "size": 11.631577
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T14:48:34",
+      "market_state_at_entry": {
+        "price": 0.19,
+        "timestamp": "2025-12-20T14:48:44.402389",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.19018999999999997,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:48:44.402389",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T14:50:34",
+      "market_state_at_entry": {
+        "price": 0.810000054162905,
+        "timestamp": "2025-12-20T14:50:44.490681",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.8108100542170678,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:50:44.490681",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T14:52:34",
+      "market_state_at_entry": {
+        "price": 0.810000054162905,
+        "timestamp": "2025-12-20T14:52:44.271912",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.8108100542170678,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:52:44.271912",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T14:47:42.635063",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T14:52:44.283913"
+}

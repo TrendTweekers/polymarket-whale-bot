@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_155250_0xee613b",
+  "whale_address": "0xee613b3fc183ee44f9da9c05f53e2da107e3debf",
+  "market_slug": "cbb-mont-lou-2025-12-20-spread-home-31pt5",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T15:52:50",
+    "market": "cbb-mont-lou-2025-12-20-spread-home-31pt5",
+    "price": 0.5,
+    "size": 1360.0
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T15:53:50",
+      "market_state_at_entry": {
+        "price": 0.5,
+        "timestamp": "2025-12-20T15:53:59.359235",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.5005,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:53:59.359235",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T15:55:50",
+      "market_state_at_entry": {
+        "price": 0.5,
+        "timestamp": "2025-12-20T15:55:59.383113",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.5005,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:55:59.383113",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T15:57:50",
+      "market_state_at_entry": {
+        "price": 0.5,
+        "timestamp": "2025-12-20T15:57:59.392975",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.5005,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:57:59.392975",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T15:52:57.667946",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T15:57:59.392975"
+}

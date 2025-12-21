@@ -263,9 +263,19 @@ _whale_rollup: defaultdict = defaultdict(lambda: {
 })
 
 # Expiry filter configuration
-MAX_DAYS_TO_EXPIRY = float(os.getenv("MAX_DAYS_TO_EXPIRY", "2"))
+# TEMPORARY DEBUG: Allow 0-5 days for testing (override with MAX_DAYS_TO_EXPIRY_OVERRIDE env var)
+MAX_DAYS_TO_EXPIRY_OVERRIDE = os.getenv("MAX_DAYS_TO_EXPIRY_OVERRIDE", "")
+if MAX_DAYS_TO_EXPIRY_OVERRIDE:
+    original_value = float(os.getenv("MAX_DAYS_TO_EXPIRY", "2"))
+    MAX_DAYS_TO_EXPIRY = float(MAX_DAYS_TO_EXPIRY_OVERRIDE)
+    # Logger not yet initialized, use print for override notification
+    print(f"[CONFIG_OVERRIDE] MAX_DAYS_TO_EXPIRY: {original_value} -> {MAX_DAYS_TO_EXPIRY} (MAX_DAYS_TO_EXPIRY_OVERRIDE env var)")
+else:
+    MAX_DAYS_TO_EXPIRY = float(os.getenv("MAX_DAYS_TO_EXPIRY", "2"))
 MIN_HOURS_TO_EXPIRY = float(os.getenv("MIN_HOURS_TO_EXPIRY", "2"))
-STRICT_SHORT_TERM = os.getenv("STRICT_SHORT_TERM", "1").strip() == "1"  # Reject markets with unknown expiry
+# STRICT_SHORT_TERM: Reject markets with unknown expiry
+# Will be adjusted for paper trading mode after env_bool is defined
+STRICT_SHORT_TERM_DEFAULT = os.getenv("STRICT_SHORT_TERM", "1").strip() == "1"
 
 # Production mode configuration
 PRODUCTION_MODE = os.getenv("PRODUCTION_MODE", "False").lower() == "true"
@@ -277,6 +287,22 @@ def env_bool(name: str, default: bool) -> bool:
     if v is None:
         return default
     return v.strip().lower() in ("1", "true", "yes", "y", "on")
+
+# Paper trading mode configuration (must be after env_bool definition)
+PAPER_TRADING = env_bool("PAPER_TRADING", False)
+
+# STRICT_SHORT_TERM: Reject markets with unknown expiry
+# In paper trading mode, auto-disable unless explicitly overridden
+STRICT_SHORT_TERM_OVERRIDE = os.getenv("STRICT_SHORT_TERM_OVERRIDE", "")
+if PAPER_TRADING and STRICT_SHORT_TERM_OVERRIDE == "":
+    # Auto-disable STRICT_SHORT_TERM in paper trading mode unless explicitly overridden
+    STRICT_SHORT_TERM = False
+    print(f"[PAPER_TRADING] STRICT_SHORT_TERM disabled (allowing unknown expiry for testing)")
+elif STRICT_SHORT_TERM_OVERRIDE != "":
+    # Allow explicit override via env var
+    STRICT_SHORT_TERM = STRICT_SHORT_TERM_OVERRIDE.strip().lower() in ("1", "true", "yes", "y", "on")
+else:
+    STRICT_SHORT_TERM = STRICT_SHORT_TERM_DEFAULT
 
 # Exclude categories (comma-separated from env, e.g., "sports,crypto")
 # Handle empty string, "none", "false", "0" as "no excludes"
@@ -318,12 +344,20 @@ PAPER_STAKE_EUR = float(os.getenv("PAPER_STAKE_EUR", "2.0"))
 FX_EUR_USD = float(os.getenv("FX_EUR_USD", "1.10"))
 RESOLVER_INTERVAL_SECONDS = int(os.getenv("RESOLVER_INTERVAL_SECONDS", "300"))  # 5 minutes
 # Paper trading filters (for fast feedback)
-PAPER_MAX_DTE_DAYS = float(os.getenv("PAPER_MAX_DTE_DAYS", "2.0"))  # Only trade markets expiring within N days
+# TEMPORARY DEBUG: Allow 0-5 days for testing (override with PAPER_MAX_DTE_DAYS_OVERRIDE env var)
+PAPER_MAX_DTE_DAYS_OVERRIDE = os.getenv("PAPER_MAX_DTE_DAYS_OVERRIDE", "")
+if PAPER_MAX_DTE_DAYS_OVERRIDE:
+    original_value = float(os.getenv("PAPER_MAX_DTE_DAYS", "2.0"))
+    PAPER_MAX_DTE_DAYS = float(PAPER_MAX_DTE_DAYS_OVERRIDE)
+    # Logger not yet initialized, use print for override notification
+    print(f"[CONFIG_OVERRIDE] PAPER_MAX_DTE_DAYS: {original_value} -> {PAPER_MAX_DTE_DAYS} (PAPER_MAX_DTE_DAYS_OVERRIDE env var)")
+else:
+    PAPER_MAX_DTE_DAYS = float(os.getenv("PAPER_MAX_DTE_DAYS", "2.0"))  # Only trade markets expiring within N days
 PAPER_MIN_DISCOUNT_PCT = float(os.getenv("PAPER_MIN_DISCOUNT_PCT", "0.0001"))  # Minimum discount (as fraction, e.g., 0.0001 = 0.01%)
 PAPER_MIN_TRADE_USD = float(os.getenv("PAPER_MIN_TRADE_USD", "50.0"))  # Minimum trade value USD
 
 # Heartbeat configuration
-HEARTBEAT_INTERVAL_SECONDS = int(os.getenv("HEARTBEAT_INTERVAL_SECONDS", "600"))  # Default 10 minutes
+HEARTBEAT_INTERVAL_SECONDS = int(os.getenv("HEARTBEAT_INTERVAL_SECONDS", "1800"))  # Default 30 minutes (was 10 minutes)
 
 # Operator dashboard configuration (periodic summary reports)
 DASHBOARD_INTERVAL_SECONDS = int(os.getenv("DASHBOARD_INTERVAL_SECONDS", "3600"))  # Default 1 hour (0 = disabled)
@@ -1095,6 +1129,28 @@ async def process_trade(session: aiohttp.ClientSession, trade: Dict, market_cate
     if not trade_wallet:
         trade_wallet = "unknown"
     
+    # Log whale address detection for debugging (target whales: 0x507e52..., 0x9a6e69..., 0xfc25f1...)
+    if trade_wallet and trade_wallet != "unknown":
+        trade_wallet_lower = trade_wallet.lower()
+        # Check if this is one of the target whale addresses
+        target_whales = [
+            "0x507e52ef684ca2dd91f90a9d26d149dd3288beae",
+            "0x9a6e69c9b012030c668397d8346b4d55dd8335b4",
+            "0xfc25f141ed27bb1787338d2c4e7f51e3a15e1f7f"
+        ]
+        if trade_wallet_lower in [w.lower() for w in target_whales]:
+            market_slug = trade.get("slug", "")[:60] if trade.get("slug") else "unknown"
+            condition_id = trade.get("conditionId", "")[:20] if trade.get("conditionId") else "unknown"
+            trade_value = (trade.get("size", 0) * trade.get("price", 0)) if trade.get("size") and trade.get("price") else 0
+            logger.info("target_whale_trade_detected",
+                       wallet=trade_wallet[:16],
+                       market_slug=market_slug,
+                       condition_id=condition_id,
+                       trade_value_usd=trade_value,
+                       price=trade.get("price"),
+                       size=trade.get("size"),
+                       side=trade.get("side", "unknown"))
+    
     # Check daily limits
     can_proceed, reason = check_daily_limits()
     if not can_proceed:
@@ -1310,7 +1366,17 @@ async def process_trade(session: aiohttp.ClientSession, trade: Dict, market_cate
     # Log ALL whale activity for analysis (before filtering)
     # Note: trade_usd already calculated above
     market_id = trade.get("conditionId", trade.get("slug", "unknown"))
-    logger.debug("whale_activity", wallet=trade_wallet[:20], score=whale["score"], discount=discount_pct, size_usd=trade_usd)
+    # Calculate days_to_expiry for logging if market_obj available
+    dte_for_log = None
+    if market_obj:
+        dte_for_log = _days_to_expiry(market_obj)
+    logger.debug("whale_activity", 
+                wallet=trade_wallet[:20], 
+                score=whale["score"], 
+                discount=discount_pct, 
+                size_usd=trade_usd,
+                days_to_expiry=dte_for_log,
+                condition_id=condition_id[:20] if condition_id else "unknown")
     log_all_activity(market_id, trade_wallet, whale["score"], discount_pct, trade_usd)
     
     # Calibration mode: track whale score for histogram analysis
@@ -1402,11 +1468,16 @@ async def process_trade(session: aiohttp.ClientSession, trade: Dict, market_cate
                 rejected_other += 1
                 rejected_other_reasons["expiry_title_safety_net"] = rejected_other_reasons.get("expiry_title_safety_net", 0) + 1
                 event_id = trade.get("conditionId") or trade.get("condition_id") or "unknown"
-                logger.info("signal_rejected_expiry_title_safety_net",
+                wallet = trade.get("proxyWallet", "")[:16] if trade.get("proxyWallet") else "unknown"
+                logger.warning("signal_rejected_expiry_title_safety_net",
+                           wallet=wallet,
                            title_dte=title_dte,
                            max_days=MAX_DAYS_TO_EXPIRY,
                            market_title=market_title[:120],
-                           event_id=event_id[:20] if isinstance(event_id, str) else str(event_id)[:20])
+                           event_id=event_id[:20] if isinstance(event_id, str) else str(event_id)[:20],
+                           reason="expiry_title_safety_net",
+                           filter_type="MAX_DAYS_TO_EXPIRY",
+                           config_value=MAX_DAYS_TO_EXPIRY)
                 return None
             
             dte = _days_to_expiry(market_for_expiry)
@@ -1423,21 +1494,32 @@ async def process_trade(session: aiohttp.ClientSession, trade: Dict, market_cate
                 rejected_other += 1
                 rejected_other_reasons["expiry_too_long"] = rejected_other_reasons.get("expiry_too_long", 0) + 1
                 event_id = trade.get("conditionId") or trade.get("condition_id") or "unknown"
-                logger.info("signal_rejected_expiry",
+                wallet = trade.get("proxyWallet", "")[:16] if trade.get("proxyWallet") else "unknown"
+                logger.warning("signal_rejected_expiry_too_long",
+                           wallet=wallet,
                            title=market_title[:120],
                            event_id=event_id[:20] if isinstance(event_id, str) else str(event_id)[:20],
                            days_to_expiry=dte,
-                           reason="too_long_at_emit")
+                           max_days_to_expiry=MAX_DAYS_TO_EXPIRY,
+                           reason="too_long_at_emit",
+                           filter_type="MAX_DAYS_TO_EXPIRY",
+                           config_value=MAX_DAYS_TO_EXPIRY)
                 return None
             if dte * 24.0 < MIN_HOURS_TO_EXPIRY:
                 rejected_other += 1
                 rejected_other_reasons["expiry_too_soon"] = rejected_other_reasons.get("expiry_too_soon", 0) + 1
                 event_id = trade.get("conditionId") or trade.get("condition_id") or "unknown"
-                logger.info("signal_rejected_expiry",
+                wallet = trade.get("proxyWallet", "")[:16] if trade.get("proxyWallet") else "unknown"
+                logger.warning("signal_rejected_expiry_too_soon",
+                           wallet=wallet,
                            title=market_title[:120],
                            event_id=event_id[:20] if isinstance(event_id, str) else str(event_id)[:20],
                            days_to_expiry=dte,
-                           reason="too_soon_at_emit")
+                           hours_to_expiry=dte * 24.0,
+                           min_hours_to_expiry=MIN_HOURS_TO_EXPIRY,
+                           reason="too_soon_at_emit",
+                           filter_type="MIN_HOURS_TO_EXPIRY",
+                           config_value=MIN_HOURS_TO_EXPIRY)
                 return None
         
         # Paranoia guard: verify trade's condition_id matches market's condition_id
@@ -2335,7 +2417,246 @@ async def main_loop():
                 signals_generated = 0
                 trades_considered = 0
                 
-                # 1. Fetch top markets by volume (gamma-api → conditionId bridge)
+                # PAPER TRADING MODE: Use fetch_recent_trades instead of market-by-market scanning
+                # This gets ALL recent trades (like WebSocket) instead of polling specific markets
+                # Much more efficient and catches trades from any market
+                if PAPER_TRADING:
+                    # Initialize total_trades_processed for paper trading mode (same as regular mode)
+                    total_trades_processed = 0
+                    
+                    # Fetch recent trades without market filtering (like Phase 2 WebSocket approach)
+                    # Lower min_size_usd to catch more trades (API filter, not our filter)
+                    recent_trades = await fetch_recent_trades(session, min_size_usd=API_MIN_SIZE_USD, limit=500)
+                    
+                    if not recent_trades:
+                        logger.info("no_recent_trades_found", api_min_size_usd=API_MIN_SIZE_USD)
+                        elapsed = time() - cycle_started
+                        sleep_for = max(0, SCAN_INTERVAL_SECONDS - elapsed)
+                        await asyncio.sleep(sleep_for)
+                        continue
+                    
+                    logger.info("fetched_recent_trades", count=len(recent_trades), api_min_size_usd=API_MIN_SIZE_USD)
+                    
+                    # Process trades directly (no market filtering needed)
+                    safe_vars = {"wallet": "unknown", "condition_id": "unknown"}  # Initialize safe_vars
+                    for trade in recent_trades:
+                        # Update wallet in safe_vars dict for exception handling
+                        safe_vars["wallet"] = trade.get("proxyWallet") or trade.get("wallet") or trade.get("makerAddress") or "unknown"
+                        
+                        # DEDUPE: skip duplicate trades
+                        k = trade_key(trade)
+                        if k in SEEN_TRADE_KEYS:
+                            continue
+                        SEEN_TRADE_KEYS.add(k)
+                        
+                        # Prevent unbounded memory growth
+                        if len(SEEN_TRADE_KEYS) > SEEN_TRADE_KEYS_MAX:
+                            SEEN_TRADE_KEYS.clear()
+                        
+                        # Extract wallet and condition_id early (needed for error handling)
+                        trade_wallet = trade.get("proxyWallet") or trade.get("wallet") or trade.get("makerAddress", "")
+                        trade_condition_id = trade.get("conditionId") or trade.get("condition_id") or ""
+                        
+                        if not trade_condition_id:
+                            continue  # Skip trades without condition_id
+                        
+                        # Fetch market metadata for expiry check (with error handling)
+                        market_meta = None
+                        try:
+                            market_meta = await fetch_market_metadata_by_condition(session, trade_condition_id)
+                        except asyncio.CancelledError:
+                            # Handle cancellation gracefully
+                            logger.warning("market_metadata_fetch_cancelled", 
+                                         condition_id=trade_condition_id[:20],
+                                         wallet=trade_wallet[:16] if trade_wallet else "unknown")
+                            continue
+                        except Exception as e:
+                            # Handle other errors (timeout, network, etc.)
+                            logger.debug("market_metadata_fetch_failed",
+                                       condition_id=trade_condition_id[:20],
+                                       wallet=trade_wallet[:16] if trade_wallet else "unknown",
+                                       error=str(e)[:100])
+                            # Continue without metadata - process_trade will handle expiry check
+                        
+                        # Apply expiry filter if metadata available
+                        if market_meta:
+                            dte = _days_to_expiry(market_meta)
+                            if dte is not None:
+                                # Apply expiry filter
+                                if dte > MAX_DAYS_TO_EXPIRY:
+                                    continue
+                                if dte * 24.0 < MIN_HOURS_TO_EXPIRY:
+                                    continue
+                        # If metadata fetch failed, continue anyway - process_trade will check expiry
+                        
+                        # PAPER TRADING OPTIMIZATION: Check if trade is from target whale BEFORE processing
+                        # This avoids expensive API calls for non-target whales
+                        # (trade_wallet already extracted above)
+                        if trade_wallet:
+                            trade_wallet_lower = trade_wallet.lower()
+                            target_whales = [
+                                "0x507e52ef684ca2dd91f90a9d26d149dd3288beae",
+                                "0x9a6e69c9b012030c668397d8346b4d55dd8335b4",
+                                "0xfc25f141ed27bb1787338d2c4e7f51e3a15e1f7f"
+                            ]
+                            # Skip processing if not a target whale (saves API calls)
+                            if trade_wallet_lower not in [w.lower() for w in target_whales]:
+                                continue  # Skip non-target whales in paper trading mode
+                        
+                        # Process trade (will filter by target whales inside process_trade)
+                        trades_considered += 1
+                        try:
+                            signal = await process_trade(session, trade, market_category=market_meta.get("category") if market_meta else None, category_inferred=market_meta is None, market_obj=market_meta)
+                            total_trades_processed += 1
+                        except asyncio.CancelledError:
+                            # Handle cancellation gracefully (e.g., during shutdown)
+                            logger.warning("trade_processing_cancelled", wallet=trade_wallet[:16] if trade_wallet else "unknown")
+                            continue
+                        except Exception as e:
+                            # Handle other errors gracefully
+                            logger.warning("trade_processing_error", 
+                                         wallet=trade_wallet[:16] if trade_wallet else "unknown",
+                                         error=str(e)[:100])
+                            continue
+                        
+                        if signal:
+                            # Apply same signal filtering as market-by-market approach
+                            if signal.get("whale_score") is None:
+                                rejected_score_missing += 1
+                                continue
+                            if signal.get("discount_pct") is None:
+                                rejected_discount_missing += 1
+                                continue
+                            
+                            # Check cluster minimum trades
+                            bypass_cluster = os.getenv("BYPASS_CLUSTER_MIN", "False") == "True"
+                            trade_count = signal.get("cluster_trades_count", 0)
+                            min_trades = int(os.getenv("CLUSTER_MIN_TRADES", "1"))
+                            if not bypass_cluster and trade_count < min_trades:
+                                rejected_below_cluster_min += 1
+                                continue
+                            
+                            # Dedupe cooldown
+                            event_id_for_dedup = signal.get("condition_id") or signal.get("market_id") or trade_condition_id
+                            outcome_index_for_dedup = signal.get("outcome_index") or trade.get("outcomeIndex")
+                            side_for_dedup = signal.get("side", "BUY")
+                            wallet_for_dedup = signal.get("wallet", "unknown")[:10] if signal.get("wallet") else "unknown"
+                            dedup_key = (event_id_for_dedup, outcome_index_for_dedup, side_for_dedup, wallet_for_dedup)
+                            now_ts = time()
+                            last_signal_time = _recent_signal_keys.get(dedup_key)
+                            if last_signal_time and (now_ts - last_signal_time) < SIGNAL_COOLDOWN_SECONDS:
+                                rejected_other_reasons["signal_deduped"] = rejected_other_reasons.get("signal_deduped", 0) + 1
+                                continue
+                            _recent_signal_keys[dedup_key] = now_ts
+                            
+                            # Signal already created by process_trade - proceed to paper trading logic
+                            signals_generated += 1
+                            
+                            # Compute confidence from whale_score (same as regular mode)
+                            whale_score = signal.get("whale_score")
+                            if whale_score is not None:
+                                try:
+                                    confidence = int(round(float(whale_score) * 100))
+                                except Exception:
+                                    confidence = 0
+                            else:
+                                confidence = signal.get("confidence", 0)
+                            
+                            # Add confidence to signal dict
+                            signal["confidence"] = confidence
+                            
+                            # Log signal to CSV
+                            log_signal_to_csv(signal)
+                            
+                            # Store signal in SQLite database
+                            signal_id = signal_store.insert_signal(signal)
+                                
+                                # Paper trading logic (same as regular mode)
+                                if PAPER_TRADING and signal_id and should_paper_trade(confidence):
+                                    # Apply paper trading filters (same as regular mode)
+                                    skip_reasons = []
+                                    
+                                    # Filter 1: days_to_expiry must be present and <= PAPER_MAX_DTE_DAYS
+                                    # NOTE: In paper trading mode, allow unknown expiry (markets might resolve same-day)
+                                    days_to_expiry = signal.get("days_to_expiry")
+                                    if days_to_expiry is None:
+                                        # For paper trading, allow unknown expiry (STRICT_SHORT_TERM already checked earlier)
+                                        # Only skip if we can't determine expiry AND STRICT_SHORT_TERM is enabled
+                                        if STRICT_SHORT_TERM:
+                                            skip_reasons.append("expiry_unknown_strict_mode")
+                                    elif days_to_expiry > PAPER_MAX_DTE_DAYS:
+                                        skip_reasons.append(f"expiry_too_long_{days_to_expiry:.1f}d")
+                                    
+                                    # Filter 2: discount_pct must be >= PAPER_MIN_DISCOUNT_PCT
+                                    discount_pct = signal.get("discount_pct")
+                                    if discount_pct is None:
+                                        skip_reasons.append("discount_missing")
+                                    elif discount_pct < PAPER_MIN_DISCOUNT_PCT:
+                                        skip_reasons.append(f"discount_too_low_{discount_pct:.2f}%")
+                                    
+                                    # Filter 3: trade_value_usd must be >= PAPER_MIN_TRADE_USD
+                                    trade_value_usd = signal.get("trade_value_usd")
+                                    if trade_value_usd is None:
+                                        skip_reasons.append("trade_value_missing")
+                                    elif trade_value_usd < PAPER_MIN_TRADE_USD:
+                                        skip_reasons.append(f"trade_value_too_low_{trade_value_usd:.0f}")
+                                    
+                                    # Filter 4: stake must be > 0
+                                    from src.polymarket.paper_trading import stake_eur_from_confidence
+                                    stake_eur = round(stake_eur_from_confidence(confidence), 2)
+                                    if stake_eur <= 0:
+                                        skip_reasons.append("stake_zero")
+                                    
+                                    # Filter 5: no open trade on same condition
+                                    condition_id_for_check = signal.get("condition_id") or trade_condition_id
+                                    if condition_id_for_check and signal_store.has_open_paper_trade(condition_id_for_check):
+                                        skip_reasons.append("open_trade_exists")
+                                    
+                                    if skip_reasons:
+                                        logger.warning("paper_trade_skipped",
+                                                     wallet=signal.get("wallet", "unknown")[:16],
+                                                     market=signal.get("market", "unknown")[:50],
+                                                     reasons=", ".join(skip_reasons),
+                                                     min_confidence=PAPER_MIN_CONFIDENCE)
+                                        continue
+                                    
+                                    # All filters passed - open paper trade
+                                    trade_dict = open_paper_trade(signal, confidence=confidence)
+                                    if trade_dict:
+                                        trade_id = signal_store.insert_paper_trade(
+                                            wallet=trade_dict["wallet"],
+                                            market=trade_dict["market"],
+                                            condition_id=trade_dict["condition_id"],
+                                            outcome_index=trade_dict.get("outcome_index"),
+                                            side=trade_dict["side"],
+                                            stake_eur=trade_dict["stake_eur"],
+                                            confidence=confidence
+                                        )
+                                        
+                                        if trade_id:
+                                            logger.info("paper_trade_opened",
+                                                      trade_id=trade_id,
+                                                      wallet=signal.get("wallet", "unknown")[:16],
+                                                      market=signal.get("market", "unknown")[:50],
+                                                      confidence=confidence)
+                                            
+                                            # Send Telegram notification
+                                            from src.polymarket.telegram import send_telegram
+                                            telegram_msg = format_paper_trade_telegram(signal, trade_id, confidence)
+                                            send_telegram(telegram_msg)
+                    
+                    # Log processing summary for paper trading mode (same format as regular mode)
+                    logger.info("processing_complete",
+                               markets=0,  # No markets scanned in paper trading mode
+                               trades_processed=total_trades_processed)
+                    
+                    # Skip market-by-market scanning in paper trading mode
+                    elapsed = time() - cycle_started
+                    sleep_for = max(0, SCAN_INTERVAL_SECONDS - elapsed)
+                    await asyncio.sleep(sleep_for)
+                    continue
+                
+                # REGULAR MODE: Fetch top markets by volume (gamma-api → conditionId bridge)
                 # Fetch many markets to increase chance of finding short-term ones
                 # Use reasonable page size (200) and fetch multiple pages if needed
                 # Note: "closingSoon" order causes 422 error, so we use "volume" (default)
@@ -2718,34 +3039,71 @@ async def main_loop():
                                         skip_reasons.append("days_to_expiry_missing")
                                     elif days_to_expiry > PAPER_MAX_DTE_DAYS:
                                         skip_reasons.append(f"days_to_expiry_too_long_{days_to_expiry:.1f}d")
+                                        logger.warning("paper_trade_rejected_days_to_expiry",
+                                                    wallet=signal.get("wallet", "")[:16] if signal.get("wallet") else "unknown",
+                                                    market=signal.get("market", "")[:60],
+                                                    days_to_expiry=days_to_expiry,
+                                                    max_dte_days=PAPER_MAX_DTE_DAYS,
+                                                    reason="days_to_expiry_exceeds_paper_max",
+                                                    filter_type="PAPER_MAX_DTE_DAYS",
+                                                    config_value=PAPER_MAX_DTE_DAYS)
                                     
                                     # Filter 2: discount_pct must be present and >= PAPER_MIN_DISCOUNT_PCT
                                     discount_pct = signal.get("discount_pct")
                                     if discount_pct is None:
                                         skip_reasons.append("discount_pct_missing")
+                                        logger.warning("paper_trade_rejected_discount_missing",
+                                                    wallet=signal.get("wallet", "")[:16] if signal.get("wallet") else "unknown",
+                                                    market=signal.get("market", "")[:60],
+                                                    reason="discount_pct_missing",
+                                                    filter_type="PAPER_MIN_DISCOUNT_PCT")
                                     elif discount_pct < PAPER_MIN_DISCOUNT_PCT:
                                         skip_reasons.append(f"discount_too_low_{discount_pct:.6f}")
+                                        logger.warning("paper_trade_rejected_discount_too_low",
+                                                    wallet=signal.get("wallet", "")[:16] if signal.get("wallet") else "unknown",
+                                                    market=signal.get("market", "")[:60],
+                                                    discount_pct=discount_pct,
+                                                    min_discount_pct=PAPER_MIN_DISCOUNT_PCT,
+                                                    reason="discount_below_minimum",
+                                                    filter_type="PAPER_MIN_DISCOUNT_PCT",
+                                                    config_value=PAPER_MIN_DISCOUNT_PCT)
                                     
                                     # Filter 3: trade_value_usd must be >= PAPER_MIN_TRADE_USD
                                     trade_value_usd = signal.get("trade_value_usd")
                                     if trade_value_usd is None:
                                         skip_reasons.append("trade_value_usd_missing")
+                                        logger.warning("paper_trade_rejected_trade_value_missing",
+                                                    wallet=signal.get("wallet", "")[:16] if signal.get("wallet") else "unknown",
+                                                    market=signal.get("market", "")[:60],
+                                                    reason="trade_value_usd_missing",
+                                                    filter_type="PAPER_MIN_TRADE_USD")
                                     elif trade_value_usd < PAPER_MIN_TRADE_USD:
                                         skip_reasons.append(f"trade_value_too_low_{trade_value_usd:.2f}")
+                                        logger.warning("paper_trade_rejected_trade_value_too_low",
+                                                    wallet=signal.get("wallet", "")[:16] if signal.get("wallet") else "unknown",
+                                                    market=signal.get("market", "")[:60],
+                                                    trade_value_usd=trade_value_usd,
+                                                    min_trade_usd=PAPER_MIN_TRADE_USD,
+                                                    reason="trade_value_below_minimum",
+                                                    filter_type="PAPER_MIN_TRADE_USD",
+                                                    config_value=PAPER_MIN_TRADE_USD)
                                     
                                     # If any filter fails, skip paper trade creation
                                     if skip_reasons:
-                                        logger.debug(
-                                            "paper_trade_skipped",
+                                        logger.warning(  # Changed from debug to warning for visibility
+                                            "paper_trade_rejected",
                                             signal_id=signal_id,
+                                            wallet=signal.get("wallet", "")[:16] if signal.get("wallet") else "unknown",
+                                            market=signal.get("market", "")[:60],
                                             confidence=confidence,
-                                            reasons=skip_reasons,
+                                            reasons=", ".join(skip_reasons),  # Join for readability
                                             days_to_expiry=days_to_expiry,
                                             discount_pct=discount_pct,
                                             trade_value_usd=trade_value_usd,
                                             max_dte_days=PAPER_MAX_DTE_DAYS,
                                             min_discount_pct=PAPER_MIN_DISCOUNT_PCT,
                                             min_trade_usd=PAPER_MIN_TRADE_USD,
+                                            min_confidence=PAPER_MIN_CONFIDENCE,
                                         )
                                     else:
                                         # All filters passed - create paper trade
@@ -2765,9 +3123,11 @@ async def main_loop():
                                             # Check if there's already an open paper trade for this market
                                             condition_id_for_check = signal.get("condition_id") or signal.get("event_id") or event_id
                                             if condition_id_for_check and signal_store.has_open_paper_trade(condition_id_for_check):
-                                                logger.debug(
-                                                    "paper_trade_skipped",
+                                                logger.warning(
+                                                    "paper_trade_rejected_open_trade_exists",
                                                     signal_id=signal_id,
+                                                    wallet=signal.get("wallet", "")[:16] if signal.get("wallet") else "unknown",
+                                                    market=signal.get("market", "")[:60],
                                                     condition_id=condition_id_for_check[:20],
                                                     reason="open_trade_exists_for_market",
                                                 )

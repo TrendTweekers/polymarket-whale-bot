@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_152931_0xa7b7da",
+  "whale_address": "0xa7b7dada578ef061f1d874414c91aff2c7910adb",
+  "market_slug": "por-gil-rio-2025-12-20-gil",
+  "is_elite": true,
+  "confidence": 0.7000000000000002,
+  "detection": {
+    "timestamp": "2025-12-20T15:29:31",
+    "market": "por-gil-rio-2025-12-20-gil",
+    "price": 0.57,
+    "size": 508.0
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T15:30:31",
+      "market_state_at_entry": {
+        "price": 0.57,
+        "timestamp": "2025-12-20T15:30:34.738129",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.5705699999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:30:34.738129",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T15:32:31",
+      "market_state_at_entry": {
+        "price": 0.43,
+        "timestamp": "2025-12-20T15:32:34.734220",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.4304299999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:32:34.734220",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T15:34:31",
+      "market_state_at_entry": {
+        "price": 0.57,
+        "timestamp": "2025-12-20T15:34:34.748279",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.5705699999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:34:34.748279",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T15:29:33.647359",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T15:34:34.762234"
+}

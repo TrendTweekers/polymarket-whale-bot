@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_143230_0x13ce9e",
+  "whale_address": "0x13ce9e717dcd64b262c9041c32bd444be576bf33",
+  "market_slug": "will-trump-nominate-kevin-hassett-as-the-next-fed-chair",
+  "is_elite": true,
+  "confidence": 0.8000000000000003,
+  "detection": {
+    "timestamp": "2025-12-20T14:32:30",
+    "market": "will-trump-nominate-kevin-hassett-as-the-next-fed-chair",
+    "price": 0.540000011385055,
+    "size": 45.673912
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T14:33:30",
+      "market_state_at_entry": {
+        "price": 0.459999988614945,
+        "timestamp": "2025-12-20T14:33:32.786365",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.4604599886035599,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:33:32.786365",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T14:35:30",
+      "market_state_at_entry": {
+        "price": 0.5400000041274114,
+        "timestamp": "2025-12-20T14:35:32.784587",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.5405400041315388,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:35:32.784587",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T14:37:30",
+      "market_state_at_entry": {
+        "price": 0.540000011385055,
+        "timestamp": "2025-12-20T14:37:33.007571",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.54054001139644,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:37:33.007571",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T14:32:32.030650",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T14:37:33.018570"
+}

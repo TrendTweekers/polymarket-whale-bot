@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_153432_0xe9c631",
+  "whale_address": "0xe9c6312464b52aa3eff13d822b003282075995c9",
+  "market_slug": "bitcoin-above-90k-on-december-21",
+  "is_elite": true,
+  "confidence": 0.55,
+  "detection": {
+    "timestamp": "2025-12-20T15:34:32",
+    "market": "bitcoin-above-90k-on-december-21",
+    "price": 0.8900000012844484,
+    "size": 638.406362
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T15:35:32",
+      "market_state_at_entry": {
+        "price": 0.89,
+        "timestamp": "2025-12-20T15:35:54.533713",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.89089,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:35:54.533713",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T15:37:32",
+      "market_state_at_entry": {
+        "price": 0.8900000012844484,
+        "timestamp": "2025-12-20T15:37:53.712057",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.8908900012857328,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:37:53.712057",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T15:39:32",
+      "market_state_at_entry": {
+        "price": 0.8900000012844484,
+        "timestamp": "2025-12-20T15:39:53.775372",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.8908900012857328,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:39:53.775372",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T15:34:51.449818",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T15:39:53.776373"
+}

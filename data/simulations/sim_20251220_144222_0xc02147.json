@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_144222_0xc02147",
+  "whale_address": "0xc02147dee42356b7a4edbb1c35ac4ffa95f61fa8",
+  "market_slug": "russia-x-ukraine-ceasefire-by-january-31-2026",
+  "is_elite": true,
+  "confidence": 0.55,
+  "detection": {
+    "timestamp": "2025-12-20T14:42:22",
+    "market": "russia-x-ukraine-ceasefire-by-january-31-2026",
+    "price": 0.91,
+    "size": 1500.0
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T14:43:22",
+      "market_state_at_entry": {
+        "price": 0.11,
+        "timestamp": "2025-12-20T14:43:29.063851",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.11010999999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:43:29.063851",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T14:45:22",
+      "market_state_at_entry": {
+        "price": 0.91,
+        "timestamp": "2025-12-20T14:45:29.065315",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9109099999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:45:29.065315",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T14:47:22",
+      "market_state_at_entry": {
+        "price": 0.91,
+        "timestamp": "2025-12-20T14:47:29.080930",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9109099999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:47:29.080930",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T14:42:27.995167",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T14:47:29.088958"
+}

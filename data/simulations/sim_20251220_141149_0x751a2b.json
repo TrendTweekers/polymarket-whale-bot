@@ -1,0 +1,38 @@
+{
+  "simulation_id": "sim_20251220_141149_0x751a2b",
+  "whale_address": "0x751a2b86cab503496efd325c8344e10159349ea1",
+  "market_slug": "solana-up-or-down-december-20-7am-et",
+  "is_elite": true,
+  "confidence": 0.9500000000000004,
+  "detection": {
+    "timestamp": "2025-12-20T14:11:49",
+    "market": "solana-up-or-down-december-20-7am-et",
+    "price": 0.999,
+    "size": 21.05
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T14:12:49",
+      "market_state_at_entry": {
+        "price": 0.999,
+        "timestamp": "2025-12-20T14:13:00.403271",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.9999989999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:13:00.403271",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "pending",
+  "created_at": "2025-12-20T14:11:59.473131",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ]
+}

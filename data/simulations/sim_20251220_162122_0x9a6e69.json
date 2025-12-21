@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_162122_0x9a6e69",
+  "whale_address": "0x9a6e69c9b012030c668397d8346b4d55dd8335b4",
+  "market_slug": "nba-por-sac-2025-12-20",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T16:21:22",
+    "market": "nba-por-sac-2025-12-20",
+    "price": 0.3700000204103709,
+    "size": 7.349205
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:22:22",
+      "market_state_at_entry": {
+        "price": 0.6299999795896291,
+        "timestamp": "2025-12-20T16:22:23.910323",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.6306299795692186,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:22:23.910323",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:24:22",
+      "market_state_at_entry": {
+        "price": 0.3700000204103709,
+        "timestamp": "2025-12-20T16:24:24.341544",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.3703700204307812,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:24:24.341544",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:26:22",
+      "market_state_at_entry": {
+        "price": 0.3700000204103709,
+        "timestamp": "2025-12-20T16:26:26.229320",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.3703700204307812,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:26:26.229320",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T16:21:23.305374",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T16:26:26.240321"
+}

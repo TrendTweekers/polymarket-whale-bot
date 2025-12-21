@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_160214_0x2652dd",
+  "whale_address": "0x2652dd1140c3b9e69c8852264cf8dbe727672a1d",
+  "market_slug": "epl-bri-sun-2025-12-20-bri",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T16:02:14",
+    "market": "epl-bri-sun-2025-12-20-bri",
+    "price": 0.46,
+    "size": 5.0
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:03:14",
+      "market_state_at_entry": {
+        "price": 0.5399999996869566,
+        "timestamp": "2025-12-20T16:03:38.848029",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.5405399996866435,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:03:38.848029",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:05:14",
+      "market_state_at_entry": {
+        "price": 0.51,
+        "timestamp": "2025-12-20T16:05:38.460352",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.5105099999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:05:38.460352",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:07:14",
+      "market_state_at_entry": {
+        "price": 0.46,
+        "timestamp": "2025-12-20T16:07:38.470337",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.46046,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:07:38.470337",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T16:02:36.546270",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T16:07:38.482306"
+}

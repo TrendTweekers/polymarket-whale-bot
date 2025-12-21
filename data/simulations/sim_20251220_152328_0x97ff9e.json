@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_152328_0x97ff9e",
+  "whale_address": "0x97ff9e9affb3acf739161deef10492a96a36d095",
+  "market_slug": "elon-musk-of-tweets-december-16-december-23-280-299",
+  "is_elite": true,
+  "confidence": 0.55,
+  "detection": {
+    "timestamp": "2025-12-20T15:23:28",
+    "market": "elon-musk-of-tweets-december-16-december-23-280-299",
+    "price": 0.850000112500028,
+    "size": 6.666665
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T15:24:28",
+      "market_state_at_entry": {
+        "price": 0.1499998874999719,
+        "timestamp": "2025-12-20T15:24:35.092943",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.15014988738747184,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:24:35.092943",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T15:26:28",
+      "market_state_at_entry": {
+        "price": 0.850000112500028,
+        "timestamp": "2025-12-20T15:26:34.574962",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.850850112612528,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:26:34.574962",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T15:28:28",
+      "market_state_at_entry": {
+        "price": 0.850000112500028,
+        "timestamp": "2025-12-20T15:28:34.569781",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.850850112612528,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:28:34.569781",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T15:23:33.204330",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T15:28:34.569781"
+}

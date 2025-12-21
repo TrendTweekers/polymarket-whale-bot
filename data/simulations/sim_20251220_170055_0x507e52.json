@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_170055_0x507e52",
+  "whale_address": "0x507e52ef684ca2dd91f90a9d26d149dd3288beae",
+  "market_slug": "epl-not-mac-2025-12-27-mac",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T17:00:55",
+    "market": "epl-not-mac-2025-12-27-mac",
+    "price": 0.3900000213500099,
+    "size": 3.278687
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T17:01:55",
+      "market_state_at_entry": {
+        "price": 0.6099999786499901,
+        "timestamp": "2025-12-20T17:02:12.092261",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.6106099786286401,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T17:02:12.092261",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T17:03:55",
+      "market_state_at_entry": {
+        "price": 0.390000140300108,
+        "timestamp": "2025-12-20T17:04:11.151114",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.39039014044040804,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T17:04:11.151114",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T17:05:55",
+      "market_state_at_entry": {
+        "price": 0.3900000213500099,
+        "timestamp": "2025-12-20T17:06:11.028886",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.39039002137135986,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T17:06:11.028886",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T17:01:09.783987",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T17:06:11.028886"
+}

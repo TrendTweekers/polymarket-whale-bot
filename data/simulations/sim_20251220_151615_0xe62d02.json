@@ -1,0 +1,21 @@
+{
+  "simulation_id": "sim_20251220_151615_0xe62d02",
+  "whale_address": "0xe62d0223966f7cee8cc77065150a2db417bcc34d",
+  "market_slug": "ethereum-up-or-down-on-december-20",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T15:16:15",
+    "market": "ethereum-up-or-down-on-december-20",
+    "price": 0.63,
+    "size": 42.0
+  },
+  "results": [],
+  "status": "pending",
+  "created_at": "2025-12-20T15:16:35.268163",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ]
+}

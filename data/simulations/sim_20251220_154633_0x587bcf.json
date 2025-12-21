@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_154633_0x587bcf",
+  "whale_address": "0x587bcff09b7e887186a4e2b3086653f10dcd2622",
+  "market_slug": "itsb-mon-car-2025-12-20-draw",
+  "is_elite": true,
+  "confidence": 0.5,
+  "detection": {
+    "timestamp": "2025-12-20T15:46:33",
+    "market": "itsb-mon-car-2025-12-20-draw",
+    "price": 0.3,
+    "size": 33.44
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T15:47:33",
+      "market_state_at_entry": {
+        "price": 0.3,
+        "timestamp": "2025-12-20T15:47:46.315466",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.30029999999999996,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:47:46.315466",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T15:49:33",
+      "market_state_at_entry": {
+        "price": 0.3,
+        "timestamp": "2025-12-20T15:49:46.349740",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.30029999999999996,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:49:46.349740",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T15:51:33",
+      "market_state_at_entry": {
+        "price": 0.3,
+        "timestamp": "2025-12-20T15:51:46.753558",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.30029999999999996,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:51:46.753558",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T15:46:45.015042",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T15:51:46.762563"
+}

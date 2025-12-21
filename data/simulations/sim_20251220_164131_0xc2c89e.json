@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_164131_0xc2c89e",
+  "whale_address": "0xc2c89e23a69936da2991ddffdc7c99d4f0bd5471",
+  "market_slug": "epl-tot-liv-2025-12-20-liv",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T16:41:31",
+    "market": "epl-tot-liv-2025-12-20-liv",
+    "price": 0.520000019200003,
+    "size": 10.416665
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:42:31",
+      "market_state_at_entry": {
+        "price": 0.520000019200003,
+        "timestamp": "2025-12-20T16:42:35.555989",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.520520019219203,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:42:35.555989",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:44:31",
+      "market_state_at_entry": {
+        "price": 0.520000019200003,
+        "timestamp": "2025-12-20T16:44:34.795306",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.520520019219203,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:44:34.795306",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:46:31",
+      "market_state_at_entry": {
+        "price": 0.52,
+        "timestamp": "2025-12-20T16:46:34.782206",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.52052,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:46:34.782206",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T16:41:33.597329",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T16:46:34.793200"
+}

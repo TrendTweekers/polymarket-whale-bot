@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_142914_0x97e12c",
+  "whale_address": "0x97e12cc7391a50e49042b44a2d4a0cef54c8017b",
+  "market_slug": "dota2-pari-og-2025-12-20",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T14:29:14",
+    "market": "dota2-pari-og-2025-12-20",
+    "price": 0.47,
+    "size": 700.0
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T14:30:14",
+      "market_state_at_entry": {
+        "price": 0.48,
+        "timestamp": "2025-12-20T14:30:42.275165",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.4804799999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:30:42.275165",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T14:32:14",
+      "market_state_at_entry": {
+        "price": 0.5399999654399953,
+        "timestamp": "2025-12-20T14:32:42.278650",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.5405399654054353,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:32:42.278650",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T14:34:14",
+      "market_state_at_entry": {
+        "price": 0.6,
+        "timestamp": "2025-12-20T14:34:42.288139",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.6005999999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:34:42.288139",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T14:29:40.883650",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T14:34:42.299138"
+}

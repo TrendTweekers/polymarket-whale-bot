@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_143709_0xa7b7da",
+  "whale_address": "0xa7b7dada578ef061f1d874414c91aff2c7910adb",
+  "market_slug": "bun-wol-fre-2025-12-20-fre",
+  "is_elite": true,
+  "confidence": 0.7000000000000002,
+  "detection": {
+    "timestamp": "2025-12-20T14:37:09",
+    "market": "bun-wol-fre-2025-12-20-fre",
+    "price": 0.33,
+    "size": 18.47
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T14:38:09",
+      "market_state_at_entry": {
+        "price": 0.6699999932999956,
+        "timestamp": "2025-12-20T14:38:12.839272",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.6706699932932956,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:38:12.839272",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T14:40:09",
+      "market_state_at_entry": {
+        "price": 0.33,
+        "timestamp": "2025-12-20T14:40:12.734646",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.33032999999999996,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:40:12.734646",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T14:42:09",
+      "market_state_at_entry": {
+        "price": 0.33,
+        "timestamp": "2025-12-20T14:42:12.745373",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.33032999999999996,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:42:12.745373",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T14:37:12.018840",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T14:42:12.755332"
+}

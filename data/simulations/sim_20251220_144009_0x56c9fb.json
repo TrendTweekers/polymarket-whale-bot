@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_144009_0x56c9fb",
+  "whale_address": "0x56c9fbdeccf198f1f5ad95ace39b24f5f7fb0d9e",
+  "market_slug": "dota2-pari-og-2025-12-20",
+  "is_elite": true,
+  "confidence": 0.6500000000000001,
+  "detection": {
+    "timestamp": "2025-12-20T14:40:09",
+    "market": "dota2-pari-og-2025-12-20",
+    "price": 0.794559194290669,
+    "size": 2248.95
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T14:41:09",
+      "market_state_at_entry": {
+        "price": 0.21,
+        "timestamp": "2025-12-20T14:41:26.230296",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.21020999999999998,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:41:26.230296",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T14:43:09",
+      "market_state_at_entry": {
+        "price": 0.8899999807759988,
+        "timestamp": "2025-12-20T14:43:26.315278",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.8908899807567747,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:43:26.315278",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T14:45:09",
+      "market_state_at_entry": {
+        "price": 0.11,
+        "timestamp": "2025-12-20T14:45:26.263697",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.11010999999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:45:26.263697",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T14:40:24.856923",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T14:45:26.263697"
+}

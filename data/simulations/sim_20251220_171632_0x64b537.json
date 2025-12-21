@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_171632_0x64b537",
+  "whale_address": "0x64b537601c39203e2d831bcf5df66601aff67543",
+  "market_slug": "nfl-phi-was-2025-12-20",
+  "is_elite": true,
+  "confidence": 0.5,
+  "detection": {
+    "timestamp": "2025-12-20T17:16:32",
+    "market": "nfl-phi-was-2025-12-20",
+    "price": 0.24,
+    "size": 124.63
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T17:17:32",
+      "market_state_at_entry": {
+        "price": 0.24,
+        "timestamp": "2025-12-20T17:17:44.781349",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.24023999999999995,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T17:17:44.781349",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T17:19:32",
+      "market_state_at_entry": {
+        "price": 0.24,
+        "timestamp": "2025-12-20T17:19:44.806978",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.24023999999999995,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T17:19:44.806978",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T17:21:32",
+      "market_state_at_entry": {
+        "price": 0.24,
+        "timestamp": "2025-12-20T17:21:44.799676",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.24023999999999995,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T17:21:44.799676",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T17:16:43.283235",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T17:21:44.799676"
+}

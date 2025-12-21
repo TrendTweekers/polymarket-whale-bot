@@ -1,0 +1,54 @@
+{
+  "simulation_id": "sim_20251220_141130_0x13ce9e",
+  "whale_address": "0x13ce9e717dcd64b262c9041c32bd444be576bf33",
+  "market_slug": "will-trump-nominate-kevin-hassett-as-the-next-fed-chair",
+  "is_elite": true,
+  "confidence": 0.7500000000000002,
+  "detection": {
+    "timestamp": "2025-12-20T14:11:30",
+    "market": "will-trump-nominate-kevin-hassett-as-the-next-fed-chair",
+    "price": 0.5400000016044646,
+    "size": 62.326085
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T14:12:30",
+      "market_state_at_entry": {
+        "price": 0.5499999662872116,
+        "timestamp": "2025-12-20T14:12:41.452385",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.5505499662534987,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:12:41.452385",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T14:14:30",
+      "market_state_at_entry": {
+        "price": 0.5400000066096478,
+        "timestamp": "2025-12-20T14:14:41.560405",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.5405400066162573,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:14:41.560405",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "pending",
+  "created_at": "2025-12-20T14:11:40.776115",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ]
+}

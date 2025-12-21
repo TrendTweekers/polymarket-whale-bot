@@ -1,0 +1,93 @@
+# DEBUG REJECTION LOGGING PATCH
+# This patch adds detailed rejection logging to help debug why trades aren't triggering
+
+## CHANGES TO: src/polymarket/engine.py
+
+### 1. Add detailed logging at signal generation (around line 1422)
+
+```python
+# REPLACE THIS (around line 1422):
+            if dte > MAX_DAYS_TO_EXPIRY:
+                rejected_other += 1
+                rejected_other_reasons["expiry_too_long"] = rejected_other_reasons.get("expiry_too_long", 0) + 1
+                event_id = trade.get("conditionId") or trade.get("condition_id") or "unknown"
+                logger.info("signal_rejected_expiry",
+                           title=market_title[:120],
+                           event_id=event_id[:20] if isinstance(event_id, str) else str(event_id)[:20],
+                           days_to_expiry=dte,
+                           reason="too_long_at_emit")
+                return None
+
+# WITH THIS (enhanced logging):
+            if dte > MAX_DAYS_TO_EXPIRY:
+                rejected_other += 1
+                rejected_other_reasons["expiry_too_long"] = rejected_other_reasons.get("expiry_too_long", 0) + 1
+                event_id = trade.get("conditionId") or trade.get("condition_id") or "unknown"
+                wallet = trade.get("proxyWallet", "")[:16] if trade.get("proxyWallet") else "unknown"
+                logger.warning("signal_rejected_expiry_too_long",
+                           wallet=wallet,
+                           title=market_title[:120],
+                           event_id=event_id[:20] if isinstance(event_id, str) else str(event_id)[:20],
+                           days_to_expiry=dte,
+                           max_days_to_expiry=MAX_DAYS_TO_EXPIRY,
+                           reason="too_long_at_emit",
+                           filter_type="MAX_DAYS_TO_EXPIRY",
+                           config_value=MAX_DAYS_TO_EXPIRY)
+                return None
+```
+
+### 2. Add detailed logging for paper trading filter (around line 2719)
+
+```python
+# REPLACE THIS (around line 2719):
+                                    elif days_to_expiry > PAPER_MAX_DTE_DAYS:
+                                        skip_reasons.append(f"days_to_expiry_too_long_{days_to_expiry:.1f}d")
+
+# WITH THIS (enhanced logging):
+                                    elif days_to_expiry > PAPER_MAX_DTE_DAYS:
+                                        skip_reasons.append(f"days_to_expiry_too_long_{days_to_expiry:.1f}d")
+                                        logger.warning("paper_trade_rejected_days_to_expiry",
+                                                    wallet=signal.get("wallet", "")[:16] if signal.get("wallet") else "unknown",
+                                                    market=signal.get("market", "")[:60],
+                                                    days_to_expiry=days_to_expiry,
+                                                    max_dte_days=PAPER_MAX_DTE_DAYS,
+                                                    reason="days_to_expiry_exceeds_paper_max",
+                                                    filter_type="PAPER_MAX_DTE_DAYS",
+                                                    config_value=PAPER_MAX_DTE_DAYS)
+```
+
+### 3. Add logging for all other rejection reasons in paper trading section
+
+```python
+# AFTER line 2737, ENHANCE the skip_reasons logging:
+                                    if skip_reasons:
+                                        logger.warning(  # Changed from debug to warning for visibility
+                                            "paper_trade_rejected",
+                                            signal_id=signal_id,
+                                            wallet=signal.get("wallet", "")[:16] if signal.get("wallet") else "unknown",
+                                            market=signal.get("market", "")[:60],
+                                            confidence=confidence,
+                                            reasons=", ".join(skip_reasons),  # Join for readability
+                                            days_to_expiry=days_to_expiry,
+                                            discount_pct=discount_pct,
+                                            trade_value_usd=trade_value_usd,
+                                            max_dte_days=PAPER_MAX_DTE_DAYS,
+                                            min_discount_pct=PAPER_MIN_DISCOUNT_PCT,
+                                            min_trade_usd=PAPER_MIN_TRADE_USD,
+                                            min_confidence=PAPER_MIN_CONFIDENCE,
+                                        )
+```
+
+### 4. Add logging for whale address checks (around line 2350-2400)
+
+```python
+# ADD THIS before whale filtering logic (around line 2350):
+                    # Log whale address check for debugging
+                    trade_wallet = trade.get("proxyWallet", "").lower() if trade.get("proxyWallet") else ""
+                    if trade_wallet:
+                        logger.debug("whale_trade_detected",
+                                   wallet=trade_wallet[:16],
+                                   market_slug=trade.get("slug", "")[:60],
+                                   trade_value=trade.get("size", 0) * trade.get("price", 0),
+                                   condition_id=trade.get("conditionId", "")[:20] if trade.get("conditionId") else "unknown")
+```

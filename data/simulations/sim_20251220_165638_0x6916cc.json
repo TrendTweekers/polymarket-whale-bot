@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_165638_0x6916cc",
+  "whale_address": "0x6916cc00aa1c3e75ecf4081df7cae7d2f3592fd4",
+  "market_slug": "will-solana-dip-to-90-before-2026-889-994-752-911-532-546-984",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T16:56:38",
+    "market": "will-solana-dip-to-90-before-2026-889-994-752-911-532-546-984",
+    "price": 0.9609999993764992,
+    "size": 529.26953
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:57:38",
+      "market_state_at_entry": {
+        "price": 0.958,
+        "timestamp": "2025-12-20T16:57:54.904685",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.9589579999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:57:54.904685",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:59:38",
+      "market_state_at_entry": {
+        "price": 0.9609999993764992,
+        "timestamp": "2025-12-20T16:59:53.973285",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9619609993758755,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:59:53.973285",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T17:01:38",
+      "market_state_at_entry": {
+        "price": 0.9609999993764992,
+        "timestamp": "2025-12-20T17:01:53.695279",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9619609993758755,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T17:01:53.695279",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T16:56:52.625944",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T17:01:53.706279"
+}

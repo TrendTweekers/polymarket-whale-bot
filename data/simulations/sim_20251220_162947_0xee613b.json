@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_162947_0xee613b",
+  "whale_address": "0xee613b3fc183ee44f9da9c05f53e2da107e3debf",
+  "market_slug": "cbb-loych-sanclr-2025-12-20",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T16:29:47",
+    "market": "cbb-loych-sanclr-2025-12-20",
+    "price": 0.92,
+    "size": 67.81
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:30:47",
+      "market_state_at_entry": {
+        "price": 0.08,
+        "timestamp": "2025-12-20T16:30:54.058653",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.08008,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:30:54.058653",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:32:47",
+      "market_state_at_entry": {
+        "price": 0.92,
+        "timestamp": "2025-12-20T16:32:53.998246",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.92092,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:32:53.998246",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:34:47",
+      "market_state_at_entry": {
+        "price": 0.92,
+        "timestamp": "2025-12-20T16:34:56.214233",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.92092,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:34:56.214233",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T16:29:52.810797",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T16:34:56.223234"
+}

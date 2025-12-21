@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_164758_0x2652dd",
+  "whale_address": "0x2652dd1140c3b9e69c8852264cf8dbe727672a1d",
+  "market_slug": "bun-wol-fre-2025-12-20-draw",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T16:47:58",
+    "market": "bun-wol-fre-2025-12-20-draw",
+    "price": 0.74,
+    "size": 0.77
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:48:58",
+      "market_state_at_entry": {
+        "price": 0.26,
+        "timestamp": "2025-12-20T16:49:01.517392",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.26026,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:49:01.517392",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:50:58",
+      "market_state_at_entry": {
+        "price": 0.74,
+        "timestamp": "2025-12-20T16:51:01.020918",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.74074,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:51:01.020918",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:52:58",
+      "market_state_at_entry": {
+        "price": 0.5300001081000292,
+        "timestamp": "2025-12-20T16:53:01.035071",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.5305301082081292,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:53:01.035071",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T16:47:59.479923",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T16:53:01.044071"
+}

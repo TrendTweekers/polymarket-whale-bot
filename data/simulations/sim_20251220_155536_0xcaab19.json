@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_155536_0xcaab19",
+  "whale_address": "0xcaab19659b995951a44cc992447cb2ad5be324dd",
+  "market_slug": "ripple-labs-ipo-in-2025",
+  "is_elite": true,
+  "confidence": 0.8500000000000003,
+  "detection": {
+    "timestamp": "2025-12-20T15:55:36",
+    "market": "ripple-labs-ipo-in-2025",
+    "price": 0.9969990269270036,
+    "size": 1.003008
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T15:56:36",
+      "market_state_at_entry": {
+        "price": 0.9969990269270036,
+        "timestamp": "2025-12-20T15:56:52.586784",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.9979960259539304,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:56:52.586784",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T15:58:36",
+      "market_state_at_entry": {
+        "price": 0.9969990269270036,
+        "timestamp": "2025-12-20T15:58:53.042144",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9979960259539304,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:58:53.042144",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:00:36",
+      "market_state_at_entry": {
+        "price": 0.9969990269270036,
+        "timestamp": "2025-12-20T16:00:51.843971",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9979960259539304,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:00:51.843971",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T15:55:50.754414",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T16:00:51.843971"
+}

@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_160852_0x639484",
+  "whale_address": "0x639484beecabf5771bb4edea214f3a2050dc9bb3",
+  "market_slug": "epl-tot-liv-2025-12-20-liv",
+  "is_elite": true,
+  "confidence": 0.9000000000000004,
+  "detection": {
+    "timestamp": "2025-12-20T16:08:52",
+    "market": "epl-tot-liv-2025-12-20-liv",
+    "price": 0.530000001786,
+    "size": 106.382977
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:09:52",
+      "market_state_at_entry": {
+        "price": 0.469999998214,
+        "timestamp": "2025-12-20T16:10:19.680672",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.47046999821221397,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:10:19.680672",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:11:52",
+      "market_state_at_entry": {
+        "price": 0.4699999969293333,
+        "timestamp": "2025-12-20T16:12:19.656246",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.47046999692626257,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:12:19.656246",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:13:52",
+      "market_state_at_entry": {
+        "price": 0.46,
+        "timestamp": "2025-12-20T16:14:20.297841",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.46046,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:14:20.297841",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T16:09:17.267905",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T16:14:20.308866"
+}

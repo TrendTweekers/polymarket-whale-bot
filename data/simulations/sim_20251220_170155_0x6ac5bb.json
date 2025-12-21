@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_170155_0x6ac5bb",
+  "whale_address": "0x6ac5bb06a9eb05641fd5e82640268b92f3ab4b6e",
+  "market_slug": "lol-lng-jdg-2025-12-21",
+  "is_elite": true,
+  "confidence": 0.8000000000000003,
+  "detection": {
+    "timestamp": "2025-12-20T17:01:55",
+    "market": "lol-lng-jdg-2025-12-21",
+    "price": 0.2,
+    "size": 165.0
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T17:02:55",
+      "market_state_at_entry": {
+        "price": 0.21,
+        "timestamp": "2025-12-20T17:03:07.803284",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.21020999999999998,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T17:03:07.803284",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T17:04:55",
+      "market_state_at_entry": {
+        "price": 0.2,
+        "timestamp": "2025-12-20T17:05:08.354044",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.2002,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T17:05:08.354044",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T17:06:55",
+      "market_state_at_entry": {
+        "price": 0.2,
+        "timestamp": "2025-12-20T17:07:07.881263",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.2002,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T17:07:07.881263",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T17:02:06.841232",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T17:07:07.890293"
+}

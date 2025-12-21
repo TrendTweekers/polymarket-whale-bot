@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_142003_0xc8ab97",
+  "whale_address": "0xc8ab97a9089a9ff7e6ef0688e6e591a066946418",
+  "market_slug": "nothing-ever-happens-world-leader-out-edition",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T14:20:03",
+    "market": "nothing-ever-happens-world-leader-out-edition",
+    "price": 0.96,
+    "size": 7.89
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T14:21:03",
+      "market_state_at_entry": {
+        "price": 0.96,
+        "timestamp": "2025-12-20T14:21:07.857386",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.9609599999999998,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:21:07.857386",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T14:23:03",
+      "market_state_at_entry": {
+        "price": 0.96,
+        "timestamp": "2025-12-20T14:23:07.630355",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9609599999999998,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:23:07.630355",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T14:25:03",
+      "market_state_at_entry": {
+        "price": 0.96,
+        "timestamp": "2025-12-20T14:25:07.397928",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9609599999999998,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:25:07.397928",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T14:20:06.649132",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T14:25:07.409896"
+}

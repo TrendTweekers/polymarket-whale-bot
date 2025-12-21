@@ -1,0 +1,1008 @@
+{
+  "timestamp": "2025-12-19T08:53:51.435236",
+  "total_queried": 200,
+  "validated_count": 0,
+  "with_trades_count": 0,
+  "results": {
+    "0x080a53ccb5caf5949d2e67074e8629fe1f249da4": {
+      "address": "0x080a53ccb5caf5949d2e67074e8629fe1f249da4",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xec981ed70ae69c5cbcac08c1ba063e734f6bafcd": {
+      "address": "0xec981ed70ae69c5cbcac08c1ba063e734f6bafcd",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x12d6cccfc7470a3f4bafc53599a4779cbf2cf2a8": {
+      "address": "0x12d6cccfc7470a3f4bafc53599a4779cbf2cf2a8",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x4b7410aefbf0f38012b0dfb1131a4de147a9e8d7": {
+      "address": "0x4b7410aefbf0f38012b0dfb1131a4de147a9e8d7",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x818f214c7f3e479cce1d964d53fe3db7297558cb": {
+      "address": "0x818f214c7f3e479cce1d964d53fe3db7297558cb",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x7744bfd749a70020d16a1fcbac1d064761c9999e": {
+      "address": "0x7744bfd749a70020d16a1fcbac1d064761c9999e",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x64dbf41255eacd1f73da6c0af7f8624ca60d766d": {
+      "address": "0x64dbf41255eacd1f73da6c0af7f8624ca60d766d",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x63d43bbb87f85af03b8f2f9e2fad7b54334fa2f1": {
+      "address": "0x63d43bbb87f85af03b8f2f9e2fad7b54334fa2f1",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xd218e474776403a330142299f7796e8ba32eb5c9": {
+      "address": "0xd218e474776403a330142299f7796e8ba32eb5c9",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x54b56146656e7eef9da02b3a030c18e06e924b31": {
+      "address": "0x54b56146656e7eef9da02b3a030c18e06e924b31",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x5188fa0e8a77e87bc6a58e6781fdfc4e165cc804": {
+      "address": "0x5188fa0e8a77e87bc6a58e6781fdfc4e165cc804",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x011bed81b48056b2761f3576e9a5f0b229a1e44d": {
+      "address": "0x011bed81b48056b2761f3576e9a5f0b229a1e44d",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x6f2628a8ac6e3f7bd857657d5316c33822ced136": {
+      "address": "0x6f2628a8ac6e3f7bd857657d5316c33822ced136",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x4952e4b26fd33661e871aebaa5b6e26c0d4444b7": {
+      "address": "0x4952e4b26fd33661e871aebaa5b6e26c0d4444b7",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x45c49bf952a3b2247392899b0ea781eabd52eee1": {
+      "address": "0x45c49bf952a3b2247392899b0ea781eabd52eee1",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x3c2a5046560694763b64f35a4bcdd6a044b788b8": {
+      "address": "0x3c2a5046560694763b64f35a4bcdd6a044b788b8",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xaedd6c816358bc3bb09508d5c36699610244150c": {
+      "address": "0xaedd6c816358bc3bb09508d5c36699610244150c",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x861721eebed7bf9e4185da85ac49837396442ac3": {
+      "address": "0x861721eebed7bf9e4185da85ac49837396442ac3",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x8262ffa70186af8656abb788bdb778e3f67ba815": {
+      "address": "0x8262ffa70186af8656abb788bdb778e3f67ba815",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xecd55daa7c6900683b804d1d4db935fbfabe43f4": {
+      "address": "0xecd55daa7c6900683b804d1d4db935fbfabe43f4",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xc42f49919bfb2f735a7d4580200e6ad7d2cb78a0": {
+      "address": "0xc42f49919bfb2f735a7d4580200e6ad7d2cb78a0",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xf1528f12e645462c344799b62b1b421a6a4c64aa": {
+      "address": "0xf1528f12e645462c344799b62b1b421a6a4c64aa",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xd14015609f9474178fe2bba3340c709bb35ebbbd": {
+      "address": "0xd14015609f9474178fe2bba3340c709bb35ebbbd",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x3c918a8ef8c379304f744592120cbb4d76149af7": {
+      "address": "0x3c918a8ef8c379304f744592120cbb4d76149af7",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xc8ab97a9089a9ff7e6ef0688e6e591a066946418": {
+      "address": "0xc8ab97a9089a9ff7e6ef0688e6e591a066946418",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x46bdb2025015fd8d467db9a4a73a264051d851ca": {
+      "address": "0x46bdb2025015fd8d467db9a4a73a264051d851ca",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x7881a9189e6e6030ba46a3dfa06b0f35efea611b": {
+      "address": "0x7881a9189e6e6030ba46a3dfa06b0f35efea611b",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x05d7b5f4bfb81a4b080a107626930ca82abc22c1": {
+      "address": "0x05d7b5f4bfb81a4b080a107626930ca82abc22c1",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xca3f77cb090cf7cbcf48bcf865e8f27364418078": {
+      "address": "0xca3f77cb090cf7cbcf48bcf865e8f27364418078",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xcddaa383867c245a8594071388e50f38e9a05b28": {
+      "address": "0xcddaa383867c245a8594071388e50f38e9a05b28",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x68dd6269bb89d27a850dcde0d59ee824a227f0b2": {
+      "address": "0x68dd6269bb89d27a850dcde0d59ee824a227f0b2",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x6ac5bb06a9eb05641fd5e82640268b92f3ab4b6e": {
+      "address": "0x6ac5bb06a9eb05641fd5e82640268b92f3ab4b6e",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x97317409bfd9e992611596acee93e8b938019b35": {
+      "address": "0x97317409bfd9e992611596acee93e8b938019b35",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xd04d631183d7568356f598a3c77181ec4ab6d0e5": {
+      "address": "0xd04d631183d7568356f598a3c77181ec4ab6d0e5",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xe4fc1041edb5c205e449fb6a5967e9db24418af7": {
+      "address": "0xe4fc1041edb5c205e449fb6a5967e9db24418af7",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x6c8dd6f70721b4bb565e35a6fa100df1c06e673a": {
+      "address": "0x6c8dd6f70721b4bb565e35a6fa100df1c06e673a",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x9a6e69c9b012030c668397d8346b4d55dd8335b4": {
+      "address": "0x9a6e69c9b012030c668397d8346b4d55dd8335b4",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x204f72f35326db932158cba6adff0b9a1da95e14": {
+      "address": "0x204f72f35326db932158cba6adff0b9a1da95e14",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xee613b3fc183ee44f9da9c05f53e2da107e3debf": {
+      "address": "0xee613b3fc183ee44f9da9c05f53e2da107e3debf",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x1d8c256b15d3cd1f5db221e70c77f552eb8d757a": {
+      "address": "0x1d8c256b15d3cd1f5db221e70c77f552eb8d757a",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xe8dd7741ccb12350957ec71e9ee332e0d1e6ec86": {
+      "address": "0xe8dd7741ccb12350957ec71e9ee332e0d1e6ec86",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x21ffd2b7a212a6f277ed3eca1a9f8efcbca90d71": {
+      "address": "0x21ffd2b7a212a6f277ed3eca1a9f8efcbca90d71",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x076ca0207aaa48365da2eb6a917edcbdee5e4e7b": {
+      "address": "0x076ca0207aaa48365da2eb6a917edcbdee5e4e7b",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x95867fe8b44c8883eb1cba0f542d52e8511c8320": {
+      "address": "0x95867fe8b44c8883eb1cba0f542d52e8511c8320",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xba264376d6fef08f23a44db4153d12d47f5f23c9": {
+      "address": "0xba264376d6fef08f23a44db4153d12d47f5f23c9",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xa103eee98ac104a676c202d7afe5e859881c255c": {
+      "address": "0xa103eee98ac104a676c202d7afe5e859881c255c",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x79daefab17a1760778530e9244b83d8653cd7742": {
+      "address": "0x79daefab17a1760778530e9244b83d8653cd7742",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x1ff49fdcb6685c94059b65620f43a683be0ce7a5": {
+      "address": "0x1ff49fdcb6685c94059b65620f43a683be0ce7a5",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x8593b8189d243a760a40a371f2453ceaff5efb1e": {
+      "address": "0x8593b8189d243a760a40a371f2453ceaff5efb1e",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x25869d34ca274c24da62b7d62e3c2f692d1df071": {
+      "address": "0x25869d34ca274c24da62b7d62e3c2f692d1df071",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x4df332e27f9ee3224f52ce30e3ce15c1075e788f": {
+      "address": "0x4df332e27f9ee3224f52ce30e3ce15c1075e788f",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x49e20e64433eac734dd6024352b007281012018d": {
+      "address": "0x49e20e64433eac734dd6024352b007281012018d",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xb2304a93c928e05c13e3b96b07be1f2ea8374193": {
+      "address": "0xb2304a93c928e05c13e3b96b07be1f2ea8374193",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x448861155279dbf833d041b963e3ac854599e319": {
+      "address": "0x448861155279dbf833d041b963e3ac854599e319",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xe60a9b0be459d9849bc2339dac20517639ae6a47": {
+      "address": "0xe60a9b0be459d9849bc2339dac20517639ae6a47",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x589222a5124a96765443b97a3498d89ffd824ad2": {
+      "address": "0x589222a5124a96765443b97a3498d89ffd824ad2",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xad231899cc99ec3ddbb53926eb1fbef6c3f747c4": {
+      "address": "0xad231899cc99ec3ddbb53926eb1fbef6c3f747c4",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x8ebfdc251c6c378d4a3a54a8f15cebfa4b9183ce": {
+      "address": "0x8ebfdc251c6c378d4a3a54a8f15cebfa4b9183ce",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xa9e8faf20424f3efbf12abaea0e7069d7546c443": {
+      "address": "0xa9e8faf20424f3efbf12abaea0e7069d7546c443",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x53757615de1c42b83f893b79d4241a009dc2aeea": {
+      "address": "0x53757615de1c42b83f893b79d4241a009dc2aeea",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x08458f7e9d2858027de579e4c3ca305475496b6f": {
+      "address": "0x08458f7e9d2858027de579e4c3ca305475496b6f",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x25257a6a89dba93dd0c536b6279365632a4eb919": {
+      "address": "0x25257a6a89dba93dd0c536b6279365632a4eb919",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xdcd669c506a938bae9269a84b8bd2bdb220484cd": {
+      "address": "0xdcd669c506a938bae9269a84b8bd2bdb220484cd",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x2005d16a84ceefa912d4e380cd32e7ff827875ea": {
+      "address": "0x2005d16a84ceefa912d4e380cd32e7ff827875ea",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x4133bcbad1d9c41de776646696f41c34d0a65e70": {
+      "address": "0x4133bcbad1d9c41de776646696f41c34d0a65e70",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x8717e750e5e20cd0e28e39280e960cc020fb49a8": {
+      "address": "0x8717e750e5e20cd0e28e39280e960cc020fb49a8",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xa1e1f3a1564966d924e855c5e58501e650ea921e": {
+      "address": "0xa1e1f3a1564966d924e855c5e58501e650ea921e",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x0aae5c4ec45339a64a1dd2fe4ba98c2a19eb251c": {
+      "address": "0x0aae5c4ec45339a64a1dd2fe4ba98c2a19eb251c",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xc0629caf9a88dc6ce0b4980c393ef600949bea25": {
+      "address": "0xc0629caf9a88dc6ce0b4980c393ef600949bea25",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x56c9fbdeccf198f1f5ad95ace39b24f5f7fb0d9e": {
+      "address": "0x56c9fbdeccf198f1f5ad95ace39b24f5f7fb0d9e",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x97e12cc7391a50e49042b44a2d4a0cef54c8017b": {
+      "address": "0x97e12cc7391a50e49042b44a2d4a0cef54c8017b",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xfcf2378f20cf408d077c21e731272f21cccea469": {
+      "address": "0xfcf2378f20cf408d077c21e731272f21cccea469",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xe62d0223966f7cee8cc77065150a2db417bcc34d": {
+      "address": "0xe62d0223966f7cee8cc77065150a2db417bcc34d",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x5cd5c8d7a17c78d7389d8b87b611aed83322ac33": {
+      "address": "0x5cd5c8d7a17c78d7389d8b87b611aed83322ac33",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xfc25f141ed27bb1787338d2c4e7f51e3a15e1f7f": {
+      "address": "0xfc25f141ed27bb1787338d2c4e7f51e3a15e1f7f",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x3e04fbc51adb75418129f6ce2091ae633070564d": {
+      "address": "0x3e04fbc51adb75418129f6ce2091ae633070564d",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x96e9edf0e27596d8eb42f771f24464ee92224b32": {
+      "address": "0x96e9edf0e27596d8eb42f771f24464ee92224b32",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x97ff9e9affb3acf739161deef10492a96a36d095": {
+      "address": "0x97ff9e9affb3acf739161deef10492a96a36d095",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x71a70f24538d885d1b45f9cea158a2cdf2e56fcf": {
+      "address": "0x71a70f24538d885d1b45f9cea158a2cdf2e56fcf",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xa81eefec9c08fa157d855f1ac5caf8feab1903dc": {
+      "address": "0xa81eefec9c08fa157d855f1ac5caf8feab1903dc",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x45720deb102f700682bfcb19b5872b5022ad83ff": {
+      "address": "0x45720deb102f700682bfcb19b5872b5022ad83ff",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x6916cc00aa1c3e75ecf4081df7cae7d2f3592fd4": {
+      "address": "0x6916cc00aa1c3e75ecf4081df7cae7d2f3592fd4",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xa82b0e89cf734e2fa70cbd52ca65c77d64595220": {
+      "address": "0xa82b0e89cf734e2fa70cbd52ca65c77d64595220",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x6a13a9864a8e53c815cf1adb6026a0f35e3d4593": {
+      "address": "0x6a13a9864a8e53c815cf1adb6026a0f35e3d4593",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x45bc74efa620b45c02308acaecdff1f7c06f978b": {
+      "address": "0x45bc74efa620b45c02308acaecdff1f7c06f978b",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x3a8651c42ac19aa3e3141531a298abc72f51dea8": {
+      "address": "0x3a8651c42ac19aa3e3141531a298abc72f51dea8",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x9af5db3286cba252e9597904a2ca58f8ee85451f": {
+      "address": "0x9af5db3286cba252e9597904a2ca58f8ee85451f",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x4fc19a907012ef58717ee7ceb1f89057f71aec92": {
+      "address": "0x4fc19a907012ef58717ee7ceb1f89057f71aec92",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x507e52ef684ca2dd91f90a9d26d149dd3288beae": {
+      "address": "0x507e52ef684ca2dd91f90a9d26d149dd3288beae",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xbcc9608ff5481e8452173a2236ffd735fad726fb": {
+      "address": "0xbcc9608ff5481e8452173a2236ffd735fad726fb",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xcaab19659b995951a44cc992447cb2ad5be324dd": {
+      "address": "0xcaab19659b995951a44cc992447cb2ad5be324dd",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xdbb9b3616f733e19278d1ca6f3207a8344b5ed8d": {
+      "address": "0xdbb9b3616f733e19278d1ca6f3207a8344b5ed8d",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xab57cc188d8b0e3938005dcb55960e1768a2842b": {
+      "address": "0xab57cc188d8b0e3938005dcb55960e1768a2842b",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xe028b917d25346ddfd08327fa26f9006d6a1b4e4": {
+      "address": "0xe028b917d25346ddfd08327fa26f9006d6a1b4e4",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xb9fc8078fd6c0275c631ec10fcf8d5cc52d6da76": {
+      "address": "0xb9fc8078fd6c0275c631ec10fcf8d5cc52d6da76",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x1a090610aedb4f378e07c4526904b4dc91d1af0f": {
+      "address": "0x1a090610aedb4f378e07c4526904b4dc91d1af0f",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x491d9291d49322840b1117fd02902326963af42b": {
+      "address": "0x491d9291d49322840b1117fd02902326963af42b",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x9977760c6bd6f824cac834d1a36ee99478d63020": {
+      "address": "0x9977760c6bd6f824cac834d1a36ee99478d63020",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xd9a301d0e4ebecd8f755f3e096c9d8a13c80b1df": {
+      "address": "0xd9a301d0e4ebecd8f755f3e096c9d8a13c80b1df",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xd44e29936409019f93993de8bd603ef6cb1bb15e": {
+      "address": "0xd44e29936409019f93993de8bd603ef6cb1bb15e",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x6a72f61820b26b1fe4d956e17b6dc2a1ea3033ee": {
+      "address": "0x6a72f61820b26b1fe4d956e17b6dc2a1ea3033ee",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xfdb826a0fb4a90b4cc9049e408ea3ef1b73ae4c9": {
+      "address": "0xfdb826a0fb4a90b4cc9049e408ea3ef1b73ae4c9",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x3dd2db2d398ff72c2c71c9ad6473368b941e9ab1": {
+      "address": "0x3dd2db2d398ff72c2c71c9ad6473368b941e9ab1",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xa3ad70cf48a2f2b44163e798223c01a2c2536866": {
+      "address": "0xa3ad70cf48a2f2b44163e798223c01a2c2536866",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x8efc884a7d3c458dc1e8fe47510944d2802b478f": {
+      "address": "0x8efc884a7d3c458dc1e8fe47510944d2802b478f",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x908aad3bfbd70410e73f1db6a3e46c2a917cad16": {
+      "address": "0x908aad3bfbd70410e73f1db6a3e46c2a917cad16",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x43351dd7e8def5f29e5bd5954c8381c848a2fc2f": {
+      "address": "0x43351dd7e8def5f29e5bd5954c8381c848a2fc2f",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x64e93f87d8a0c1b2cde6f20d71f211372a95eb4c": {
+      "address": "0x64e93f87d8a0c1b2cde6f20d71f211372a95eb4c",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x6b7c75862e64d6e976d2c08ad9f9b54add6c5f83": {
+      "address": "0x6b7c75862e64d6e976d2c08ad9f9b54add6c5f83",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xc23dc0eca9e1c2e293de8911b9ac254f0bcd82c8": {
+      "address": "0xc23dc0eca9e1c2e293de8911b9ac254f0bcd82c8",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xf2960714df990b13dc7d51bb6f860b113707c59d": {
+      "address": "0xf2960714df990b13dc7d51bb6f860b113707c59d",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x69645cea639e7a19cbde6c126a197bc1abafef53": {
+      "address": "0x69645cea639e7a19cbde6c126a197bc1abafef53",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x5d5e64f4d9c6ef5d8f3cac17ef89ed805bc2450e": {
+      "address": "0x5d5e64f4d9c6ef5d8f3cac17ef89ed805bc2450e",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x94fb389d0f9d3686b363b8bbf30ec240ce97d6cb": {
+      "address": "0x94fb389d0f9d3686b363b8bbf30ec240ce97d6cb",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x9cb48ddd4185f3e947edf596589e40e574588285": {
+      "address": "0x9cb48ddd4185f3e947edf596589e40e574588285",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x557bed924a1bb6f62842c5742d1dc789b8d480d4": {
+      "address": "0x557bed924a1bb6f62842c5742d1dc789b8d480d4",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x25a495ff6b2ceb058900874157b54c9b3d65ae1a": {
+      "address": "0x25a495ff6b2ceb058900874157b54c9b3d65ae1a",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x20e547d9ca6ab26c530cb9703b1a165a25cdd3bc": {
+      "address": "0x20e547d9ca6ab26c530cb9703b1a165a25cdd3bc",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x99939249e9fa9e345d7483310ed30567f3ec251b": {
+      "address": "0x99939249e9fa9e345d7483310ed30567f3ec251b",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x751a2b86cab503496efd325c8344e10159349ea1": {
+      "address": "0x751a2b86cab503496efd325c8344e10159349ea1",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x6e2c3937e6dd094a3a9f814ecbdc289d3fd5b7f8": {
+      "address": "0x6e2c3937e6dd094a3a9f814ecbdc289d3fd5b7f8",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xe351902b4f34a31637eff40bd13446bb18d0e48d": {
+      "address": "0xe351902b4f34a31637eff40bd13446bb18d0e48d",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xf41acf49e99ea322b1c4db136e84ab73e7a1ea2b": {
+      "address": "0xf41acf49e99ea322b1c4db136e84ab73e7a1ea2b",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x64b537601c39203e2d831bcf5df66601aff67543": {
+      "address": "0x64b537601c39203e2d831bcf5df66601aff67543",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x2652dd1140c3b9e69c8852264cf8dbe727672a1d": {
+      "address": "0x2652dd1140c3b9e69c8852264cf8dbe727672a1d",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xe9c6312464b52aa3eff13d822b003282075995c9": {
+      "address": "0xe9c6312464b52aa3eff13d822b003282075995c9",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xbacd00c9080a82ded56f504ee8810af732b0ab35": {
+      "address": "0xbacd00c9080a82ded56f504ee8810af732b0ab35",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x1501fbaa3ad82ba1d6f1a50421a9da94bbd95cef": {
+      "address": "0x1501fbaa3ad82ba1d6f1a50421a9da94bbd95cef",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x0eb32f4c1a8672b61b48d9f1493b6dd5a6b1f766": {
+      "address": "0x0eb32f4c1a8672b61b48d9f1493b6dd5a6b1f766",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xbd699d6b2dd129d1d2a30ce10e0a5c06a1a6dc74": {
+      "address": "0xbd699d6b2dd129d1d2a30ce10e0a5c06a1a6dc74",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x15b6382ddf2155ae114632ec0773db953fc5a6a0": {
+      "address": "0x15b6382ddf2155ae114632ec0773db953fc5a6a0",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x80cd8310aa624521e9e1b2b53b568cafb0ef0273": {
+      "address": "0x80cd8310aa624521e9e1b2b53b568cafb0ef0273",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x4c7d43a6e5ca58b281626e0dd6126c512d667a1f": {
+      "address": "0x4c7d43a6e5ca58b281626e0dd6126c512d667a1f",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xa9694c6ed488e54df6da870cae74149351b35efb": {
+      "address": "0xa9694c6ed488e54df6da870cae74149351b35efb",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x8f037a2e4fd49d11267f4ab874ab7ba745ac64d6": {
+      "address": "0x8f037a2e4fd49d11267f4ab874ab7ba745ac64d6",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x84dbb7103982e3617704a2ed7d5b39691952aeeb": {
+      "address": "0x84dbb7103982e3617704a2ed7d5b39691952aeeb",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x4706778cf0481c9708d4d8ee1965e81c08c5286e": {
+      "address": "0x4706778cf0481c9708d4d8ee1965e81c08c5286e",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x1455445e9a775cfa3fe9fc4b02bb4d2f682ae5cd": {
+      "address": "0x1455445e9a775cfa3fe9fc4b02bb4d2f682ae5cd",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x90448cec34e3cfa75212374ea45ed01a258c6364": {
+      "address": "0x90448cec34e3cfa75212374ea45ed01a258c6364",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xc02147dee42356b7a4edbb1c35ac4ffa95f61fa8": {
+      "address": "0xc02147dee42356b7a4edbb1c35ac4ffa95f61fa8",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x79f0df70e6582dbf4e0cc69c627ecbce0348964e": {
+      "address": "0x79f0df70e6582dbf4e0cc69c627ecbce0348964e",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x5b8e1ac396de463145b390a2dde1eddfc7e95c3c": {
+      "address": "0x5b8e1ac396de463145b390a2dde1eddfc7e95c3c",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xe20a1538293903b746ffe6c4ce2d5c3c0300e469": {
+      "address": "0xe20a1538293903b746ffe6c4ce2d5c3c0300e469",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xf1ffa0a8bc7cdeb0240027e623b026ced4d0e56a": {
+      "address": "0xf1ffa0a8bc7cdeb0240027e623b026ced4d0e56a",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x7b2c123bceec0c3d0fd206a19c283af65932af48": {
+      "address": "0x7b2c123bceec0c3d0fd206a19c283af65932af48",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xa7b7dada578ef061f1d874414c91aff2c7910adb": {
+      "address": "0xa7b7dada578ef061f1d874414c91aff2c7910adb",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x60a92c8620846d81f5ea17b0564e0d4b7c545a71": {
+      "address": "0x60a92c8620846d81f5ea17b0564e0d4b7c545a71",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x84cb17a50bc2487e8d64029783c3d2abcba328ad": {
+      "address": "0x84cb17a50bc2487e8d64029783c3d2abcba328ad",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xead02f1568144be782d762e2b6a719302830f3ba": {
+      "address": "0xead02f1568144be782d762e2b6a719302830f3ba",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x60b2a17f0472db7361ae3189ad99063efe0b3cce": {
+      "address": "0x60b2a17f0472db7361ae3189ad99063efe0b3cce",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x445e88628a68c596c857085eb26f6379a1f49be0": {
+      "address": "0x445e88628a68c596c857085eb26f6379a1f49be0",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xdb405a9ad581a23c68a32b5d5869d4ad5ae73612": {
+      "address": "0xdb405a9ad581a23c68a32b5d5869d4ad5ae73612",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x25cc572fae8d022da57a888597561908fd669297": {
+      "address": "0x25cc572fae8d022da57a888597561908fd669297",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x9f138019d5481fdc5c59b93b0ae4b9b817cce0fd": {
+      "address": "0x9f138019d5481fdc5c59b93b0ae4b9b817cce0fd",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x587bcff09b7e887186a4e2b3086653f10dcd2622": {
+      "address": "0x587bcff09b7e887186a4e2b3086653f10dcd2622",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x01ed5c64d1d8905afd7917d75a5652665f5cca5f": {
+      "address": "0x01ed5c64d1d8905afd7917d75a5652665f5cca5f",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xdb5ad26b68d77ae966d29e7180147272ab7a3965": {
+      "address": "0xdb5ad26b68d77ae966d29e7180147272ab7a3965",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x21d0c129deb8a7f7e1569045200d20e23862ce91": {
+      "address": "0x21d0c129deb8a7f7e1569045200d20e23862ce91",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x29c0a89b23af58739b6a4ab5f9c8b459af4aefaa": {
+      "address": "0x29c0a89b23af58739b6a4ab5f9c8b459af4aefaa",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x6d7776a0f954be1a7c975a1e8244de6268f7b72c": {
+      "address": "0x6d7776a0f954be1a7c975a1e8244de6268f7b72c",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x26519b477f1cd031919e18f33fd8d3fcb48c3471": {
+      "address": "0x26519b477f1cd031919e18f33fd8d3fcb48c3471",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x5d192e52bf5dc0156e97744f8ee3d48c7fdc733a": {
+      "address": "0x5d192e52bf5dc0156e97744f8ee3d48c7fdc733a",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xead152b855effa6b5b5837f53b24c0756830c76a": {
+      "address": "0xead152b855effa6b5b5837f53b24c0756830c76a",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x59cac874c111cda0530966b50edb57953b97185f": {
+      "address": "0x59cac874c111cda0530966b50edb57953b97185f",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xc8b438e4a1c10643ea0ea3e59bcaadc73174f05d": {
+      "address": "0xc8b438e4a1c10643ea0ea3e59bcaadc73174f05d",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x7a8df2025da51c3e5b697d0092edddc410d231a8": {
+      "address": "0x7a8df2025da51c3e5b697d0092edddc410d231a8",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x7d8a547ecae47a031ea46fff45876e400c28217a": {
+      "address": "0x7d8a547ecae47a031ea46fff45876e400c28217a",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x85d93101299e3b58a7adf72114d4fce78a5b717b": {
+      "address": "0x85d93101299e3b58a7adf72114d4fce78a5b717b",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x16b29c50f2439faf627209b2ac0c7bbddaa8a881": {
+      "address": "0x16b29c50f2439faf627209b2ac0c7bbddaa8a881",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xc2c89e23a69936da2991ddffdc7c99d4f0bd5471": {
+      "address": "0xc2c89e23a69936da2991ddffdc7c99d4f0bd5471",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x13faff6b4dbabaaf9fd780befcd13dcb027a3fac": {
+      "address": "0x13faff6b4dbabaaf9fd780befcd13dcb027a3fac",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x707ee69ecae91e2486ec33a906d3ddd17af51960": {
+      "address": "0x707ee69ecae91e2486ec33a906d3ddd17af51960",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xf705fa045201391d9632b7f3cde06a5e24453ca7": {
+      "address": "0xf705fa045201391d9632b7f3cde06a5e24453ca7",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xe90bec87d9ef430f27f9dcfe72c34b76967d5da2": {
+      "address": "0xe90bec87d9ef430f27f9dcfe72c34b76967d5da2",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xe5f85d076f0b1edd4ec89bfb95e123a9036a8d75": {
+      "address": "0xe5f85d076f0b1edd4ec89bfb95e123a9036a8d75",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x8c80d213c0cbad777d06ee3f58f6ca4bc03102c3": {
+      "address": "0x8c80d213c0cbad777d06ee3f58f6ca4bc03102c3",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x997cda7b31612e3c394bfb55440619f3f689251e": {
+      "address": "0x997cda7b31612e3c394bfb55440619f3f689251e",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x388537259dc9e693c1c9b96fdf07a63f6b7aca77": {
+      "address": "0x388537259dc9e693c1c9b96fdf07a63f6b7aca77",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xd81431e96b2dc36863c2064d38a14a603d1a7f65": {
+      "address": "0xd81431e96b2dc36863c2064d38a14a603d1a7f65",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xb63ac06f20eed05d0a34f61116d0580a0afb4064": {
+      "address": "0xb63ac06f20eed05d0a34f61116d0580a0afb4064",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x6ade597c0e2b43c0bf3542cada8a5e330d73f5b0": {
+      "address": "0x6ade597c0e2b43c0bf3542cada8a5e330d73f5b0",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xea325cab4f4ac5bb2ff4cfba98893fb0cdf38870": {
+      "address": "0xea325cab4f4ac5bb2ff4cfba98893fb0cdf38870",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xa2f1fecf1cc7db65a46588f764b6691533052d22": {
+      "address": "0xa2f1fecf1cc7db65a46588f764b6691533052d22",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x639484beecabf5771bb4edea214f3a2050dc9bb3": {
+      "address": "0x639484beecabf5771bb4edea214f3a2050dc9bb3",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x6550c02337bf562d9611fd881cace840a5cf3bc5": {
+      "address": "0x6550c02337bf562d9611fd881cace840a5cf3bc5",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x7c3db723f1d4d8cb9c550095203b686cb11e5c6b": {
+      "address": "0x7c3db723f1d4d8cb9c550095203b686cb11e5c6b",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xa7ec2d5ce6c38557443a044e627d6abd317279fb": {
+      "address": "0xa7ec2d5ce6c38557443a044e627d6abd317279fb",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x38e59b36aae31b164200d0cad7c3fe5e0ee795e7": {
+      "address": "0x38e59b36aae31b164200d0cad7c3fe5e0ee795e7",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x4b786ddc5c56d0429094bedd15320def5b464d2f": {
+      "address": "0x4b786ddc5c56d0429094bedd15320def5b464d2f",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xcdb1f1ef8213c06911e4ba6a884176c5571e276c": {
+      "address": "0xcdb1f1ef8213c06911e4ba6a884176c5571e276c",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x869b00cfb22f9385445ad88f914d423d27e3c625": {
+      "address": "0x869b00cfb22f9385445ad88f914d423d27e3c625",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xcc500cbcc8b7cf5bd21975ebbea34f21b5644c82": {
+      "address": "0xcc500cbcc8b7cf5bd21975ebbea34f21b5644c82",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x5116ee15e86bc8878b90ac8a8514e38511eb58c4": {
+      "address": "0x5116ee15e86bc8878b90ac8a8514e38511eb58c4",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x13ce9e717dcd64b262c9041c32bd444be576bf33": {
+      "address": "0x13ce9e717dcd64b262c9041c32bd444be576bf33",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x7846e489e11c7d2b9d6c15a955c1df93d041c08d": {
+      "address": "0x7846e489e11c7d2b9d6c15a955c1df93d041c08d",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x8970b56535153baadee991ca25a178ac085636b5": {
+      "address": "0x8970b56535153baadee991ca25a178ac085636b5",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xa45cdb0a5ba4629b5c7860dc3f310978a4dd1d10": {
+      "address": "0xa45cdb0a5ba4629b5c7860dc3f310978a4dd1d10",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xbad26fe5458e6219cec3e40272760e275e835296": {
+      "address": "0xbad26fe5458e6219cec3e40272760e275e835296",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0xf2ae307ff9ee57d532a62dd330874f5f40cd74c0": {
+      "address": "0xf2ae307ff9ee57d532a62dd330874f5f40cd74c0",
+      "validated": false,
+      "error": "No data from subgraph"
+    },
+    "0x4ad6cadefae3c28f5b2caa32a99ebba3a614464c": {
+      "address": "0x4ad6cadefae3c28f5b2caa32a99ebba3a614464c",
+      "validated": false,
+      "error": "No data from subgraph"
+    }
+  }
+}

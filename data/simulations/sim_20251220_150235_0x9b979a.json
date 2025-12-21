@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_150235_0x9b979a",
+  "whale_address": "0x9b979a065641e8cfde3022a30ed2d9415cf55e12",
+  "market_slug": "epl-new-che-2025-12-20-total-2pt5",
+  "is_elite": false,
+  "confidence": 0.8000000000000003,
+  "detection": {
+    "timestamp": "2025-12-20T15:02:35",
+    "market": "epl-new-che-2025-12-20-total-2pt5",
+    "price": 0.999,
+    "size": 1940.67
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T15:03:35",
+      "market_state_at_entry": {
+        "price": 0.999,
+        "timestamp": "2025-12-20T15:03:40.446060",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.9999989999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:03:40.446060",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T15:05:35",
+      "market_state_at_entry": {
+        "price": 0.999,
+        "timestamp": "2025-12-20T15:05:40.446824",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.9999989999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:05:40.446824",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T15:07:35",
+      "market_state_at_entry": {
+        "price": 0.999,
+        "timestamp": "2025-12-20T15:07:41.105305",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9999989999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:07:41.105305",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T15:02:39.434144",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T15:07:41.105305"
+}

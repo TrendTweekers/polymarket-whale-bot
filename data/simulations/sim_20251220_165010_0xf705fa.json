@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_165010_0xf705fa",
+  "whale_address": "0xf705fa045201391d9632b7f3cde06a5e24453ca7",
+  "market_slug": "will-ethereum-dip-to-1300-by-december-31-455-941-866-736-589",
+  "is_elite": true,
+  "confidence": 0.5,
+  "detection": {
+    "timestamp": "2025-12-20T16:50:10",
+    "market": "will-ethereum-dip-to-1300-by-december-31-455-941-866-736-589",
+    "price": 0.006,
+    "size": 7000.89
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:51:10",
+      "market_state_at_entry": {
+        "price": 0.006,
+        "timestamp": "2025-12-20T16:51:18.276455",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.006012,
+      "slippage_percent": 0.2,
+      "checked_at": "2025-12-20T16:51:18.276455",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:53:10",
+      "market_state_at_entry": {
+        "price": 0.006,
+        "timestamp": "2025-12-20T16:53:18.151833",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.006012,
+      "slippage_percent": 0.2,
+      "checked_at": "2025-12-20T16:53:18.151833",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:55:10",
+      "market_state_at_entry": {
+        "price": 0.006,
+        "timestamp": "2025-12-20T16:55:18.406833",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.006012,
+      "slippage_percent": 0.2,
+      "checked_at": "2025-12-20T16:55:18.406833",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T16:50:16.297959",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T16:55:18.407829"
+}

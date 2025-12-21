@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_142519_0x29c0a8",
+  "whale_address": "0x29c0a89b23af58739b6a4ab5f9c8b459af4aefaa",
+  "market_slug": "tur-eyu-fen-2025-12-20-draw",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T14:25:19",
+    "market": "tur-eyu-fen-2025-12-20-draw",
+    "price": 0.81,
+    "size": 12.0
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T14:26:19",
+      "market_state_at_entry": {
+        "price": 0.19,
+        "timestamp": "2025-12-20T14:26:35.264536",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.19018999999999997,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:26:35.264536",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T14:28:19",
+      "market_state_at_entry": {
+        "price": 0.81,
+        "timestamp": "2025-12-20T14:28:35.277929",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.8108099999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:28:35.277929",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T14:30:19",
+      "market_state_at_entry": {
+        "price": 0.81,
+        "timestamp": "2025-12-20T14:30:35.272164",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.8108099999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:30:35.272164",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T14:25:34.652291",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T14:30:35.292164"
+}

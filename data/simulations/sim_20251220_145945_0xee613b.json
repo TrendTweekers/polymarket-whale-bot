@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_145945_0xee613b",
+  "whale_address": "0xee613b3fc183ee44f9da9c05f53e2da107e3debf",
+  "market_slug": "cbb-buck-iowa-2025-12-20-total-135pt5",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T14:59:45",
+    "market": "cbb-buck-iowa-2025-12-20-total-135pt5",
+    "price": 0.55,
+    "size": 12.73
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T15:00:45",
+      "market_state_at_entry": {
+        "price": 0.45,
+        "timestamp": "2025-12-20T15:00:51.743135",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.45044999999999996,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:00:51.743135",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T15:02:45",
+      "market_state_at_entry": {
+        "price": 0.55,
+        "timestamp": "2025-12-20T15:02:51.210463",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.55055,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:02:51.210463",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T15:04:45",
+      "market_state_at_entry": {
+        "price": 0.55,
+        "timestamp": "2025-12-20T15:04:51.432820",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.55055,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:04:51.432820",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T14:59:50.221286",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T15:04:51.432820"
+}

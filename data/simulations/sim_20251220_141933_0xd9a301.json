@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_141933_0xd9a301",
+  "whale_address": "0xd9a301d0e4ebecd8f755f3e096c9d8a13c80b1df",
+  "market_slug": "dota2-pari-og-2025-12-20",
+  "is_elite": true,
+  "confidence": 0.7500000000000002,
+  "detection": {
+    "timestamp": "2025-12-20T14:19:33",
+    "market": "dota2-pari-og-2025-12-20",
+    "price": 0.5800000013466934,
+    "size": 237.619046
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T14:20:33",
+      "market_state_at_entry": {
+        "price": 0.58,
+        "timestamp": "2025-12-20T14:20:36.012643",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.5805799999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:20:36.012643",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T14:22:33",
+      "market_state_at_entry": {
+        "price": 0.5800000013466934,
+        "timestamp": "2025-12-20T14:22:36.473930",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.58058000134804,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:22:36.473930",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T14:24:33",
+      "market_state_at_entry": {
+        "price": 0.5800000013466934,
+        "timestamp": "2025-12-20T14:24:36.489577",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.58058000134804,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:24:36.489577",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T14:19:34.912054",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T14:24:36.500577"
+}

@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_161630_0xc8ab97",
+  "whale_address": "0xc8ab97a9089a9ff7e6ef0688e6e591a066946418",
+  "market_slug": "will-nasry-juan-asfura-zablah-win-the-2025-honduran-presidential-election-by-between-1-and-2-724",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T16:16:30",
+    "market": "will-nasry-juan-asfura-zablah-win-the-2025-honduran-presidential-election-by-between-1-and-2-724",
+    "price": 0.7299999982229795,
+    "size": 28.136985
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:17:30",
+      "market_state_at_entry": {
+        "price": 0.72,
+        "timestamp": "2025-12-20T16:17:32.359186",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.7207199999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:17:32.359186",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:19:30",
+      "market_state_at_entry": {
+        "price": 0.7299999982229795,
+        "timestamp": "2025-12-20T16:19:32.207570",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.7307299982212023,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:19:32.207570",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:21:30",
+      "market_state_at_entry": {
+        "price": 0.7299999982229795,
+        "timestamp": "2025-12-20T16:21:32.254429",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.7307299982212023,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:21:32.254429",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T16:16:31.229372",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T16:21:32.255431"
+}

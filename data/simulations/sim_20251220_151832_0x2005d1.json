@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_151832_0x2005d1",
+  "whale_address": "0x2005d16a84ceefa912d4e380cd32e7ff827875ea",
+  "market_slug": "elc-pne-nor-2025-12-20-nor",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T15:18:32",
+    "market": "elc-pne-nor-2025-12-20-nor",
+    "price": 0.84,
+    "size": 2837.0
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T15:19:32",
+      "market_state_at_entry": {
+        "price": 0.85,
+        "timestamp": "2025-12-20T15:19:35.038386",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.8508499999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:19:35.038386",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T15:21:32",
+      "market_state_at_entry": {
+        "price": 0.09,
+        "timestamp": "2025-12-20T15:21:35.036125",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.09008999999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:21:35.036125",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T15:23:32",
+      "market_state_at_entry": {
+        "price": 0.84,
+        "timestamp": "2025-12-20T15:23:35.404331",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.8408399999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:23:35.404331",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T15:18:33.865168",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T15:23:35.422330"
+}

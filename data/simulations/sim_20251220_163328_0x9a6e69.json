@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_163328_0x9a6e69",
+  "whale_address": "0x9a6e69c9b012030c668397d8346b4d55dd8335b4",
+  "market_slug": "epl-eve-ars-2025-12-20-ars",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T16:33:28",
+    "market": "epl-eve-ars-2025-12-20-ars",
+    "price": 0.3800000165333356,
+    "size": 19.354836
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:34:28",
+      "market_state_at_entry": {
+        "price": 0.3800000001686336,
+        "timestamp": "2025-12-20T16:35:00.577803",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.3803800001688022,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:35:00.577803",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:36:28",
+      "market_state_at_entry": {
+        "price": 0.3800000165333356,
+        "timestamp": "2025-12-20T16:37:01.361017",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.38038001654986886,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:37:01.361017",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:38:28",
+      "market_state_at_entry": {
+        "price": 0.3800000165333356,
+        "timestamp": "2025-12-20T16:39:00.574445",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.38038001654986886,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:39:00.574445",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T16:33:58.983810",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T16:39:00.575445"
+}

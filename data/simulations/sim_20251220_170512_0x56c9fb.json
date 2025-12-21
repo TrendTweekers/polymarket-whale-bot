@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_170512_0x56c9fb",
+  "whale_address": "0x56c9fbdeccf198f1f5ad95ace39b24f5f7fb0d9e",
+  "market_slug": "dota2-ts8-ty-2025-12-20-game2",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T17:05:12",
+    "market": "dota2-ts8-ty-2025-12-20-game2",
+    "price": 0.6100000009330904,
+    "size": 450.117178
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T17:06:12",
+      "market_state_at_entry": {
+        "price": 0.65,
+        "timestamp": "2025-12-20T17:06:39.021191",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.65065,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T17:06:39.021191",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T17:08:12",
+      "market_state_at_entry": {
+        "price": 0.3800877114805082,
+        "timestamp": "2025-12-20T17:08:36.563584",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.38046779919198864,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T17:08:36.563584",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T17:10:12",
+      "market_state_at_entry": {
+        "price": 0.4400000256628508,
+        "timestamp": "2025-12-20T17:10:36.569619",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.4404400256885136,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T17:10:36.569619",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T17:05:34.951365",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T17:10:36.569619"
+}

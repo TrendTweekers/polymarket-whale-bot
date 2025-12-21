@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_150514_0x29c0a8",
+  "whale_address": "0x29c0a89b23af58739b6a4ab5f9c8b459af4aefaa",
+  "market_slug": "cbb-loulaf-lamon-2025-12-20",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T15:05:14",
+    "market": "cbb-loulaf-lamon-2025-12-20",
+    "price": 0.5,
+    "size": 20.0
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T15:06:14",
+      "market_state_at_entry": {
+        "price": 0.5,
+        "timestamp": "2025-12-20T15:06:30.092013",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.5005,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:06:30.092013",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T15:08:14",
+      "market_state_at_entry": {
+        "price": 0.5,
+        "timestamp": "2025-12-20T15:08:30.843722",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.5005,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:08:30.843722",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T15:10:14",
+      "market_state_at_entry": {
+        "price": 0.5,
+        "timestamp": "2025-12-20T15:10:30.712869",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.5005,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:10:30.712869",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T15:05:29.348193",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T15:10:30.712869"
+}

@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_153220_0xba2643",
+  "whale_address": "0xba264376d6fef08f23a44db4153d12d47f5f23c9",
+  "market_slug": "epl-bou-bur-2025-12-20-total-3pt5",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T15:32:20",
+    "market": "epl-bou-bur-2025-12-20-total-3pt5",
+    "price": 0.6200000167200009,
+    "size": 26.315788
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T15:33:20",
+      "market_state_at_entry": {
+        "price": 0.3799999832799991,
+        "timestamp": "2025-12-20T15:33:34.113360",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.3803799832632791,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:33:34.113360",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T15:35:20",
+      "market_state_at_entry": {
+        "price": 0.6200000167200009,
+        "timestamp": "2025-12-20T15:35:34.175096",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.6206200167367208,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:35:34.175096",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T15:37:20",
+      "market_state_at_entry": {
+        "price": 0.6200000167200009,
+        "timestamp": "2025-12-20T15:37:33.884253",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.6206200167367208,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:37:33.884253",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T15:32:32.869457",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T15:37:33.894283"
+}

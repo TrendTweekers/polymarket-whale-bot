@@ -1,0 +1,38 @@
+{
+  "simulation_id": "sim_20251220_141235_0x08458f",
+  "whale_address": "0x08458f7e9d2858027de579e4c3ca305475496b6f",
+  "market_slug": "will-trump-visit-china-by-march-31",
+  "is_elite": true,
+  "confidence": 0.7500000000000002,
+  "detection": {
+    "timestamp": "2025-12-20T14:12:35",
+    "market": "will-trump-visit-china-by-march-31",
+    "price": 0.9499995249992875,
+    "size": 1.05263
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T14:13:35",
+      "market_state_at_entry": {
+        "price": 0.9499995249992875,
+        "timestamp": "2025-12-20T14:13:38.338945",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.9509495245242867,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:13:38.338945",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "pending",
+  "created_at": "2025-12-20T14:12:37.416383",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ]
+}

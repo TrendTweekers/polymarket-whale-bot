@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_161930_0x84cb17",
+  "whale_address": "0x84cb17a50bc2487e8d64029783c3d2abcba328ad",
+  "market_slug": "epl-mac-wes-2025-12-20-total-3pt5",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T16:19:30",
+    "market": "epl-mac-wes-2025-12-20-total-3pt5",
+    "price": 0.4555037550232114,
+    "size": 4390.743165
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:20:30",
+      "market_state_at_entry": {
+        "price": 0.53,
+        "timestamp": "2025-12-20T16:20:48.512396",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.53053,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:20:48.512396",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:22:30",
+      "market_state_at_entry": {
+        "price": 0.4555037550232114,
+        "timestamp": "2025-12-20T16:22:47.571320",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.45595925877823457,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:22:47.571320",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:24:30",
+      "market_state_at_entry": {
+        "price": 0.53,
+        "timestamp": "2025-12-20T16:24:47.579522",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.53053,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:24:47.579522",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T16:19:45.736281",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T16:24:47.588492"
+}

@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_150723_0xe35190",
+  "whale_address": "0xe351902b4f34a31637eff40bd13446bb18d0e48d",
+  "market_slug": "lal-lev-rso-2025-12-20-lev",
+  "is_elite": true,
+  "confidence": 0.5,
+  "detection": {
+    "timestamp": "2025-12-20T15:07:23",
+    "market": "lal-lev-rso-2025-12-20-lev",
+    "price": 0.31,
+    "size": 100.0
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T15:08:23",
+      "market_state_at_entry": {
+        "price": 0.31,
+        "timestamp": "2025-12-20T15:08:33.643725",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.31031,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:08:33.643725",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T15:10:23",
+      "market_state_at_entry": {
+        "price": 0.31,
+        "timestamp": "2025-12-20T15:10:33.069868",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.31031,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:10:33.069868",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T15:12:23",
+      "market_state_at_entry": {
+        "price": 0.31,
+        "timestamp": "2025-12-20T15:12:32.967244",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.31031,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:12:32.967244",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T15:07:32.099738",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T15:12:32.967244"
+}

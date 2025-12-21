@@ -1,0 +1,54 @@
+{
+  "simulation_id": "sim_20251220_151219_0x16b29c",
+  "whale_address": "0x16b29c50f2439faf627209b2ac0c7bbddaa8a881",
+  "market_slug": "epl-mac-wes-2025-12-20-spread-home-2pt5",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T15:12:19",
+    "market": "epl-mac-wes-2025-12-20-spread-home-2pt5",
+    "price": 0.6100000000455,
+    "size": 6153.846152
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T15:13:19",
+      "market_state_at_entry": {
+        "price": 0.6100000000455,
+        "timestamp": "2025-12-20T15:13:29.741931",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.6112200000455911,
+      "slippage_percent": 0.2,
+      "checked_at": "2025-12-20T15:13:29.741931",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T15:15:19",
+      "market_state_at_entry": {
+        "price": 0.6100000000455,
+        "timestamp": "2025-12-20T15:15:30.338293",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.6112200000455911,
+      "slippage_percent": 0.2,
+      "checked_at": "2025-12-20T15:15:30.338293",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "pending",
+  "created_at": "2025-12-20T15:12:28.692308",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ]
+}

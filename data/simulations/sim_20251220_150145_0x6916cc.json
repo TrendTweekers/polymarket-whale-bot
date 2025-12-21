@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_150145_0x6916cc",
+  "whale_address": "0x6916cc00aa1c3e75ecf4081df7cae7d2f3592fd4",
+  "market_slug": "will-bitcoin-reach-102k-december-15-21",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T15:01:45",
+    "market": "will-bitcoin-reach-102k-december-15-21",
+    "price": 0.999,
+    "size": 106.63
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T15:02:45",
+      "market_state_at_entry": {
+        "price": 0.999,
+        "timestamp": "2025-12-20T15:02:47.291433",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.9999989999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:02:47.291433",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T15:04:45",
+      "market_state_at_entry": {
+        "price": 0.999,
+        "timestamp": "2025-12-20T15:04:47.338624",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9999989999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:04:47.338624",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T15:06:45",
+      "market_state_at_entry": {
+        "price": 0.999,
+        "timestamp": "2025-12-20T15:06:47.534491",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9999989999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:06:47.534491",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T15:01:46.243706",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T15:06:47.534491"
+}

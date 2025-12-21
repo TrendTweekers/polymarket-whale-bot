@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_142011_0x2652dd",
+  "whale_address": "0x2652dd1140c3b9e69c8852264cf8dbe727672a1d",
+  "market_slug": "cs2-fnc-ill-2025-12-20",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T14:20:11",
+    "market": "cs2-fnc-ill-2025-12-20",
+    "price": 0.3200000054400005,
+    "size": 29.411762
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T14:21:11",
+      "market_state_at_entry": {
+        "price": 0.3200000054400005,
+        "timestamp": "2025-12-20T14:21:22.398788",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.3203200054454405,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:21:22.398788",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T14:23:11",
+      "market_state_at_entry": {
+        "price": 0.3200000054400005,
+        "timestamp": "2025-12-20T14:23:22.256053",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.3203200054454405,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:23:22.256053",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T14:25:11",
+      "market_state_at_entry": {
+        "price": 0.39,
+        "timestamp": "2025-12-20T14:25:21.996400",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.39038999999999996,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:25:21.996400",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T14:20:19.754120",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T14:25:22.005408"
+}

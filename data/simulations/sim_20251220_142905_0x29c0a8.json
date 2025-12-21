@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_142905_0x29c0a8",
+  "whale_address": "0x29c0a89b23af58739b6a4ab5f9c8b459af4aefaa",
+  "market_slug": "cbb-uk-stjohn-2025-12-20",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T14:29:05",
+    "market": "cbb-uk-stjohn-2025-12-20",
+    "price": 0.43,
+    "size": 100.0
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T14:30:05",
+      "market_state_at_entry": {
+        "price": 0.57,
+        "timestamp": "2025-12-20T14:30:12.509577",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.5705699999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:30:12.509577",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T14:32:05",
+      "market_state_at_entry": {
+        "price": 0.43,
+        "timestamp": "2025-12-20T14:32:11.973910",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.4304299999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:32:11.973910",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T14:34:05",
+      "market_state_at_entry": {
+        "price": 0.43,
+        "timestamp": "2025-12-20T14:34:11.968358",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.4304299999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:34:11.968358",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T14:29:10.932371",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T14:34:11.969359"
+}

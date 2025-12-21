@@ -1,0 +1,62 @@
+{
+  "whale_address": "0x000d257d2dc7616feaef4ae0f14600fdf50a758e",
+  "market_slug": "will-trump-release-the-epstein-files-by-december-19-771",
+  "whale_trade_time": "2025-12-20T00:14:33",
+  "whale_entry_price": 0.997000002988,
+  "whale_trade_size": 333.333332,
+  "detection_time": "2025-12-20T00:14:33",
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "entry_price": 0.9979970029909878,
+      "slippage_pct": 0.001,
+      "execution_time": "2025-12-20T00:15:33",
+      "market_state_at_entry": {
+        "price": 0.997000002988,
+        "timestamp": "2025-12-20 00:14:33",
+        "data": {}
+      },
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false,
+      "resolution_time": null
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "entry_price": 0.9979970029909878,
+      "slippage_pct": 0.001,
+      "execution_time": "2025-12-20T00:17:33",
+      "market_state_at_entry": {
+        "price": 0.997000002988,
+        "timestamp": "2025-12-20 00:14:33",
+        "data": {}
+      },
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false,
+      "resolution_time": null
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "entry_price": 0.9979970029909878,
+      "slippage_pct": 0.001,
+      "execution_time": "2025-12-20T00:19:33",
+      "market_state_at_entry": {
+        "price": 0.997000002988,
+        "timestamp": "2025-12-20 00:14:33",
+        "data": {}
+      },
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false,
+      "resolution_time": null
+    }
+  ],
+  "best_delay": null,
+  "profitable": null,
+  "avg_pnl": null,
+  "is_elite": false
+}

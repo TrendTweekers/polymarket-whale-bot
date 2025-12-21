@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_170951_0x08458f",
+  "whale_address": "0x08458f7e9d2858027de579e4c3ca305475496b6f",
+  "market_slug": "will-the-swedish-social-democratic-party-s-win-the-most-seats-in-the-2026-swedish-parliamentary-election",
+  "is_elite": true,
+  "confidence": 0.8000000000000003,
+  "detection": {
+    "timestamp": "2025-12-20T17:09:51",
+    "market": "will-the-swedish-social-democratic-party-s-win-the-most-seats-in-the-2026-swedish-parliamentary-election",
+    "price": 0.11,
+    "size": 111.0
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T17:10:51",
+      "market_state_at_entry": {
+        "price": 0.11,
+        "timestamp": "2025-12-20T17:11:12.559146",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.11010999999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T17:11:12.559146",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T17:12:51",
+      "market_state_at_entry": {
+        "price": 0.11,
+        "timestamp": "2025-12-20T17:13:09.358791",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.11010999999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T17:13:09.358791",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T17:14:51",
+      "market_state_at_entry": {
+        "price": 0.11,
+        "timestamp": "2025-12-20T17:15:09.569826",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.11010999999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T17:15:09.569826",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T17:10:07.819940",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T17:15:09.569826"
+}

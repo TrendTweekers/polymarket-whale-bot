@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_145700_0xc8ab97",
+  "whale_address": "0xc8ab97a9089a9ff7e6ef0688e6e591a066946418",
+  "market_slug": "will-elon-musk-be-richest-person-on-december-31",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T14:57:00",
+    "market": "will-elon-musk-be-richest-person-on-december-31",
+    "price": 0.992,
+    "size": 32.97
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T14:58:00",
+      "market_state_at_entry": {
+        "price": 0.993,
+        "timestamp": "2025-12-20T14:58:15.595096",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.9939929999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:58:15.595096",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T15:00:00",
+      "market_state_at_entry": {
+        "price": 0.992,
+        "timestamp": "2025-12-20T15:00:16.046173",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9929919999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:00:16.046173",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T15:02:00",
+      "market_state_at_entry": {
+        "price": 0.992,
+        "timestamp": "2025-12-20T15:02:15.843102",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9929919999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:02:15.843102",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T14:57:14.875246",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T15:02:15.843102"
+}

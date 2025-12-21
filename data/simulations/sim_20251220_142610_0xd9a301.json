@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_142610_0xd9a301",
+  "whale_address": "0xd9a301d0e4ebecd8f755f3e096c9d8a13c80b1df",
+  "market_slug": "dota2-pari-og-2025-12-20",
+  "is_elite": true,
+  "confidence": 0.8000000000000003,
+  "detection": {
+    "timestamp": "2025-12-20T14:26:10",
+    "market": "dota2-pari-og-2025-12-20",
+    "price": 0.56,
+    "size": 41.58
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T14:27:10",
+      "market_state_at_entry": {
+        "price": 0.56,
+        "timestamp": "2025-12-20T14:27:12.531938",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.56056,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:27:12.531938",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T14:29:10",
+      "market_state_at_entry": {
+        "price": 0.5309090909090909,
+        "timestamp": "2025-12-20T14:29:12.743350",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.5314399999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:29:12.743350",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T14:31:10",
+      "market_state_at_entry": {
+        "price": 0.4899999950999984,
+        "timestamp": "2025-12-20T14:31:12.889816",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.4904899950950984,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:31:12.889816",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T14:26:11.655322",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T14:31:12.890816"
+}

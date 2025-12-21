@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_144230_0xc0629c",
+  "whale_address": "0xc0629caf9a88dc6ce0b4980c393ef600949bea25",
+  "market_slug": "btc-updown-15m-1766237400",
+  "is_elite": true,
+  "confidence": 0.6500000000000001,
+  "detection": {
+    "timestamp": "2025-12-20T14:42:30",
+    "market": "btc-updown-15m-1766237400",
+    "price": 0.99,
+    "size": 909.0909
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T14:43:30",
+      "market_state_at_entry": {
+        "price": 0.99,
+        "timestamp": "2025-12-20T14:43:42.999243",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.9909899999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:43:42.999243",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T14:45:30",
+      "market_state_at_entry": {
+        "price": 0.99,
+        "timestamp": "2025-12-20T14:45:43.501643",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.9909899999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:45:43.501643",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T14:47:30",
+      "market_state_at_entry": {
+        "price": 0.99,
+        "timestamp": "2025-12-20T14:47:42.990371",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.9909899999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:47:42.990371",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T14:42:41.609882",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T14:47:42.999397"
+}

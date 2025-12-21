@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_141742_0x12d6cc",
+  "whale_address": "0x12d6cccfc7470a3f4bafc53599a4779cbf2cf2a8",
+  "market_slug": "will-trump-release-the-epstein-files-by-december-19-771",
+  "is_elite": true,
+  "confidence": 0.55,
+  "detection": {
+    "timestamp": "2025-12-20T14:17:42",
+    "market": "will-trump-release-the-epstein-files-by-december-19-771",
+    "price": 0.999,
+    "size": 358.57
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T14:18:42",
+      "market_state_at_entry": {
+        "price": 0.001,
+        "timestamp": "2025-12-20T14:18:46.950580",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.001001,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:18:46.950580",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T14:20:42",
+      "market_state_at_entry": {
+        "price": 0.002,
+        "timestamp": "2025-12-20T14:20:46.945669",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.002002,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:20:46.945669",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T14:22:42",
+      "market_state_at_entry": {
+        "price": 0.001,
+        "timestamp": "2025-12-20T14:22:46.937104",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.001001,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:22:46.937104",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T14:17:45.963062",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T14:22:46.937104"
+}

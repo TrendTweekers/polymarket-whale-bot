@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_145252_0xfc25f1",
+  "whale_address": "0xfc25f141ed27bb1787338d2c4e7f51e3a15e1f7f",
+  "market_slug": "nba-hou-den-2025-12-20",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T14:52:52",
+    "market": "nba-hou-den-2025-12-20",
+    "price": 0.49000000153,
+    "size": 196.07843
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T14:53:52",
+      "market_state_at_entry": {
+        "price": 0.50999999847,
+        "timestamp": "2025-12-20T14:54:04.166092",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.5105099984684699,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:54:04.166092",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T14:55:52",
+      "market_state_at_entry": {
+        "price": 0.509999998572,
+        "timestamp": "2025-12-20T14:56:04.163874",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.5105099985705719,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:56:04.163874",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T14:57:52",
+      "market_state_at_entry": {
+        "price": 0.49000000153,
+        "timestamp": "2025-12-20T14:58:04.196405",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.49049000153152994,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:58:04.196405",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T14:53:03.420721",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T14:58:04.205405"
+}

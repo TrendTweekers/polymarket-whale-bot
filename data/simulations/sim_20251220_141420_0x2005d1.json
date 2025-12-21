@@ -1,0 +1,21 @@
+{
+  "simulation_id": "sim_20251220_141420_0x2005d1",
+  "whale_address": "0x2005d16a84ceefa912d4e380cd32e7ff827875ea",
+  "market_slug": "elc-pne-nor-2025-12-20-pne",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T14:14:20",
+    "market": "elc-pne-nor-2025-12-20-pne",
+    "price": 0.6200000167200009,
+    "size": 26.315788
+  },
+  "results": [],
+  "status": "pending",
+  "created_at": "2025-12-20T14:14:34.881407",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ]
+}

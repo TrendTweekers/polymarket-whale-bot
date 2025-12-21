@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_164808_0x6f2628",
+  "whale_address": "0x6f2628a8ac6e3f7bd857657d5316c33822ced136",
+  "market_slug": "will-the-price-of-bitcoin-be-between-88000-90000-on-december-20",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T16:48:08",
+    "market": "will-the-price-of-bitcoin-be-between-88000-90000-on-december-20",
+    "price": 0.83,
+    "size": 52.0
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:49:08",
+      "market_state_at_entry": {
+        "price": 0.17,
+        "timestamp": "2025-12-20T16:49:14.752880",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.17017,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:49:14.752880",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:51:08",
+      "market_state_at_entry": {
+        "price": 0.83,
+        "timestamp": "2025-12-20T16:51:14.739209",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.8308299999999998,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:51:14.739209",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:53:08",
+      "market_state_at_entry": {
+        "price": 0.83,
+        "timestamp": "2025-12-20T16:53:14.752951",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.8308299999999998,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:53:14.752951",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T16:48:13.315022",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T16:53:14.765960"
+}

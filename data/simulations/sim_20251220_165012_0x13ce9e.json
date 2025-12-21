@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_165012_0x13ce9e",
+  "whale_address": "0x13ce9e717dcd64b262c9041c32bd444be576bf33",
+  "market_slug": "will-trump-nominate-kevin-hassett-as-the-next-fed-chair",
+  "is_elite": true,
+  "confidence": 0.8500000000000003,
+  "detection": {
+    "timestamp": "2025-12-20T16:50:12",
+    "market": "will-trump-nominate-kevin-hassett-as-the-next-fed-chair",
+    "price": 0.54,
+    "size": 1.85
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:51:12",
+      "market_state_at_entry": {
+        "price": 0.4599999547540657,
+        "timestamp": "2025-12-20T16:51:21.446076",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.46045995470881973,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:51:21.446076",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:53:12",
+      "market_state_at_entry": {
+        "price": 0.54,
+        "timestamp": "2025-12-20T16:53:21.087440",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.54054,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:53:21.087440",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:55:12",
+      "market_state_at_entry": {
+        "price": 0.5400000043380487,
+        "timestamp": "2025-12-20T16:55:20.859337",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.5405400043423867,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:55:20.859337",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T16:50:19.415744",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T16:55:20.860240"
+}

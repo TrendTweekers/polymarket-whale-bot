@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_141748_0x08458f",
+  "whale_address": "0x08458f7e9d2858027de579e4c3ca305475496b6f",
+  "market_slug": "will-trump-visit-china-by-march-31",
+  "is_elite": true,
+  "confidence": 0.7500000000000002,
+  "detection": {
+    "timestamp": "2025-12-20T14:17:48",
+    "market": "will-trump-visit-china-by-march-31",
+    "price": 0.9499995249992875,
+    "size": 1.05263
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T14:18:48",
+      "market_state_at_entry": {
+        "price": 0.9499995249992875,
+        "timestamp": "2025-12-20T14:18:53.981043",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.9509495245242867,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:18:53.981043",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T14:20:48",
+      "market_state_at_entry": {
+        "price": 0.9499995249992875,
+        "timestamp": "2025-12-20T14:20:54.095718",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.9509495245242867,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:20:54.095718",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T14:22:48",
+      "market_state_at_entry": {
+        "price": 0.9499995249992875,
+        "timestamp": "2025-12-20T14:22:54.015607",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9509495245242867,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:22:54.015607",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T14:17:52.905865",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T14:22:54.016608"
+}

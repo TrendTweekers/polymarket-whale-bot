@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_152509_0x64e93f",
+  "whale_address": "0x64e93f87d8a0c1b2cde6f20d71f211372a95eb4c",
+  "market_slug": "will-trump-sell-0-gold-cards-in-2025",
+  "is_elite": true,
+  "confidence": 0.5,
+  "detection": {
+    "timestamp": "2025-12-20T15:25:09",
+    "market": "will-trump-sell-0-gold-cards-in-2025",
+    "price": 0.12,
+    "size": 400.0
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T15:26:09",
+      "market_state_at_entry": {
+        "price": 0.12,
+        "timestamp": "2025-12-20T15:26:11.956484",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.12011999999999998,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:26:11.956484",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T15:28:09",
+      "market_state_at_entry": {
+        "price": 0.12,
+        "timestamp": "2025-12-20T15:28:12.349292",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.12011999999999998,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:28:12.349292",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T15:30:09",
+      "market_state_at_entry": {
+        "price": 0.12,
+        "timestamp": "2025-12-20T15:30:12.111215",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.12011999999999998,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:30:12.111215",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T15:25:11.471533",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T15:30:12.120214"
+}

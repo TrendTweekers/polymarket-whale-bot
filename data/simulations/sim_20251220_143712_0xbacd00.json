@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_143712_0xbacd00",
+  "whale_address": "0xbacd00c9080a82ded56f504ee8810af732b0ab35",
+  "market_slug": "xi-jinping-out-in-2025",
+  "is_elite": true,
+  "confidence": 0.9000000000000004,
+  "detection": {
+    "timestamp": "2025-12-20T14:37:12",
+    "market": "xi-jinping-out-in-2025",
+    "price": 0.007,
+    "size": 1162.63
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T14:38:12",
+      "market_state_at_entry": {
+        "price": 0.007,
+        "timestamp": "2025-12-20T14:38:27.035458",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.007006999999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:38:27.035458",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T14:40:12",
+      "market_state_at_entry": {
+        "price": 0.007,
+        "timestamp": "2025-12-20T14:40:26.919327",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.007006999999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:40:26.919327",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T14:42:12",
+      "market_state_at_entry": {
+        "price": 0.007,
+        "timestamp": "2025-12-20T14:42:26.693203",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.007006999999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:42:26.693203",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T14:37:26.136601",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T14:42:26.706139"
+}

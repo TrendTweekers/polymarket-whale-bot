@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_145004_0x6f2628",
+  "whale_address": "0x6f2628a8ac6e3f7bd857657d5316c33822ced136",
+  "market_slug": "bitcoin-up-or-down-on-december-20",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T14:50:04",
+    "market": "bitcoin-up-or-down-on-december-20",
+    "price": 0.82,
+    "size": 1978.75
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T14:51:04",
+      "market_state_at_entry": {
+        "price": 0.17,
+        "timestamp": "2025-12-20T14:51:07.581261",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.17017,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:51:07.581261",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T14:53:04",
+      "market_state_at_entry": {
+        "price": 0.82,
+        "timestamp": "2025-12-20T14:53:07.360707",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.8208199999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:53:07.360707",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T14:55:04",
+      "market_state_at_entry": {
+        "price": 0.83,
+        "timestamp": "2025-12-20T14:55:07.357760",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.8308299999999998,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:55:07.357760",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T14:50:06.100685",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T14:55:07.358688"
+}

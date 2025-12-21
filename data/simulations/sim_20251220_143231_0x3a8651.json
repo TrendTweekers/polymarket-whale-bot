@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_143231_0x3a8651",
+  "whale_address": "0x3a8651c42ac19aa3e3141531a298abc72f51dea8",
+  "market_slug": "will-dick-schoof-be-the-next-leader-out-in-2025",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T14:32:31",
+    "market": "will-dick-schoof-be-the-next-leader-out-in-2025",
+    "price": 0.001,
+    "size": 1000.0
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T14:33:31",
+      "market_state_at_entry": {
+        "price": 0.001,
+        "timestamp": "2025-12-20T14:33:38.491362",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.001001,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:33:38.491362",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T14:35:31",
+      "market_state_at_entry": {
+        "price": 0.001,
+        "timestamp": "2025-12-20T14:35:38.485833",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.001001,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:35:38.485833",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T14:37:31",
+      "market_state_at_entry": {
+        "price": 0.001,
+        "timestamp": "2025-12-20T14:37:38.638422",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.001001,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:37:38.638422",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T14:32:37.472573",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T14:37:38.647432"
+}

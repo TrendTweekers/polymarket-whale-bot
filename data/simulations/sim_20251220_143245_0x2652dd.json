@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_143245_0x2652dd",
+  "whale_address": "0x2652dd1140c3b9e69c8852264cf8dbe727672a1d",
+  "market_slug": "cs2-ex-gank-esports-efa-2025-12-20",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T14:32:45",
+    "market": "cs2-ex-gank-esports-efa-2025-12-20",
+    "price": 0.766875,
+    "size": 64.0
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T14:33:45",
+      "market_state_at_entry": {
+        "price": 0.23,
+        "timestamp": "2025-12-20T14:33:57.922361",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.23023,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:33:57.922361",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T14:35:45",
+      "market_state_at_entry": {
+        "price": 0.14,
+        "timestamp": "2025-12-20T14:35:57.639954",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.14014,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:35:57.639954",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T14:37:45",
+      "market_state_at_entry": {
+        "price": 0.9,
+        "timestamp": "2025-12-20T14:37:57.645870",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.9008999999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:37:57.645870",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T14:32:56.922365",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T14:37:57.645870"
+}

@@ -1,0 +1,38 @@
+{
+  "simulation_id": "sim_20251220_141230_0x2005d1",
+  "whale_address": "0x2005d16a84ceefa912d4e380cd32e7ff827875ea",
+  "market_slug": "epl-new-che-2025-12-20-draw",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T14:12:30",
+    "market": "epl-new-che-2025-12-20-draw",
+    "price": 0.8800000923077101,
+    "size": 8.666665
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T14:13:30",
+      "market_state_at_entry": {
+        "price": 0.16,
+        "timestamp": "2025-12-20T14:13:32.187972",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.16016,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:13:32.187972",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "pending",
+  "created_at": "2025-12-20T14:12:31.673706",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ]
+}

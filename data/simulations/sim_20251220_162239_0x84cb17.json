@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_162239_0x84cb17",
+  "whale_address": "0x84cb17a50bc2487e8d64029783c3d2abcba328ad",
+  "market_slug": "epl-bou-bur-2025-12-20-total-2pt5",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T16:22:39",
+    "market": "epl-bou-bur-2025-12-20-total-2pt5",
+    "price": 0.5625752721671026,
+    "size": 3555.079823
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:23:39",
+      "market_state_at_entry": {
+        "price": 0.55,
+        "timestamp": "2025-12-20T16:23:51.861928",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.55055,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:23:51.861928",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:25:39",
+      "market_state_at_entry": {
+        "price": 0.58,
+        "timestamp": "2025-12-20T16:25:52.634155",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.5805799999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:25:52.634155",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:27:39",
+      "market_state_at_entry": {
+        "price": 0.5700001298658197,
+        "timestamp": "2025-12-20T16:27:51.860542",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.5705701299956855,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:27:51.860542",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T16:22:50.584482",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T16:27:51.860542"
+}

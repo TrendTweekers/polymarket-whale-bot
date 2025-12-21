@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_165632_0xcaab19",
+  "whale_address": "0xcaab19659b995951a44cc992447cb2ad5be324dd",
+  "market_slug": "will-ethereum-reach-6000-by-december-31-2026",
+  "is_elite": true,
+  "confidence": 0.9000000000000004,
+  "detection": {
+    "timestamp": "2025-12-20T16:56:32",
+    "market": "will-ethereum-reach-6000-by-december-31-2026",
+    "price": 0.71,
+    "size": 6.66
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:57:32",
+      "market_state_at_entry": {
+        "price": 0.7199995391993733,
+        "timestamp": "2025-12-20T16:57:35.702363",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.7207195387385726,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:57:35.702363",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:59:32",
+      "market_state_at_entry": {
+        "price": 0.71,
+        "timestamp": "2025-12-20T16:59:36.236575",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.7107099999999998,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:59:36.236575",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T17:01:32",
+      "market_state_at_entry": {
+        "price": 0.71,
+        "timestamp": "2025-12-20T17:01:35.630486",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.7107099999999998,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T17:01:35.630486",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T16:56:35.027578",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T17:01:35.642486"
+}

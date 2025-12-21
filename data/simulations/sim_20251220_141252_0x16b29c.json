@@ -1,0 +1,38 @@
+{
+  "simulation_id": "sim_20251220_141252_0x16b29c",
+  "whale_address": "0x16b29c50f2439faf627209b2ac0c7bbddaa8a881",
+  "market_slug": "nfl-gb-chi-2025-12-20-spread-away-1pt5",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T14:12:52",
+    "market": "nfl-gb-chi-2025-12-20-spread-away-1pt5",
+    "price": 0.44,
+    "size": 5555.36
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T14:13:52",
+      "market_state_at_entry": {
+        "price": 0.44,
+        "timestamp": "2025-12-20T14:13:54.327944",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.44088,
+      "slippage_percent": 0.2,
+      "checked_at": "2025-12-20T14:13:54.327944",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "pending",
+  "created_at": "2025-12-20T14:12:53.355624",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ]
+}

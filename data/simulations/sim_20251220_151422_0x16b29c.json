@@ -1,0 +1,38 @@
+{
+  "simulation_id": "sim_20251220_151422_0x16b29c",
+  "whale_address": "0x16b29c50f2439faf627209b2ac0c7bbddaa8a881",
+  "market_slug": "lal-rea-sev-2025-12-20-spread-home-2pt5",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T15:14:22",
+    "market": "lal-rea-sev-2025-12-20-spread-home-2pt5",
+    "price": 0.6,
+    "size": 33.4
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T15:15:22",
+      "market_state_at_entry": {
+        "price": 0.4,
+        "timestamp": "2025-12-20T15:15:49.763290",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.4004,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:15:49.763290",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "pending",
+  "created_at": "2025-12-20T15:14:48.821292",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ]
+}

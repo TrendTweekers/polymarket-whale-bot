@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_144542_0x64dbf4",
+  "whale_address": "0x64dbf41255eacd1f73da6c0af7f8624ca60d766d",
+  "market_slug": "solana-above-120-on-december-21",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T14:45:42",
+    "market": "solana-above-120-on-december-21",
+    "price": 0.95,
+    "size": 100.0
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T14:46:42",
+      "market_state_at_entry": {
+        "price": 0.05,
+        "timestamp": "2025-12-20T14:47:02.030948",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.05005,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:47:02.030948",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T14:48:42",
+      "market_state_at_entry": {
+        "price": 0.95,
+        "timestamp": "2025-12-20T14:49:01.698616",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9509499999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:49:01.698616",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T14:50:42",
+      "market_state_at_entry": {
+        "price": 0.95,
+        "timestamp": "2025-12-20T14:51:01.748708",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9509499999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:51:01.748708",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T14:46:01.239475",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T14:51:01.758700"
+}

@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_154110_0xcc500c",
+  "whale_address": "0xcc500cbcc8b7cf5bd21975ebbea34f21b5644c82",
+  "market_slug": "will-bitcoin-reach-95000-by-december-31-2025-818-596-821-318-841",
+  "is_elite": true,
+  "confidence": 0.5,
+  "detection": {
+    "timestamp": "2025-12-20T15:41:10",
+    "market": "will-bitcoin-reach-95000-by-december-31-2025-818-596-821-318-841",
+    "price": 0.7000000005278066,
+    "size": 947.316665
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T15:42:10",
+      "market_state_at_entry": {
+        "price": 0.7099999502999869,
+        "timestamp": "2025-12-20T15:42:34.510288",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.7107099502502867,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:42:34.510288",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T15:44:10",
+      "market_state_at_entry": {
+        "price": 0.69,
+        "timestamp": "2025-12-20T15:44:34.525040",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.6906899999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:44:34.525040",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T15:46:10",
+      "market_state_at_entry": {
+        "price": 0.7000000005278066,
+        "timestamp": "2025-12-20T15:46:35.258739",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.7007000005283344,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:46:35.258739",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T15:41:33.558524",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T15:46:35.269739"
+}

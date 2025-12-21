@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_161828_0x6916cc",
+  "whale_address": "0x6916cc00aa1c3e75ecf4081df7cae7d2f3592fd4",
+  "market_slug": "will-xrp-dip-to-1pt70-in-december",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T16:18:28",
+    "market": "will-xrp-dip-to-1pt70-in-december",
+    "price": 0.72,
+    "size": 13.7
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:19:28",
+      "market_state_at_entry": {
+        "price": 0.72,
+        "timestamp": "2025-12-20T16:19:42.490198",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.7207199999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:19:42.490198",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:21:28",
+      "market_state_at_entry": {
+        "price": 0.72,
+        "timestamp": "2025-12-20T16:21:42.488883",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.7207199999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:21:42.488883",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:23:28",
+      "market_state_at_entry": {
+        "price": 0.72,
+        "timestamp": "2025-12-20T16:23:42.705928",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.7207199999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:23:42.705928",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T16:18:41.347150",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T16:23:42.716960"
+}

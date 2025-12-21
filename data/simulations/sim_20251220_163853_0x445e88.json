@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_163853_0x445e88",
+  "whale_address": "0x445e88628a68c596c857085eb26f6379a1f49be0",
+  "market_slug": "will-ohio-state-win-the-2026-college-football-national-championship",
+  "is_elite": true,
+  "confidence": 0.5,
+  "detection": {
+    "timestamp": "2025-12-20T16:38:53",
+    "market": "will-ohio-state-win-the-2026-college-football-national-championship",
+    "price": 0.29,
+    "size": 11.0
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:39:53",
+      "market_state_at_entry": {
+        "price": 0.7099999777254822,
+        "timestamp": "2025-12-20T16:39:58.401308",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.7107099777032075,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:39:58.401308",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:41:53",
+      "market_state_at_entry": {
+        "price": 0.29,
+        "timestamp": "2025-12-20T16:41:57.069323",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.29028999999999994,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:41:57.069323",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:43:53",
+      "market_state_at_entry": {
+        "price": 0.29,
+        "timestamp": "2025-12-20T16:43:58.504574",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.29028999999999994,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:43:58.504574",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T16:38:55.823405",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T16:43:58.505574"
+}

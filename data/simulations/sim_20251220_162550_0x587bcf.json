@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_162550_0x587bcf",
+  "whale_address": "0x587bcff09b7e887186a4e2b3086653f10dcd2622",
+  "market_slug": "itsb-pad-sam-2025-12-20-sam",
+  "is_elite": true,
+  "confidence": 0.5,
+  "detection": {
+    "timestamp": "2025-12-20T16:25:50",
+    "market": "itsb-pad-sam-2025-12-20-sam",
+    "price": 0.74,
+    "size": 110.0
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:26:50",
+      "market_state_at_entry": {
+        "price": 0.26,
+        "timestamp": "2025-12-20T16:27:13.778172",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.26026,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:27:13.778172",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:28:50",
+      "market_state_at_entry": {
+        "price": 0.77,
+        "timestamp": "2025-12-20T16:29:12.001729",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.77077,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:29:12.001729",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:30:50",
+      "market_state_at_entry": {
+        "price": 0.74,
+        "timestamp": "2025-12-20T16:31:11.393657",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.74074,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:31:11.393657",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T16:26:09.010374",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T16:31:11.418671"
+}

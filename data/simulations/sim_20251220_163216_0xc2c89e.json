@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_163216_0xc2c89e",
+  "whale_address": "0xc2c89e23a69936da2991ddffdc7c99d4f0bd5471",
+  "market_slug": "epl-tot-liv-2025-12-20-liv",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T16:32:16",
+    "market": "epl-tot-liv-2025-12-20-liv",
+    "price": 0.5200000172800011,
+    "size": 20.833332
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:33:16",
+      "market_state_at_entry": {
+        "price": 0.47,
+        "timestamp": "2025-12-20T16:33:28.587971",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.47046999999999994,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:33:28.587971",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:35:16",
+      "market_state_at_entry": {
+        "price": 0.5200000172800011,
+        "timestamp": "2025-12-20T16:35:28.896062",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.520520017297281,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:35:28.896062",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:37:16",
+      "market_state_at_entry": {
+        "price": 0.47,
+        "timestamp": "2025-12-20T16:37:27.549359",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.47046999999999994,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:37:27.549359",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T16:32:26.399183",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T16:37:27.549359"
+}

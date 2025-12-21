@@ -1,0 +1,21 @@
+{
+  "simulation_id": "sim_20251220_151612_0x0aae5c",
+  "whale_address": "0x0aae5c4ec45339a64a1dd2fe4ba98c2a19eb251c",
+  "market_slug": "microstrategy-sell-any-bitcoin-in-2025",
+  "is_elite": true,
+  "confidence": 0.6500000000000001,
+  "detection": {
+    "timestamp": "2025-12-20T15:16:12",
+    "market": "microstrategy-sell-any-bitcoin-in-2025",
+    "price": 0.991,
+    "size": 98.99
+  },
+  "results": [],
+  "status": "pending",
+  "created_at": "2025-12-20T15:16:27.440689",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ]
+}

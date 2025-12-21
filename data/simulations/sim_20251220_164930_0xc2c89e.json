@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_164930_0xc2c89e",
+  "whale_address": "0xc2c89e23a69936da2991ddffdc7c99d4f0bd5471",
+  "market_slug": "epl-tot-liv-2025-12-20-liv",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T16:49:30",
+    "market": "epl-tot-liv-2025-12-20-liv",
+    "price": 0.5200000172800011,
+    "size": 20.833332
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:50:30",
+      "market_state_at_entry": {
+        "price": 0.4799998271998894,
+        "timestamp": "2025-12-20T16:50:40.280103",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.4804798270270892,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:50:40.280103",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:52:30",
+      "market_state_at_entry": {
+        "price": 0.5200000172800011,
+        "timestamp": "2025-12-20T16:52:40.378895",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.520520017297281,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:52:40.378895",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:54:30",
+      "market_state_at_entry": {
+        "price": 0.5200000172800011,
+        "timestamp": "2025-12-20T16:54:41.311219",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.520520017297281,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:54:41.311219",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T16:49:39.128175",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T16:54:41.311219"
+}

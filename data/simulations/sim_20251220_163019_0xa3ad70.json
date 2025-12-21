@@ -1,0 +1,983 @@
+{
+  "simulation_id": "sim_20251220_163019_0xa3ad70",
+  "whale_address": "0xa3ad70cf48a2f2b44163e798223c01a2c2536866",
+  "market_slug": "elon-musk-of-tweets-december-16-december-23-500-519",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T16:30:19",
+    "market": "elon-musk-of-tweets-december-16-december-23-500-519",
+    "price": 0.997,
+    "size": 5.0
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:31:19",
+      "market_state_at_entry": {
+        "price": 0.923,
+        "timestamp": "2025-12-20T16:31:22.520389",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.9239229999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:31:22.520389",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:31:19",
+      "market_state_at_entry": {
+        "price": 0.012,
+        "timestamp": "2025-12-20T16:31:24.425250",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.012011999999999998,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:31:24.425250",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:31:19",
+      "market_state_at_entry": {
+        "price": 0.05,
+        "timestamp": "2025-12-20T16:31:26.603362",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.05005,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:31:26.603362",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:31:19",
+      "market_state_at_entry": {
+        "price": 0.011,
+        "timestamp": "2025-12-20T16:31:27.954571",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.011010999999999998,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:31:27.954571",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:31:19",
+      "market_state_at_entry": {
+        "price": 0.97,
+        "timestamp": "2025-12-20T16:31:29.382600",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.9709699999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:31:29.382600",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:31:19",
+      "market_state_at_entry": {
+        "price": 0.043,
+        "timestamp": "2025-12-20T16:31:31.781820",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.04304299999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:31:31.781820",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:31:19",
+      "market_state_at_entry": {
+        "price": 0.94,
+        "timestamp": "2025-12-20T16:31:33.363981",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.9409399999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:31:33.363981",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:31:19",
+      "market_state_at_entry": {
+        "price": 0.001,
+        "timestamp": "2025-12-20T16:31:35.400823",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.001001,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:31:35.400823",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:31:19",
+      "market_state_at_entry": {
+        "price": 0.849,
+        "timestamp": "2025-12-20T16:31:37.875332",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.8498489999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:31:37.875332",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:31:19",
+      "market_state_at_entry": {
+        "price": 0.15,
+        "timestamp": "2025-12-20T16:31:38.997985",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.15014999999999998,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:31:38.997985",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:31:19",
+      "market_state_at_entry": {
+        "price": 0.004,
+        "timestamp": "2025-12-20T16:31:41.222726",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.004004,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:31:41.222726",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:31:19",
+      "market_state_at_entry": {
+        "price": 0.001,
+        "timestamp": "2025-12-20T16:31:41.504727",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.001001,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:31:41.504727",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:31:19",
+      "market_state_at_entry": {
+        "price": 0.025,
+        "timestamp": "2025-12-20T16:31:43.507129",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.025025,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:31:43.507129",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:31:19",
+      "market_state_at_entry": {
+        "price": 0.968,
+        "timestamp": "2025-12-20T16:31:44.381098",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.9689679999999998,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:31:44.381098",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:31:19",
+      "market_state_at_entry": {
+        "price": 0.975,
+        "timestamp": "2025-12-20T16:31:45.384395",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.9759749999999998,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:31:45.384395",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:31:19",
+      "market_state_at_entry": {
+        "price": 0.98,
+        "timestamp": "2025-12-20T16:31:46.606394",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.9809799999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:31:46.606394",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:31:19",
+      "market_state_at_entry": {
+        "price": 0.011,
+        "timestamp": "2025-12-20T16:31:48.064732",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.011010999999999998,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:31:48.064732",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:31:19",
+      "market_state_at_entry": {
+        "price": 0.001,
+        "timestamp": "2025-12-20T16:31:49.484732",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.001001,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:31:49.484732",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:31:19",
+      "market_state_at_entry": {
+        "price": 0.001,
+        "timestamp": "2025-12-20T16:31:51.168674",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.001001,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:31:51.168674",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:31:19",
+      "market_state_at_entry": {
+        "price": 0.003,
+        "timestamp": "2025-12-20T16:31:52.456645",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.0030029999999999996,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:31:52.456645",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:33:19",
+      "market_state_at_entry": {
+        "price": 0.923,
+        "timestamp": "2025-12-20T16:33:22.550439",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9239229999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:33:22.550439",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:33:19",
+      "market_state_at_entry": {
+        "price": 0.988,
+        "timestamp": "2025-12-20T16:33:24.858474",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9889879999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:33:24.858474",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:33:19",
+      "market_state_at_entry": {
+        "price": 0.95,
+        "timestamp": "2025-12-20T16:33:26.862439",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9509499999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:33:26.862439",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:33:19",
+      "market_state_at_entry": {
+        "price": 0.989,
+        "timestamp": "2025-12-20T16:33:28.873968",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9899889999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:33:28.873968",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:33:19",
+      "market_state_at_entry": {
+        "price": 0.97,
+        "timestamp": "2025-12-20T16:33:30.008796",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9709699999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:33:30.008796",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:33:19",
+      "market_state_at_entry": {
+        "price": 0.958,
+        "timestamp": "2025-12-20T16:33:31.628809",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9589579999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:33:31.628809",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:33:19",
+      "market_state_at_entry": {
+        "price": 0.94,
+        "timestamp": "2025-12-20T16:33:34.713812",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9409399999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:33:34.713812",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:33:19",
+      "market_state_at_entry": {
+        "price": 0.999,
+        "timestamp": "2025-12-20T16:33:35.557812",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9999989999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:33:35.557812",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:33:19",
+      "market_state_at_entry": {
+        "price": 0.849,
+        "timestamp": "2025-12-20T16:33:37.217838",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.8498489999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:33:37.217838",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:33:19",
+      "market_state_at_entry": {
+        "price": 0.15,
+        "timestamp": "2025-12-20T16:33:39.289809",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.15014999999999998,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:33:39.289809",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:33:19",
+      "market_state_at_entry": {
+        "price": 0.996,
+        "timestamp": "2025-12-20T16:33:40.414814",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.9969959999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:33:40.414814",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:33:19",
+      "market_state_at_entry": {
+        "price": 0.999,
+        "timestamp": "2025-12-20T16:33:41.288808",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9999989999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:33:41.288808",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:33:19",
+      "market_state_at_entry": {
+        "price": 0.975,
+        "timestamp": "2025-12-20T16:33:43.604811",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9759749999999998,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:33:43.604811",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:33:19",
+      "market_state_at_entry": {
+        "price": 0.968,
+        "timestamp": "2025-12-20T16:33:44.315813",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9689679999999998,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:33:44.315813",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:33:19",
+      "market_state_at_entry": {
+        "price": 0.975,
+        "timestamp": "2025-12-20T16:33:45.189807",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9759749999999998,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:33:45.189807",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:33:19",
+      "market_state_at_entry": {
+        "price": 0.98,
+        "timestamp": "2025-12-20T16:33:47.039809",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9809799999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:33:47.039809",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:33:19",
+      "market_state_at_entry": {
+        "price": 0.989,
+        "timestamp": "2025-12-20T16:33:48.217847",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9899889999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:33:48.217847",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:33:19",
+      "market_state_at_entry": {
+        "price": 0.999,
+        "timestamp": "2025-12-20T16:33:49.493809",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9999989999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:33:49.493809",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:33:19",
+      "market_state_at_entry": {
+        "price": 0.999,
+        "timestamp": "2025-12-20T16:33:50.855807",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9999989999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:33:50.855807",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:33:19",
+      "market_state_at_entry": {
+        "price": 0.997,
+        "timestamp": "2025-12-20T16:33:52.948838",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9979969999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:33:52.948838",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:35:19",
+      "market_state_at_entry": {
+        "price": 0.923,
+        "timestamp": "2025-12-20T16:35:22.300045",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9239229999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:35:22.300045",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:35:19",
+      "market_state_at_entry": {
+        "price": 0.988,
+        "timestamp": "2025-12-20T16:35:24.422387",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9889879999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:35:24.422387",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:35:19",
+      "market_state_at_entry": {
+        "price": 0.95,
+        "timestamp": "2025-12-20T16:35:26.797401",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9509499999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:35:26.797401",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:35:19",
+      "market_state_at_entry": {
+        "price": 0.989,
+        "timestamp": "2025-12-20T16:35:29.176092",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9899889999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:35:29.176092",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:35:19",
+      "market_state_at_entry": {
+        "price": 0.97,
+        "timestamp": "2025-12-20T16:35:29.750062",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9709699999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:35:29.750062",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:35:19",
+      "market_state_at_entry": {
+        "price": 0.958,
+        "timestamp": "2025-12-20T16:35:32.875135",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9589579999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:35:32.875135",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:35:19",
+      "market_state_at_entry": {
+        "price": 0.94,
+        "timestamp": "2025-12-20T16:35:34.417165",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9409399999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:35:34.417165",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:35:19",
+      "market_state_at_entry": {
+        "price": 0.999,
+        "timestamp": "2025-12-20T16:35:35.395134",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9999989999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:35:35.395134",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:35:19",
+      "market_state_at_entry": {
+        "price": 0.849,
+        "timestamp": "2025-12-20T16:35:37.233811",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.8498489999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:35:37.233811",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:35:19",
+      "market_state_at_entry": {
+        "price": 0.85,
+        "timestamp": "2025-12-20T16:35:39.749866",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.8508499999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:35:39.749866",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:35:19",
+      "market_state_at_entry": {
+        "price": 0.996,
+        "timestamp": "2025-12-20T16:35:40.316836",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9969959999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:35:40.316836",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:35:19",
+      "market_state_at_entry": {
+        "price": 0.999,
+        "timestamp": "2025-12-20T16:35:41.531850",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9999989999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:35:41.531850",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:35:19",
+      "market_state_at_entry": {
+        "price": 0.975,
+        "timestamp": "2025-12-20T16:35:43.477428",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9759749999999998,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:35:43.477428",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:35:19",
+      "market_state_at_entry": {
+        "price": 0.968,
+        "timestamp": "2025-12-20T16:35:46.101392",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9689679999999998,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:35:46.101392",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:35:19",
+      "market_state_at_entry": {
+        "price": 0.975,
+        "timestamp": "2025-12-20T16:35:46.388393",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9759749999999998,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:35:46.388393",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:35:19",
+      "market_state_at_entry": {
+        "price": 0.98,
+        "timestamp": "2025-12-20T16:35:47.509422",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9809799999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:35:47.509422",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:35:19",
+      "market_state_at_entry": {
+        "price": 0.989,
+        "timestamp": "2025-12-20T16:35:48.080393",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9899889999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:35:48.080393",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:35:19",
+      "market_state_at_entry": {
+        "price": 0.999,
+        "timestamp": "2025-12-20T16:35:49.155606",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9999989999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:35:49.155606",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:35:19",
+      "market_state_at_entry": {
+        "price": 0.999,
+        "timestamp": "2025-12-20T16:35:52.173579",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9999989999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:35:52.173579",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:35:19",
+      "market_state_at_entry": {
+        "price": 0.997,
+        "timestamp": "2025-12-20T16:35:53.312574",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9979969999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:35:53.312574",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T16:30:51.321488",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T16:35:53.322573"
+}

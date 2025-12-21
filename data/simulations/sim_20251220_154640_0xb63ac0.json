@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_154640_0xb63ac0",
+  "whale_address": "0xb63ac06f20eed05d0a34f61116d0580a0afb4064",
+  "market_slug": "will-bitcoin-dip-to-84k-december-15-21",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T15:46:40",
+    "market": "will-bitcoin-dip-to-84k-december-15-21",
+    "price": 0.949,
+    "size": 85.8
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T15:47:40",
+      "market_state_at_entry": {
+        "price": 0.949,
+        "timestamp": "2025-12-20T15:48:03.022602",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.9499489999999998,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:48:03.022602",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T15:49:40",
+      "market_state_at_entry": {
+        "price": 0.949,
+        "timestamp": "2025-12-20T15:50:03.587014",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9499489999999998,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:50:03.587014",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T15:51:40",
+      "market_state_at_entry": {
+        "price": 0.949,
+        "timestamp": "2025-12-20T15:52:03.071146",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9499489999999998,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:52:03.071146",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T15:47:02.332267",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T15:52:03.081145"
+}

@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_141819_0x7846e4",
+  "whale_address": "0x7846e489e11c7d2b9d6c15a955c1df93d041c08d",
+  "market_slug": "aus-per-ade-2025-12-20-ade",
+  "is_elite": true,
+  "confidence": 0.5,
+  "detection": {
+    "timestamp": "2025-12-20T14:18:19",
+    "market": "aus-per-ade-2025-12-20-ade",
+    "price": 0.999,
+    "size": 161.27
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T14:19:19",
+      "market_state_at_entry": {
+        "price": 0.999,
+        "timestamp": "2025-12-20T14:19:31.148200",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.9999989999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:19:31.148200",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T14:21:19",
+      "market_state_at_entry": {
+        "price": 0.999,
+        "timestamp": "2025-12-20T14:21:31.175874",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9999989999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:21:31.175874",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T14:23:19",
+      "market_state_at_entry": {
+        "price": 0.999,
+        "timestamp": "2025-12-20T14:23:30.860827",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9999989999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:23:30.860827",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T14:18:29.667665",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T14:23:30.860827"
+}

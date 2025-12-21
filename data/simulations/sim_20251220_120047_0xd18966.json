@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_120047_0xd18966",
+  "whale_address": "0xd189664c5308903476f9f079820431e4fd7d06f4",
+  "market_slug": "bitcoin-up-or-down-december-20-5am-et",
+  "is_elite": false,
+  "confidence": 0.7000000000000002,
+  "detection": {
+    "timestamp": "2025-12-20T12:00:47",
+    "market": "bitcoin-up-or-down-december-20-5am-et",
+    "price": 0.99,
+    "size": 29.99
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T12:01:47",
+      "market_state_at_entry": {
+        "price": 0.99,
+        "timestamp": "2025-12-20T12:01:48.618277",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.9909899999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T12:01:48.618277",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T12:03:47",
+      "market_state_at_entry": {
+        "price": 0.99,
+        "timestamp": "2025-12-20T12:03:48.632422",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.9909899999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T12:03:48.632422",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T12:05:47",
+      "market_state_at_entry": {
+        "price": 0.99,
+        "timestamp": "2025-12-20T12:05:48.634518",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.9909899999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T12:05:48.634518",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T12:00:48.071147",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T12:05:48.635522"
+}

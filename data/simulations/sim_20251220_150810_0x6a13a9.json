@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_150810_0x6a13a9",
+  "whale_address": "0x6a13a9864a8e53c815cf1adb6026a0f35e3d4593",
+  "market_slug": "fed-decreases-interest-rates-by-25-bps-after-january-2026-meeting",
+  "is_elite": true,
+  "confidence": 0.55,
+  "detection": {
+    "timestamp": "2025-12-20T15:08:10",
+    "market": "fed-decreases-interest-rates-by-25-bps-after-january-2026-meeting",
+    "price": 0.19,
+    "size": 3.7037
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T15:09:10",
+      "market_state_at_entry": {
+        "price": 0.81,
+        "timestamp": "2025-12-20T15:09:27.910191",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.8108099999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:09:27.910191",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T15:11:10",
+      "market_state_at_entry": {
+        "price": 0.19,
+        "timestamp": "2025-12-20T15:11:27.730866",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.19018999999999997,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:11:27.730866",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T15:13:10",
+      "market_state_at_entry": {
+        "price": 0.19,
+        "timestamp": "2025-12-20T15:13:27.321933",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.19018999999999997,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:13:27.321933",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T15:08:25.435721",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T15:13:27.321933"
+}

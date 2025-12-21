@@ -1,0 +1,38 @@
+{
+  "simulation_id": "sim_20251220_151501_0x94fb38",
+  "whale_address": "0x94fb389d0f9d3686b363b8bbf30ec240ce97d6cb",
+  "market_slug": "epl-bou-bur-2025-12-20-draw",
+  "is_elite": true,
+  "confidence": 0.9000000000000004,
+  "detection": {
+    "timestamp": "2025-12-20T15:15:01",
+    "market": "epl-bou-bur-2025-12-20-draw",
+    "price": 0.2,
+    "size": 162.0
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T15:16:01",
+      "market_state_at_entry": {
+        "price": 0.8,
+        "timestamp": "2025-12-20T15:16:22.540852",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.8008,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:16:22.540852",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "pending",
+  "created_at": "2025-12-20T15:15:19.884296",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ]
+}

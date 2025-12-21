@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_164711_0x5116ee",
+  "whale_address": "0x5116ee15e86bc8878b90ac8a8514e38511eb58c4",
+  "market_slug": "nhl-car-tb-2025-12-20",
+  "is_elite": true,
+  "confidence": 0.7500000000000002,
+  "detection": {
+    "timestamp": "2025-12-20T16:47:11",
+    "market": "nhl-car-tb-2025-12-20",
+    "price": 0.48,
+    "size": 188.53
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:48:11",
+      "market_state_at_entry": {
+        "price": 0.48,
+        "timestamp": "2025-12-20T16:48:28.558879",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.4804799999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:48:28.558879",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:50:11",
+      "market_state_at_entry": {
+        "price": 0.48,
+        "timestamp": "2025-12-20T16:50:28.534712",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.4804799999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:50:28.534712",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:52:11",
+      "market_state_at_entry": {
+        "price": 0.48,
+        "timestamp": "2025-12-20T16:52:28.557741",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.4804799999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:52:28.557741",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T16:47:27.110263",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T16:52:28.557741"
+}

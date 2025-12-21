@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_160723_0x25869d",
+  "whale_address": "0x25869d34ca274c24da62b7d62e3c2f692d1df071",
+  "market_slug": "dota2-ts8-ty-2025-12-20-game1",
+  "is_elite": true,
+  "confidence": 0.8000000000000003,
+  "detection": {
+    "timestamp": "2025-12-20T16:07:23",
+    "market": "dota2-ts8-ty-2025-12-20-game1",
+    "price": 0.63,
+    "size": 777.0
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:08:23",
+      "market_state_at_entry": {
+        "price": 0.28,
+        "timestamp": "2025-12-20T16:08:35.699722",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.28028,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:08:35.699722",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:10:23",
+      "market_state_at_entry": {
+        "price": 0.7831751102508652,
+        "timestamp": "2025-12-20T16:10:35.711210",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.783958285361116,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:10:35.711210",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:12:23",
+      "market_state_at_entry": {
+        "price": 0.39,
+        "timestamp": "2025-12-20T16:12:35.703373",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.39038999999999996,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:12:35.703373",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T16:07:34.467170",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T16:12:35.719371"
+}

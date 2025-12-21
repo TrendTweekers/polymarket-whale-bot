@@ -1,0 +1,38 @@
+{
+  "simulation_id": "sim_20251220_151340_0x9a6e69",
+  "whale_address": "0x9a6e69c9b012030c668397d8346b4d55dd8335b4",
+  "market_slug": "bun-lei-b04-2025-12-20-lei",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T15:13:40",
+    "market": "bun-lei-b04-2025-12-20-lei",
+    "price": 0.56,
+    "size": 300.0
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T15:14:40",
+      "market_state_at_entry": {
+        "price": 0.45,
+        "timestamp": "2025-12-20T15:15:05.590290",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.45044999999999996,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:15:05.590290",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "pending",
+  "created_at": "2025-12-20T15:14:03.303960",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ]
+}

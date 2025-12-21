@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_154401_0xfc25f1",
+  "whale_address": "0xfc25f141ed27bb1787338d2c4e7f51e3a15e1f7f",
+  "market_slug": "nfl-gb-chi-2025-12-20",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T15:44:01",
+    "market": "nfl-gb-chi-2025-12-20",
+    "price": 0.53,
+    "size": 99999.71
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T15:45:01",
+      "market_state_at_entry": {
+        "price": 0.47,
+        "timestamp": "2025-12-20T15:45:28.017756",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.47140999999999994,
+      "slippage_percent": 0.3,
+      "checked_at": "2025-12-20T15:45:28.017756",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T15:47:01",
+      "market_state_at_entry": {
+        "price": 0.5200000007848125,
+        "timestamp": "2025-12-20T15:47:28.653549",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.5215600007871668,
+      "slippage_percent": 0.3,
+      "checked_at": "2025-12-20T15:47:28.653549",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T15:49:01",
+      "market_state_at_entry": {
+        "price": 0.5200001728001106,
+        "timestamp": "2025-12-20T15:49:28.025206",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.5215601733185109,
+      "slippage_percent": 0.3,
+      "checked_at": "2025-12-20T15:49:28.025206",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T15:44:26.470623",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T15:49:28.025206"
+}

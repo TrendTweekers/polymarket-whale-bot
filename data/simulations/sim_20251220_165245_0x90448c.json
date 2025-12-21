@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_165245_0x90448c",
+  "whale_address": "0x90448cec34e3cfa75212374ea45ed01a258c6364",
+  "market_slug": "will-andy-beshear-win-the-2028-us-presidential-election",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T16:52:45",
+    "market": "will-andy-beshear-win-the-2028-us-presidential-election",
+    "price": 0.982,
+    "size": 171.38
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:53:45",
+      "market_state_at_entry": {
+        "price": 0.982,
+        "timestamp": "2025-12-20T16:53:58.533349",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.9829819999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:53:58.533349",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:55:45",
+      "market_state_at_entry": {
+        "price": 0.982,
+        "timestamp": "2025-12-20T16:55:57.972786",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9829819999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:55:57.972786",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:57:45",
+      "market_state_at_entry": {
+        "price": 0.982,
+        "timestamp": "2025-12-20T16:57:58.157656",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9829819999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:57:58.157656",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T16:52:56.895521",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T16:57:58.158655"
+}

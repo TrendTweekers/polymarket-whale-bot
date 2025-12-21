@@ -1,0 +1,38 @@
+{
+  "simulation_id": "sim_20251220_141222_0x7846e4",
+  "whale_address": "0x7846e489e11c7d2b9d6c15a955c1df93d041c08d",
+  "market_slug": "aus-per-ade-2025-12-20-ade",
+  "is_elite": true,
+  "confidence": 0.5,
+  "detection": {
+    "timestamp": "2025-12-20T14:12:22",
+    "market": "aus-per-ade-2025-12-20-ade",
+    "price": 0.999,
+    "size": 15.79
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T14:13:22",
+      "market_state_at_entry": {
+        "price": 0.999,
+        "timestamp": "2025-12-20T14:13:26.386467",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.9999989999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:13:26.386467",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "pending",
+  "created_at": "2025-12-20T14:12:24.795706",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ]
+}

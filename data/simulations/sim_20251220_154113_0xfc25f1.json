@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_154113_0xfc25f1",
+  "whale_address": "0xfc25f141ed27bb1787338d2c4e7f51e3a15e1f7f",
+  "market_slug": "will-the-denver-nuggets-win-the-2026-nba-finals",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T15:41:13",
+    "market": "will-the-denver-nuggets-win-the-2026-nba-finals",
+    "price": 0.1,
+    "size": 30.0
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T15:42:13",
+      "market_state_at_entry": {
+        "price": 0.1,
+        "timestamp": "2025-12-20T15:42:38.540100",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.1001,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:42:38.540100",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T15:44:13",
+      "market_state_at_entry": {
+        "price": 0.1,
+        "timestamp": "2025-12-20T15:44:38.673409",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.1001,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:44:38.673409",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T15:46:13",
+      "market_state_at_entry": {
+        "price": 0.1,
+        "timestamp": "2025-12-20T15:46:38.658082",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.1001,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:46:38.658082",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T15:41:37.736606",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T15:46:38.667508"
+}

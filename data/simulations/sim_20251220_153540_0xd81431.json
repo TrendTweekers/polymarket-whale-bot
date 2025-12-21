@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_153540_0xd81431",
+  "whale_address": "0xd81431e96b2dc36863c2064d38a14a603d1a7f65",
+  "market_slug": "elon-musk-of-tweets-december-23-december-30-40-59",
+  "is_elite": true,
+  "confidence": 0.5,
+  "detection": {
+    "timestamp": "2025-12-20T15:35:40",
+    "market": "elon-musk-of-tweets-december-23-december-30-40-59",
+    "price": 0.998,
+    "size": 500.0
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T15:36:40",
+      "market_state_at_entry": {
+        "price": 0.002,
+        "timestamp": "2025-12-20T15:36:43.269906",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.002002,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:36:43.269906",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T15:38:40",
+      "market_state_at_entry": {
+        "price": 0.998,
+        "timestamp": "2025-12-20T15:38:43.486161",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9989979999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:38:43.486161",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T15:40:40",
+      "market_state_at_entry": {
+        "price": 0.998,
+        "timestamp": "2025-12-20T15:40:43.280339",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9989979999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:40:43.280339",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T15:35:41.372462",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T15:40:43.289338"
+}

@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_144908_0x0aae5c",
+  "whale_address": "0x0aae5c4ec45339a64a1dd2fe4ba98c2a19eb251c",
+  "market_slug": "will-lighter-perform-an-airdrop-by-december-31",
+  "is_elite": true,
+  "confidence": 0.5,
+  "detection": {
+    "timestamp": "2025-12-20T14:49:08",
+    "market": "will-lighter-perform-an-airdrop-by-december-31",
+    "price": 0.8,
+    "size": 1051.01
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T14:50:08",
+      "market_state_at_entry": {
+        "price": 0.2,
+        "timestamp": "2025-12-20T14:50:14.584573",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.2002,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:50:14.584573",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T14:52:08",
+      "market_state_at_entry": {
+        "price": 0.8,
+        "timestamp": "2025-12-20T14:52:14.578695",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.8008,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:52:14.578695",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T14:54:08",
+      "market_state_at_entry": {
+        "price": 0.8,
+        "timestamp": "2025-12-20T14:54:14.640078",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.8008,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:54:14.640078",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T14:49:12.096860",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T14:54:14.640078"
+}

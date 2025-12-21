@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_155917_0x507e52",
+  "whale_address": "0x507e52ef684ca2dd91f90a9d26d149dd3288beae",
+  "market_slug": "lal-osa-ala-2025-12-20-osa",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T15:59:17",
+    "market": "lal-osa-ala-2025-12-20-osa",
+    "price": 0.5700000483534275,
+    "size": 5.790696
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:00:17",
+      "market_state_at_entry": {
+        "price": 0.4299999516465724,
+        "timestamp": "2025-12-20T16:00:22.226661",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.4304299515982189,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:00:22.226661",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:02:17",
+      "market_state_at_entry": {
+        "price": 0.5700000483534275,
+        "timestamp": "2025-12-20T16:02:22.612240",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.5705700484017809,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:02:22.612240",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:04:17",
+      "market_state_at_entry": {
+        "price": 0.5700000483534275,
+        "timestamp": "2025-12-20T16:04:22.051030",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.5705700484017809,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:04:22.051030",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T15:59:20.287268",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T16:04:22.052028"
+}

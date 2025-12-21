@@ -1,0 +1,21 @@
+{
+  "simulation_id": "sim_20251220_141059_0xbacd00",
+  "whale_address": "0xbacd00c9080a82ded56f504ee8810af732b0ab35",
+  "market_slug": "israel-x-hamas-ceasefire-cancelled-by-december-31-672-844",
+  "is_elite": true,
+  "confidence": 0.9000000000000004,
+  "detection": {
+    "timestamp": "2025-12-20T14:10:59",
+    "market": "israel-x-hamas-ceasefire-cancelled-by-december-31-672-844",
+    "price": 0.98,
+    "size": 0.25
+  },
+  "results": [],
+  "status": "pending",
+  "created_at": "2025-12-20T14:11:02.022129",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ]
+}

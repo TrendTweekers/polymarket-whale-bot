@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_153921_0xe35190",
+  "whale_address": "0xe351902b4f34a31637eff40bd13446bb18d0e48d",
+  "market_slug": "nba-hou-den-2025-12-20",
+  "is_elite": true,
+  "confidence": 0.5,
+  "detection": {
+    "timestamp": "2025-12-20T15:39:21",
+    "market": "nba-hou-den-2025-12-20",
+    "price": 0.49,
+    "size": 100.0
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T15:40:21",
+      "market_state_at_entry": {
+        "price": 0.5,
+        "timestamp": "2025-12-20T15:40:45.210338",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.5005,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:40:45.210338",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T15:42:21",
+      "market_state_at_entry": {
+        "price": 0.49,
+        "timestamp": "2025-12-20T15:42:45.264666",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.4904899999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:42:45.264666",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T15:44:21",
+      "market_state_at_entry": {
+        "price": 0.49,
+        "timestamp": "2025-12-20T15:44:45.359672",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.4904899999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:44:45.359672",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T15:39:44.621414",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T15:44:45.359672"
+}

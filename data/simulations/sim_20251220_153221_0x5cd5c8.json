@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_153221_0x5cd5c8",
+  "whale_address": "0x5cd5c8d7a17c78d7389d8b87b611aed83322ac33",
+  "market_slug": "tesla-launches-unsupervised-full-self-driving-fsd-by-december-31-983",
+  "is_elite": true,
+  "confidence": 0.7000000000000002,
+  "detection": {
+    "timestamp": "2025-12-20T15:32:21",
+    "market": "tesla-launches-unsupervised-full-self-driving-fsd-by-december-31-983",
+    "price": 0.9178175675675676,
+    "size": 444.0
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T15:33:21",
+      "market_state_at_entry": {
+        "price": 0.083,
+        "timestamp": "2025-12-20T15:33:40.066361",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.08308299999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:33:40.066361",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T15:35:21",
+      "market_state_at_entry": {
+        "price": 0.9178175675675676,
+        "timestamp": "2025-12-20T15:35:40.029880",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9187353851351351,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:35:40.029880",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T15:37:21",
+      "market_state_at_entry": {
+        "price": 0.9178175675675676,
+        "timestamp": "2025-12-20T15:37:39.891469",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9187353851351351,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:37:39.891469",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T15:32:37.114076",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T15:37:39.891469"
+}

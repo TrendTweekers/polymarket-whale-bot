@@ -47,10 +47,44 @@ class DynamicWhaleManager:
     
     def load_state(self) -> Dict:
         """Load whale state from disk"""
-        if self.state_file.exists():
-            with open(self.state_file, 'r') as f:
-                return json.load(f)
-        return {}
+        if not self.state_file.exists():
+            return {}
+        
+        try:
+            with open(self.state_file, 'r', encoding='utf-8') as f:
+                content = f.read().strip()
+                # Handle empty or whitespace-only files
+                if not content:
+                    return {}
+                # Handle empty JSON objects (with or without whitespace)
+                content_stripped = content.strip()
+                if content_stripped == '{}' or content_stripped == 'null' or content_stripped == '':
+                    return {}
+                # Try to parse JSON
+                try:
+                    data = json.loads(content)
+                    # Ensure it's a dict
+                    if not isinstance(data, dict):
+                        return {}
+                    return data
+                except json.JSONDecodeError:
+                    # If parsing fails, return empty dict
+                    return {}
+        except json.JSONDecodeError as e:
+            print(f"⚠️ JSON decode error in whale state file: {e}")
+            # Backup corrupted file
+            import shutil
+            backup_file = self.state_file.with_suffix('.json.backup')
+            try:
+                shutil.copy(self.state_file, backup_file)
+                print(f"   Backed up corrupted file to {backup_file}")
+            except:
+                pass
+            # Return empty state
+            return {}
+        except Exception as e:
+            print(f"⚠️ Error loading whale state: {e}")
+            return {}
     
     def save_state(self):
         """Save whale state to disk"""

@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_152700_0x2005d1",
+  "whale_address": "0x2005d16a84ceefa912d4e380cd32e7ff827875ea",
+  "market_slug": "lal-ovi-cel-2025-12-20-cel",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T15:27:00",
+    "market": "lal-ovi-cel-2025-12-20-cel",
+    "price": 0.7700000096842108,
+    "size": 61.95652
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T15:28:00",
+      "market_state_at_entry": {
+        "price": 0.7700000096842108,
+        "timestamp": "2025-12-20T15:28:14.809869",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.7707700096938949,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:28:14.809869",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T15:30:00",
+      "market_state_at_entry": {
+        "price": 0.2,
+        "timestamp": "2025-12-20T15:30:14.712214",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.2002,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:30:14.712214",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T15:32:00",
+      "market_state_at_entry": {
+        "price": 0.17,
+        "timestamp": "2025-12-20T15:32:14.688376",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.17017,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T15:32:14.688376",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T15:27:14.011057",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T15:32:14.688376"
+}

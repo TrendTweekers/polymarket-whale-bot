@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_160505_0x9a6e69",
+  "whale_address": "0x9a6e69c9b012030c668397d8346b4d55dd8335b4",
+  "market_slug": "bun-lei-b04-2025-12-20-lei",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T16:05:05",
+    "market": "bun-lei-b04-2025-12-20-lei",
+    "price": 0.44,
+    "size": 215.2
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:06:05",
+      "market_state_at_entry": {
+        "price": 0.4400000063961991,
+        "timestamp": "2025-12-20T16:06:25.767663",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.44044000640259523,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:06:25.767663",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:08:05",
+      "market_state_at_entry": {
+        "price": 0.44,
+        "timestamp": "2025-12-20T16:08:25.842053",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.44043999999999994,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:08:25.842053",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:10:05",
+      "market_state_at_entry": {
+        "price": 0.44,
+        "timestamp": "2025-12-20T16:10:25.819287",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.44043999999999994,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:10:25.819287",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T16:05:24.117057",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T16:10:25.819287"
+}

@@ -1,0 +1,38 @@
+{
+  "simulation_id": "sim_20251220_141138_0x507e52",
+  "whale_address": "0x507e52ef684ca2dd91f90a9d26d149dd3288beae",
+  "market_slug": "tur-eyu-fen-2025-12-20-fen",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T14:11:38",
+    "market": "tur-eyu-fen-2025-12-20-fen",
+    "price": 0.2800000001156201,
+    "size": 1729.80236
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T14:12:38",
+      "market_state_at_entry": {
+        "price": 0.7,
+        "timestamp": "2025-12-20T14:12:46.004383",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.7006999999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:12:46.004383",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "pending",
+  "created_at": "2025-12-20T14:11:44.815330",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ]
+}

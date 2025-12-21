@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_152334_0x60b2a1",
+  "whale_address": "0x60b2a17f0472db7361ae3189ad99063efe0b3cce",
+  "market_slug": "epl-wol-bre-2025-12-20-bre",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T15:23:34",
+    "market": "epl-wol-bre-2025-12-20-bre",
+    "price": 0.56,
+    "size": 6000.01
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T15:24:34",
+      "market_state_at_entry": {
+        "price": 0.44,
+        "timestamp": "2025-12-20T15:24:45.923602",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.44088,
+      "slippage_percent": 0.2,
+      "checked_at": "2025-12-20T15:24:45.923602",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T15:26:34",
+      "market_state_at_entry": {
+        "price": 0.44,
+        "timestamp": "2025-12-20T15:26:45.594539",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.44088,
+      "slippage_percent": 0.2,
+      "checked_at": "2025-12-20T15:26:45.594539",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T15:28:34",
+      "market_state_at_entry": {
+        "price": 0.449999997975,
+        "timestamp": "2025-12-20T15:28:45.982851",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.45089999797095,
+      "slippage_percent": 0.2,
+      "checked_at": "2025-12-20T15:28:45.982851",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T15:23:44.417359",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T15:28:45.982851"
+}

@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_162623_0xee613b",
+  "whale_address": "0xee613b3fc183ee44f9da9c05f53e2da107e3debf",
+  "market_slug": "cbb-iona-verm-2025-12-20",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T16:26:23",
+    "market": "cbb-iona-verm-2025-12-20",
+    "price": 0.63,
+    "size": 98.41
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:27:23",
+      "market_state_at_entry": {
+        "price": 0.37,
+        "timestamp": "2025-12-20T16:27:30.734427",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.37037,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:27:30.734427",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:29:23",
+      "market_state_at_entry": {
+        "price": 0.63,
+        "timestamp": "2025-12-20T16:29:30.764405",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.6306299999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:29:30.764405",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:31:23",
+      "market_state_at_entry": {
+        "price": 0.63,
+        "timestamp": "2025-12-20T16:31:31.073851",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.6306299999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:31:31.073851",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T16:26:28.813405",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T16:31:31.082819"
+}

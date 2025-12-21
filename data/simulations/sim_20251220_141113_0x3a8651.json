@@ -1,0 +1,54 @@
+{
+  "simulation_id": "sim_20251220_141113_0x3a8651",
+  "whale_address": "0x3a8651c42ac19aa3e3141531a298abc72f51dea8",
+  "market_slug": "googl-above-280-on-december-31-2025",
+  "is_elite": true,
+  "confidence": 0.9000000000000004,
+  "detection": {
+    "timestamp": "2025-12-20T14:11:13",
+    "market": "googl-above-280-on-december-31-2025",
+    "price": 0.05,
+    "size": 41.0
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T14:12:13",
+      "market_state_at_entry": {
+        "price": 0.05,
+        "timestamp": "2025-12-20T14:12:17.539978",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.05005,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:12:17.539978",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T14:14:13",
+      "market_state_at_entry": {
+        "price": 0.05,
+        "timestamp": "2025-12-20T14:14:17.620405",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.05005,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T14:14:17.620405",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "pending",
+  "created_at": "2025-12-20T14:11:27.783497",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ]
+}

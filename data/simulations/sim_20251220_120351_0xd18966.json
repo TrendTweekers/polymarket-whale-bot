@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_120351_0xd18966",
+  "whale_address": "0xd189664c5308903476f9f079820431e4fd7d06f4",
+  "market_slug": "bitcoin-up-or-down-december-20-5am-et",
+  "is_elite": false,
+  "confidence": 0.7500000000000002,
+  "detection": {
+    "timestamp": "2025-12-20T12:03:51",
+    "market": "bitcoin-up-or-down-december-20-5am-et",
+    "price": 0.99,
+    "size": 112.61
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T12:04:51",
+      "market_state_at_entry": {
+        "price": 0.99,
+        "timestamp": "2025-12-20T12:04:52.790280",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.9909899999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T12:04:52.790280",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T12:06:51",
+      "market_state_at_entry": {
+        "price": 0.99,
+        "timestamp": "2025-12-20T12:06:53.200749",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9909899999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T12:06:53.200749",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T12:08:51",
+      "market_state_at_entry": {
+        "price": 0.99,
+        "timestamp": "2025-12-20T12:08:52.790222",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9909899999999999,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T12:08:52.790222",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T12:03:52.185319",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T12:08:52.803219"
+}

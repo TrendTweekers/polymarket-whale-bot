@@ -1,0 +1,21 @@
+{
+  "simulation_id": "sim_20251220_151612_0xc8b438",
+  "whale_address": "0xc8b438e4a1c10643ea0ea3e59bcaadc73174f05d",
+  "market_slug": "bun-wol-fre-2025-12-20-total-2pt5",
+  "is_elite": true,
+  "confidence": 1.0,
+  "detection": {
+    "timestamp": "2025-12-20T15:16:12",
+    "market": "bun-wol-fre-2025-12-20-total-2pt5",
+    "price": 0.4800000015079749,
+    "size": 238.730768
+  },
+  "results": [],
+  "status": "pending",
+  "created_at": "2025-12-20T15:16:24.704531",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ]
+}

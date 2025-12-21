@@ -1,0 +1,71 @@
+{
+  "simulation_id": "sim_20251220_162628_0x6e2c39",
+  "whale_address": "0x6e2c3937e6dd094a3a9f814ecbdc289d3fd5b7f8",
+  "market_slug": "will-solana-reach-260-before-2026-327-264-879-598",
+  "is_elite": true,
+  "confidence": 0.6000000000000001,
+  "detection": {
+    "timestamp": "2025-12-20T16:26:28",
+    "market": "will-solana-reach-260-before-2026-327-264-879-598",
+    "price": 0.9949999829837975,
+    "size": 33.497486
+  },
+  "results": [
+    {
+      "delay_seconds": 60,
+      "delay_minutes": 1.0,
+      "execution_time": "2025-12-20T16:27:28",
+      "market_state_at_entry": {
+        "price": 0.9949999829837975,
+        "timestamp": "2025-12-20T16:27:55.021250",
+        "source": "actual_lookup"
+      },
+      "simulated_entry_price": 0.9959949829667812,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:27:55.021250",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 180,
+      "delay_minutes": 3.0,
+      "execution_time": "2025-12-20T16:29:28",
+      "market_state_at_entry": {
+        "price": 0.9949999829837975,
+        "timestamp": "2025-12-20T16:29:55.043553",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9959949829667812,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:29:55.043553",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    },
+    {
+      "delay_seconds": 300,
+      "delay_minutes": 5.0,
+      "execution_time": "2025-12-20T16:31:28",
+      "market_state_at_entry": {
+        "price": 0.9949999829837975,
+        "timestamp": "2025-12-20T16:31:55.178374",
+        "source": "fallback_detection"
+      },
+      "simulated_entry_price": 0.9959949829667812,
+      "slippage_percent": 0.1,
+      "checked_at": "2025-12-20T16:31:55.178374",
+      "pnl": null,
+      "pnl_pct": null,
+      "resolved": false
+    }
+  ],
+  "status": "completed",
+  "created_at": "2025-12-20T16:26:53.287560",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ],
+  "completed_at": "2025-12-20T16:31:55.187374"
+}

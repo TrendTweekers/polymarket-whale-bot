@@ -1,0 +1,21 @@
+{
+  "simulation_id": "sim_20251220_141103_0x5116ee",
+  "whale_address": "0x5116ee15e86bc8878b90ac8a8514e38511eb58c4",
+  "market_slug": "elon-musk-of-tweets-december-16-december-23-220-239",
+  "is_elite": true,
+  "confidence": 0.55,
+  "detection": {
+    "timestamp": "2025-12-20T14:11:03",
+    "market": "elon-musk-of-tweets-december-16-december-23-220-239",
+    "price": 0.003,
+    "size": 2994.0
+  },
+  "results": [],
+  "status": "pending",
+  "created_at": "2025-12-20T14:11:09.009039",
+  "delays_scheduled": [
+    60,
+    180,
+    300
+  ]
+}
