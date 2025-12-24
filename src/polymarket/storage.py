@@ -141,6 +141,7 @@ class SignalStore:
                             market_id TEXT,
                             token_id TEXT,
                             confidence INTEGER,
+                            market_question TEXT NULL,
                             resolved_at TEXT NULL,
                             resolved_outcome_index INTEGER NULL,
                             won INTEGER NULL,
@@ -148,6 +149,12 @@ class SignalStore:
                             FOREIGN KEY(signal_id) REFERENCES signals(id)
                         )
                     """)
+                    
+                    # Add market_question column if it doesn't exist (for existing databases)
+                    try:
+                        cursor.execute("ALTER TABLE paper_trades ADD COLUMN market_question TEXT NULL")
+                    except sqlite3.OperationalError:
+                        pass  # Column already exists
                     
                     # Create resolutions table
                     cursor.execute("""
@@ -357,11 +364,11 @@ class SignalStore:
                             INSERT INTO paper_trades(
                                 signal_id, opened_at, status, stake_eur, stake_usd,
                                 entry_price, outcome_index, outcome_name, side,
-                                event_id, market_id, token_id, confidence
+                                event_id, market_id, token_id, confidence, market_question
                             ) VALUES (
                                 :signal_id, :opened_at, 'OPEN', :stake_eur, :stake_usd,
                                 :entry_price, :outcome_index, :outcome_name, :side,
-                                :event_id, :market_id, :token_id, :confidence
+                                :event_id, :market_id, :token_id, :confidence, :market_question
                             )
                         """, {
                             "signal_id": signal_id,
@@ -375,7 +382,8 @@ class SignalStore:
                             "event_id": signal_dict.get("event_id") or signal_dict.get("condition_id", ""),
                             "market_id": signal_dict.get("market_id", ""),
                             "token_id": signal_dict.get("token_id", ""),
-                            "confidence": confidence
+                            "confidence": confidence,
+                            "market_question": signal_dict.get("market_question") or signal_dict.get("question") or None
                         })
                         trade_id = cursor.lastrowid
                         conn.commit()
@@ -453,6 +461,7 @@ class SignalStore:
                 ORDER BY pt.opened_at ASC
                 LIMIT ?
             """, (limit,))
+            # Note: market_question is already in pt.*, no need to join
             
             rows = cursor.fetchall()
             conn.close()

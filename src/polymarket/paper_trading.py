@@ -5,7 +5,7 @@ Paper trading module - handles paper trade creation and stake computation.
 import os
 import structlog
 import re
-from typing import Dict, Optional
+from typing import Dict, Optional, Tuple
 from datetime import datetime
 
 logger = structlog.get_logger()
@@ -150,86 +150,183 @@ def compute_stake_usd(stake_eur: float, fx_eur_usd: float) -> float:
     return stake_eur * fx_eur_usd
 
 
-def open_paper_trade(signal_row: Dict, confidence: int = None) -> Dict:
+def open_paper_trade(signal_row: Dict, confidence: int = None) -> Tuple[Optional[Dict], str]:
     """
     Create a paper trade dictionary from a signal.
     
     Args:
         signal_row: Signal dictionary with all signal fields
         confidence: Confidence score (0-100). If None, extracted from signal_row.
-        
+    
     Returns:
-        Paper trade dictionary ready for database insertion
+        Tuple of (paper_trade_dict, reason_string)
+        - If successful: (dict, "success")
+        - If failed: (None, "reason_for_failure")
     """
-    # Extract confidence
-    if confidence is None:
-        confidence = signal_row.get("confidence", 0)
-    
-    # Calculate stake based on confidence
-    stake_eur = round(stake_eur_from_confidence(confidence), 2)
-    stake_usd = compute_stake_usd(stake_eur, FX_EUR_USD)
-    
-    entry_price = signal_row.get("whale_entry_price") or signal_row.get("entry_price") or signal_row.get("current_price")
-    
-    return {
-        "signal_id": None,  # Will be set by storage layer
-        "opened_at": signal_row.get("timestamp", datetime.utcnow().isoformat()),
-        "status": "OPEN",
-        "stake_eur": stake_eur,
-        "stake_usd": stake_usd,
-        "entry_price": entry_price,
-        "outcome_index": signal_row.get("outcome_index"),
-        "outcome_name": signal_row.get("outcome_name") or signal_row.get("outcome", ""),
-        "side": signal_row.get("side", ""),
-        "event_id": signal_row.get("event_id") or signal_row.get("condition_id", ""),
-        "market_id": signal_row.get("market_id", ""),
-        "token_id": signal_row.get("token_id", ""),
-        "market": signal_row.get("market", ""),
-        "category": signal_row.get("category", ""),
-        "confidence": confidence
-    }
+    try:
+        # Extract confidence
+        if confidence is None:
+            confidence = signal_row.get("confidence", 0)
+        
+        # Validate required fields
+        if not signal_row.get("wallet"):
+            return None, "missing_wallet"
+        if not signal_row.get("condition_id") and not signal_row.get("event_id"):
+            return None, "missing_condition_id"
+        if not signal_row.get("market"):
+            return None, "missing_market"
+        
+        # Calculate stake based on confidence
+        stake_eur = round(stake_eur_from_confidence(confidence), 2)
+        if stake_eur <= 0:
+            return None, f"stake_zero_or_negative_{stake_eur}"
+        
+        stake_usd = compute_stake_usd(stake_eur, FX_EUR_USD)
+        
+        entry_price = signal_row.get("whale_entry_price") or signal_row.get("entry_price") or signal_row.get("current_price")
+        if entry_price is None or entry_price <= 0:
+            return None, f"invalid_entry_price_{entry_price}"
+        
+        trade_dict = {
+            "wallet": signal_row.get("wallet", ""),
+            "signal_id": None,  # Will be set by storage layer
+            "opened_at": signal_row.get("timestamp", datetime.utcnow().isoformat()),
+            "status": "OPEN",
+            "stake_eur": stake_eur,
+            "stake_usd": stake_usd,
+            "entry_price": entry_price,
+            "outcome_index": signal_row.get("outcome_index"),
+            "outcome_name": signal_row.get("outcome_name") or signal_row.get("outcome", ""),
+            "side": signal_row.get("side", ""),
+            "event_id": signal_row.get("event_id") or signal_row.get("condition_id", ""),
+            "condition_id": signal_row.get("condition_id") or signal_row.get("event_id", ""),
+            "market_id": signal_row.get("market_id", ""),
+            "token_id": signal_row.get("token_id", ""),
+            "market": signal_row.get("market", ""),
+            "category": signal_row.get("category", ""),
+            "confidence": confidence,
+            "market_question": signal_row.get("market_question") or signal_row.get("question") or signal_row.get("market", "")  # Store full question if available
+        }
+        
+        return trade_dict, "success"
+    except Exception as e:
+        return None, f"exception_{type(e).__name__}_{str(e)[:100]}"
 
 
-def format_paper_trade_telegram(trade_dict: Dict) -> str:
+def format_paper_trade_telegram(trade_dict: Optional[Dict] = None, signal: Optional[Dict] = None, trade_id: Optional[int] = None, confidence: Optional[int] = None) -> str:
     """
     Format Telegram message for paper trade opened.
     
     Args:
-        trade_dict: Paper trade dictionary
+        trade_dict: Paper trade dictionary (preferred, contains all fields)
+        signal: Signal dictionary (alternative, merged with trade_id/confidence)
+        trade_id: Trade ID (optional, merged with signal)
+        confidence: Confidence score (optional, merged with signal)
         
     Returns:
         Formatted Telegram message string
     """
-    market = trade_dict.get("market", "Unknown")
+    # Merge data sources: prefer trade_dict, fallback to signal + trade_id + confidence
+    if trade_dict:
+        data = trade_dict.copy()
+    elif signal:
+        data = signal.copy()
+        if trade_id is not None:
+            data["trade_id"] = trade_id
+        if confidence is not None:
+            data["confidence"] = confidence
+    else:
+        data = {}
+    
+    # Extract fields safely with defaults
+    market = data.get("market") or data.get("question") or data.get("title") or "Unknown"
     market_short = (market[:50] + "...") if len(market) > 50 else market
     
-    confidence = trade_dict.get("confidence", 0)
-    confidence_str = f"{confidence}/100"
+    confidence_val = data.get("confidence", 0)
+    confidence_str = f"{confidence_val}/100"
     
     # Use safe position name helper (never blank)
-    position = _safe_position_name(trade_dict)
+    position = _safe_position_name(data)
     
     # Add range hint with actual values
     position = _range_hint(market, position)
     
-    stake_eur = trade_dict.get("stake_eur", 0.0)
-    stake_usd = trade_dict.get("stake_usd", 0.0)
-    entry_price = trade_dict.get("entry_price")
+    stake_eur = data.get("stake_eur", 0.0)
+    stake_usd = data.get("stake_usd", 0.0)
+    entry_price = data.get("entry_price") or data.get("whale_entry_price") or data.get("current_price")
     entry_price_str = f"{entry_price:.4f}" if entry_price else "N/A"
     
-    days_to_expiry = trade_dict.get("days_to_expiry")
+    days_to_expiry = data.get("days_to_expiry")
     expiry_str = f"{days_to_expiry:.1f} days" if days_to_expiry is not None else "Unknown"
     
-    status = trade_dict.get("status", "OPEN")
+    status = data.get("status", "OPEN")
+    
+    # Add trade_id if available
+    trade_id_str = ""
+    if data.get("trade_id"):
+        trade_id_str = f"Trade ID: {data['trade_id']}\n"
+    
+    # Add discount if available
+    discount_str = ""
+    discount_pct = data.get("discount_pct")
+    if discount_pct is not None:
+        discount_str = f"Discount: {discount_pct*100:.2f}%\n"
+    
+    # Add trade value if available
+    value_str = ""
+    trade_value_usd = data.get("trade_value_usd")
+    if trade_value_usd is not None:
+        value_str = f"Trade Value: ${trade_value_usd:.2f}\n"
     
     return (
         f"🧾 Paper trade opened\n"
+        f"{trade_id_str}"
         f"Market: {market_short}\n"
         f"Position: {position}\n"
         f"Status: {status}\n"
         f"Confidence: {confidence_str}\n"
+        f"{discount_str}"
+        f"{value_str}"
         f"Stake: {stake_eur:.2f} EUR ({stake_usd:.2f} USD)\n"
         f"Entry price: {entry_price_str}\n"
         f"Expiry: {expiry_str}"
     )
+
+
+if __name__ == "__main__":
+    # Sanity check: test the formatter with minimal data
+    test_dict = {
+        "market": "Test Market",
+        "confidence": 75,
+        "stake_eur": 3.5,
+        "stake_usd": 3.85,
+        "entry_price": 0.65,
+        "days_to_expiry": 2.5,
+        "status": "OPEN",
+        "outcome_name": "YES"
+    }
+    result = format_paper_trade_telegram(trade_dict=test_dict)
+    assert isinstance(result, str), "Formatter must return string"
+    assert "Test Market" in result, "Market name must be in output"
+    assert "75/100" in result, "Confidence must be in output"
+    print("Test 1 passed: trade_dict format")
+    
+    # Test with signal + trade_id + confidence (backwards compatibility)
+    test_signal = {
+        "market": "Test Market 2",
+        "discount_pct": 0.05,
+        "trade_value_usd": 200.0
+    }
+    result2 = format_paper_trade_telegram(signal=test_signal, trade_id=999, confidence=80)
+    assert isinstance(result2, str), "Formatter must return string"
+    assert "Test Market 2" in result2, "Market name must be in output"
+    assert "80/100" in result2, "Confidence must be in output"
+    print("Test 2 passed: signal + trade_id + confidence format")
+    
+    # Test with empty dict (should not crash)
+    result3 = format_paper_trade_telegram(trade_dict={})
+    assert isinstance(result3, str), "Formatter must return string even with empty dict"
+    print("Test 3 passed: empty dict format")
+    
+    print("All formatter tests passed")
 
